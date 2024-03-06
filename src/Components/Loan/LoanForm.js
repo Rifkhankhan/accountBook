@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import styles from './ReceiptForm.module.css'
+import styles from './LoanForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { createReceipt } from './../../Actions/ReceiptActions'
-const ReceiptForm = ({ header }) => {
+import { createReceipt } from '../../Actions/ReceiptActions'
+const LoanForm = ({ header }) => {
 	const [formValid, setFormValid] = useState(true)
 	// const notification = useSelector(state => state.customer.notification)
 	const [formSubmit, setFormSubmit] = useState(false)
@@ -13,7 +13,7 @@ const ReceiptForm = ({ header }) => {
 		amount: { value: '', isValid: true },
 		narration: { value: '', isValid: true },
 		date: { value: '', isValid: true },
-		category: { value: '', isValid: true }
+		type: { value: '', isValid: true }
 	}
 
 	// State for inputs
@@ -23,7 +23,7 @@ const ReceiptForm = ({ header }) => {
 		setFormValid(
 			inputs.amount.isValid &&
 				inputs.narration.isValid &&
-				inputs.category.isValid &&
+				inputs.type.isValid &&
 				inputs.date.isValid
 		)
 
@@ -47,7 +47,7 @@ const ReceiptForm = ({ header }) => {
 		const data = {
 			amount: inputs.amount.value,
 			narration: inputs.narration.value,
-			category: inputs.category.value,
+			type: inputs.type.value,
 			date: inputs.date.value
 		}
 		const dateRegex = /^\d{4}-\d{2}-\d{2}$/
@@ -55,10 +55,10 @@ const ReceiptForm = ({ header }) => {
 
 		const amountValid = data.amount > 0
 		const narrationValid = data.narration?.trim().length > 0
-		const categoryValid = data.category?.trim().length > 0
+		const typeValid = data.type?.trim().length > 0
 		const dateValid = dateRegex.test(dateString)
 
-		if (!amountValid || !narrationValid || !categoryValid || !dateValid) {
+		if (!amountValid || !narrationValid || !typeValid || !dateValid) {
 			setInputs(currentInputs => {
 				return {
 					amount: { value: currentInputs.amount.value, isValid: amountValid },
@@ -68,9 +68,9 @@ const ReceiptForm = ({ header }) => {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
 					},
-					category: {
-						value: currentInputs.category.value,
-						isValid: categoryValid
+					type: {
+						value: currentInputs.type.value,
+						isValid: typeValid
 					}
 				}
 			})
@@ -84,7 +84,7 @@ const ReceiptForm = ({ header }) => {
 	return (
 		<div className={`container ${styles.container} `}>
 			<h2 class="row col-md-12 col-sm-6" className={styles.header}>
-				Create Income
+				Create Loan
 			</h2>
 			{!formValid && (
 				<div className="row ">
@@ -157,16 +157,16 @@ const ReceiptForm = ({ header }) => {
 								<input
 									type="radio"
 									id="Cash"
-									name="category"
-									onChange={e => inputTextChangeHandler('category', 'cash')}
-									value={inputs.category?.value}
+									name="type"
+									onChange={e => inputTextChangeHandler('category', 'get')}
+									value={inputs.type?.value}
 									class="col col-2"
 								/>
 								<label
 									for="Cash"
 									class="col col-1"
 									style={{ color: 'white', fontSize: '2vh' }}>
-									Cash
+									Get
 								</label>
 							</div>
 
@@ -174,16 +174,16 @@ const ReceiptForm = ({ header }) => {
 								<input
 									type="radio"
 									id="Capital"
-									name="category"
-									onChange={e => inputTextChangeHandler('category', 'capital')}
-									value={inputs.category?.value}
+									name="type"
+									onChange={e => inputTextChangeHandler('category', 'paid')}
+									value={inputs.type?.value}
 									class="col col-2"
 								/>
 								<label
 									for="Capital"
 									class="col col-1"
 									style={{ color: 'white', fontSize: '2vh' }}>
-									Capital
+									Pay
 								</label>
 							</div>
 						</div>
@@ -205,4 +205,4 @@ const ReceiptForm = ({ header }) => {
 	)
 }
 
-export default ReceiptForm
+export default LoanForm

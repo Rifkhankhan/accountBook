@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styles from './ReceiptForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { createReceipt } from './../../Actions/ReceiptActions'
+import { createReceipt } from '../../Actions/ReceiptActions'
 const ReceiptForm = ({ header }) => {
 	const [formValid, setFormValid] = useState(true)
 	// const notification = useSelector(state => state.customer.notification)
