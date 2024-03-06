@@ -74,7 +74,7 @@ const WeeklyGraph = () => {
       <h2>Past Week's Balance, Income, and Expense Graph</h2>
       <Line
         ref={chartRef}
-        data={chartData}``
+        data={chartData}
         options={{
           scales: {
             x: {
