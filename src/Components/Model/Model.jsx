@@ -4,27 +4,32 @@ import styles from './Model.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClose, faPager, faPen } from '@fortawesome/free-solid-svg-icons'
 import man from './../../Images/man.png'
-const Model = ({ type, clickedRow, showModal, closeHandler, selectedUser }) => {
+import { updateUser } from '../../Actions/userAction'
+import { useDispatch } from 'react-redux'
+const Model = ({  showModal, closeHandler, selectedUser,blockHandler }) => {
 	const [showEditModal, setShowEditModal] = useState(false)
-	const [formSubmit, setFormSubmit] = useState(false)
+	const [formSubmit, setFormSubmit] = useState(false) // for response
 	const [formValid, setFormValid] = useState(true)
+	const dispatch = useDispatch()
 
 	// initialInputsState
 	const initialInputsState = {
-		name: { value: selectedUser.name, isValid: true },
-		email: { value: selectedUser.email, isValid: true },
-		phone: { value: selectedUser.phone, isValid: true },
-		expansePermission: { value: selectedUser.expansePermission, isValid: true },
-		receiptPermission: { value: selectedUser.receiptPermission, isValid: true }
+		name: { value: selectedUser?.name, isValid: true },
+		expansePermission: { value: selectedUser?.expansePermission, isValid: true },
+		expanseEditPermission: { value: selectedUser?.expanseEditPermission, isValid: true },
+		expanseDeletePermission: { value: selectedUser?.expanseDeletePermission, isValid: true },
+		receiptPermission: { value: selectedUser?.receiptPermission, isValid: true },
+		receiptEditPermission: { value: selectedUser?.receiptEditPermission, isValid: true },
+		receiptDeletePermission: { value: selectedUser?.receiptDeletePermission, isValid: true }
 	}
 
+	console.log(selectedUser);
 	const [inputs, setInputs] = useState(initialInputsState)
 
 	useEffect(() => {
 		setFormValid(
-			inputs.receiptPermission.isValid &&
-				inputs.expansePermission.isValid &&
-				inputs.name.isValid
+		
+				inputs.name.isValid 
 		)
 
 		return () => {}
@@ -36,7 +41,7 @@ const Model = ({ type, clickedRow, showModal, closeHandler, selectedUser }) => {
 		setInputs(currentInputValue => {
       return {
         ...currentInputValue,
-				[inputType]: { value: enteredValue === 'true' ? true : enteredValue === 'false' ? false : enteredValue, isValid: true }
+				[inputType]: { value:  enteredValue, isValid: true }
 			}
 		})
 	}
@@ -44,110 +49,43 @@ const Model = ({ type, clickedRow, showModal, closeHandler, selectedUser }) => {
 	const submitHandler = () => {
 		const data = {
 			name: inputs.name.value,
-
 			expansePermission: inputs.expansePermission.value,
-			receiptPermission: inputs.receiptPermission.value
+			receiptPermission: inputs.receiptPermission.value,
+			expanseEditPermission: inputs.expanseEditPermission.value,
+			expanseDeletePermission: inputs.expanseDeletePermission.value,
+			receiptDeletePermission: inputs.receiptDeletePermission.value,
+			receiptEditPermission: inputs.receiptEditPermission.value,
+
 		}
 
 		const nameValid = data.name?.trim().length > 0
-		const expansePermissionIsValid = data.expansePermission !== null
-		const receiptPermissionIsValid = data.receiptPermission !== null
-		if (!nameValid || !expansePermissionIsValid || !receiptPermissionIsValid) {
-			setInputs(currentInputs => {
-				return {
+		
+		if (!nameValid) {
+			setInputs(currentInputs => {  
+				return { 
 					name: { value: currentInputs.name.value, isValid: nameValid },
-					expansePermission: {
-						value: currentInputs.expansePermission.value,
-						isValid: expansePermissionIsValid
-					},
-					receiptPermission: {
-						value: currentInputs.receiptPermission.value,
-						isValid: receiptPermissionIsValid
-					}
+					
 				}
 			})
 			return
 		}
 
-		// dispatch(expanseActins.createExpanse(data))
-		// setFormSubmit(true)
-    setShowEditModal(false)
-		console.log(data)
-
+		dispatch(updateUser(selectedUser._id,data))
+		setFormSubmit(true)
+    	setShowEditModal(false)
+		closeHandler()
 		setInputs(initialInputsState)
 	}
 
 	// edit handler
 	const editUserHandler = id => {
-		// closeHandler()
 		setShowEditModal(current => !current)
 	}
 	return (
 		<>
-			{type === 'expanse' && (
-				<Modal show={showModal} onHide={closeHandler} centered size="lg">
-					<Modal.Header
-						style={{
-							display: 'flex',
-							justifyContent: 'space-between',
-							backgroundColor: '#7993d2'
-						}}>
-						<Modal.Title style={{ fontSize: '2em' }}>View Details</Modal.Title>
-						<FontAwesomeIcon className={styles.editBtn} icon={faPen} />
-					</Modal.Header>
-					<Modal.Body>
-						<div className="row">
-							<div className="col-12 col-md-6">
-								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
-									Name
-								</label>
-								<p>Mohammed</p>
-							</div>
-							<div className="col-12 col-md-6">
-								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
-									Name
-								</label>
-								<p>Mohammed</p>
-							</div>
-						</div>
-						<div className="row">
-							<div className="col-12 col-md-6">
-								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
-									Name
-								</label>
-								<p>Mohammed</p>
-							</div>
-							<div className="col-12 col-md-6">
-								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
-									Name
-								</label>
-								<p>Mohammed</p>
-							</div>
-						</div>
-						<div className="row">
-							<div className="col-12 col-md-6">
-								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
-									Name
-								</label>
-								<p>Mohammed</p>
-							</div>
-							<div className="col-12 col-md-6">
-								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
-									Name
-								</label>
-								<p>Mohammed</p>
-							</div>
-						</div>
-					</Modal.Body>
-					<Modal.Footer>
-						<Button variant="secondary" onClick={closeHandler}>
-							Close
-						</Button>
-					</Modal.Footer>
-				</Modal>
-			)}
+	
 
-			{type === 'users' && !showEditModal && (
+			{ !showEditModal && (
 				<Modal show={showModal} onHide={closeHandler} centered size="lg">
 					<Modal.Header
 						style={{
@@ -183,7 +121,7 @@ const Model = ({ type, clickedRow, showModal, closeHandler, selectedUser }) => {
 						</div>
 						<div className="row">
 							<div className="col-12 col-md-6">
-								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }} 	className="col-12 col-md-12 ">
 									Name
 								</label>
 								<p>{selectedUser.name}</p>
@@ -191,28 +129,61 @@ const Model = ({ type, clickedRow, showModal, closeHandler, selectedUser }) => {
 						</div>
 						<div className="row">
 							<div className="col-12 col-md-6">
-								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }} className="col-12 col-md-12">
 									Expanse Permission
 								</label>
-								<p>{selectedUser.expansePermission ? 'Granted' : 'Denied'}</p>
+								<p>{selectedUser.expansePermission === 'yes' ? 'Granted' : 'Denied'}</p>
 							</div>
 							<div className="col-12 col-md-6">
 								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
 									Receipt Permission
 								</label>
-								<p>{selectedUser.receiptPermission ? 'Granted' : 'Denied'}</p>
+								<p>{selectedUser.receiptPermission === 'yes' ? 'Granted' : 'Denied'}</p>
+							</div>
+						</div>
+
+						<div className="row">
+							<div className="col-12 col-md-6">
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }} className="col-12 col-md-12">
+									Expanse Edit Permission
+								</label>
+								<p>{selectedUser.expanseEditPermission === 'yes' ? 'Granted' : 'Denied'}</p>
+							</div>
+							<div className="col-12 col-md-6">
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
+									Receipt Edit Permission
+								</label>
+								<p>{selectedUser.receiptEditPermission  === 'yes' ? 'Granted' : 'Denied'}</p>
+							</div>
+						</div>
+
+						<div className="row">
+							<div className="col-12 col-md-6">
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }} className="col-12 col-md-12">
+									Expanse Delete Permission
+								</label>
+								<p>{selectedUser.expanseDeletePermission === 'yes' ? 'Granted' : 'Denied'}</p>
+							</div>
+							<div className="col-12 col-md-6">
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
+									Receipt Delete Permission
+								</label>
+								<p>{selectedUser.receiptDeletePermission === 'yes' ? 'Granted' : 'Denied'}</p>
 							</div>
 						</div>
 					</Modal.Body>
-					<Modal.Footer>
-						<Button variant="secondary" onClick={closeHandler}>
+					<Modal.Footer className='row mx-1' style={{display:'flex',justifyContent:'space-between'}}>
+					<Button variant="dark" className='col-12 col-md-2' onClick={blockHandler}>
+							Block
+						</Button>
+						<Button variant="secondary" onClick={closeHandler} className='col-12 col-md-2'>
 							Close
 						</Button>
 					</Modal.Footer>
 				</Modal>
 			)}
 
-			{type === 'users' && showEditModal && (
+			{ showEditModal && (
 				<Modal show={showModal} onHide={closeHandler} centered size="lg">
 					<Modal.Header
 						style={{
@@ -259,7 +230,7 @@ const Model = ({ type, clickedRow, showModal, closeHandler, selectedUser }) => {
 							<div className="col-12 col-md-6" style={{ marginBlock: '1vh' }}>
 								<label
 									style={{ fontWeight: 600, fontSize: '1.3em' }}
-									className="col-12 col-md-6 ">
+									className="col-12 col-md-12 ">
 									Name
 								</label>
 								<input
@@ -272,7 +243,24 @@ const Model = ({ type, clickedRow, showModal, closeHandler, selectedUser }) => {
 									style={{ border: '2px solid blue' }}
 								/>
 							</div>
+							{/* <div className="col-12 col-md-6" style={{ marginBlock: '1vh' }}>
+								<label
+									style={{ fontWeight: 600, fontSize: '1.3em' }}
+									className="col-12 col-md-6 ">
+									Password
+								</label>
+								<input
+									placeholder="Example@gmail.com"
+									value={inputs.name.value}
+									onChange={e =>
+										inputTextChangeHandler('name', e.target.value)
+									}
+									className="form-control col-12 col-md-6"
+									style={{ border: '2px solid blue' }}
+								/>
+							</div> */}
 						</div>
+						
 						<div className="row">
 							<div className="col-12 col-md-6" style={{ marginBlock: '1vh' }}>
 								<label
@@ -288,9 +276,9 @@ const Model = ({ type, clickedRow, showModal, closeHandler, selectedUser }) => {
 										inputTextChangeHandler('expansePermission', e.target.value)
 									}
 									id="inputGroupSelect01">
-									<option value={true} selected={inputs.expansePermission.value}>Yes</option>
+									<option value='yes' selected={inputs.expansePermission.value === 'yes'}>Yes</option>
                 
-									<option value={false} selected={inputs.expansePermission.value}>No</option>
+									<option value='no' selected={inputs.expansePermission.value === 'no'}>No</option>
 								</select>
 							</div>
 							<div className="col-12 col-md-6" style={{ marginBlock: '1vh' }}>
@@ -307,15 +295,97 @@ const Model = ({ type, clickedRow, showModal, closeHandler, selectedUser }) => {
 										inputTextChangeHandler('receiptPermission', e.target.value)
 									}
 									id="inputGroupSelect01">
-									<option value={true} selected={inputs.receiptPermission.value}>Yes</option>
-									<option value={false} selected={inputs.receiptPermission.value}>No</option>
+									<option value='yes' selected={inputs.expansePermission.value === 'yes'}>Yes</option>
+									<option value='no' selected={inputs.expansePermission.value === 'no'}>No</option>
 								</select>
 							</div>
 						</div>
 
-           
+						<div className="row">
+							<div className="col-12 col-md-6" style={{ marginBlock: '1vh' }}>
+								<label
+									style={{ fontWeight: 600, fontSize: '1.3em' }}
+									className="col-12 col-md-12">
+									Expanse Edit Permission
+								</label>
+								<select
+									class="form-control"
+									style={{ border: '2px solid blue' }}
+									value={inputs.expanseEditPermission.value }
+									onChange={ (e) =>
+										inputTextChangeHandler('expansePermission', e.target.value)
+									}
+									id="inputGroupSelect01">
+								
+									<option value='yes' selected={inputs.expanseEditPermission.value === 'yes'}>Yes</option>
+									<option value='no' selected={inputs.expanseEditPermission.value === 'no'}>No</option>
+								</select>
+							</div>
+							<div className="col-12 col-md-6" style={{ marginBlock: '1vh' }}>
+								<label
+									style={{ fontWeight: 600, fontSize: '1.3em' }}
+									className="col-12 col-md-12">
+
+									Receipt Edit Permission
+								</label>
+								<select
+									class="form-control"
+									style={{ border: '2px solid blue' }}
+									value={inputs.receiptEditPermission.value }
+									onChange={e =>
+										inputTextChangeHandler('receiptPermission', e.target.value)
+									}
+									id="inputGroupSelect01">
+									<option value='yes' selected={inputs.receiptEditPermission.value === 'yes'}>Yes</option>
+									<option value='no' selected={inputs.receiptEditPermission.value === 'no'}>No</option>
+								</select>
+							</div>
+						</div>
+									
+						<div className="row">
+							<div className="col-12 col-md-6" style={{ marginBlock: '1vh' }}>
+								<label
+									style={{ fontWeight: 600, fontSize: '1.3em' }}
+									className="col-12 col-md-12">
+
+									Expanse Delete Permission
+								</label>
+								<select
+									class="form-control"
+									style={{ border: '2px solid blue' }}
+									value={inputs.expanseDeletePermission.value }
+									onChange={ (e) =>
+										inputTextChangeHandler('expansePermission', e.target.value)
+									}
+									id="inputGroupSelect01">
+									<option value='yes' selected={inputs.expanseDeletePermission.value === 'yes'}>Yes</option>
+                
+									<option value='no' selected={inputs.expanseDeletePermission.value === 'no'}>No</option>
+								</select>
+							</div>
+							<div className="col-12 col-md-6" style={{ marginBlock: '1vh' }}>
+								<label
+									style={{ fontWeight: 600, fontSize: '1.3em' }}
+									className="col-12 col-md-12">
+
+									Receipt Delete Permission
+								</label>
+								<select
+									class="form-control"
+									style={{ border: '2px solid blue' }}
+									value={inputs.receiptDeletePermission.value }
+									onChange={e =>
+										inputTextChangeHandler('receiptDeletePermission', e.target.value)
+									}
+									id="inputGroupSelect01">
+									<option value='yes' selected={inputs.receiptDeletePermission.value === 'yes'}>Yes</option>
+									<option value='no' selected={inputs.receiptDeletePermission.value === 'no'}>No</option>
+								</select>
+							</div>
+						</div>
 					</Modal.Body>
 					<Modal.Footer>
+				
 						<Button variant="primary" onClick={submitHandler}>
 							Submit
 						</Button>

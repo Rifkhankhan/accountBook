@@ -1,19 +1,21 @@
-import { useDispatch, useSelector } from 'react-redux'
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
-import Home from '../Pages/Home/Home'
-import Payment from '../Pages/Payment/Payment'
-import Receipt from '../Pages/Receipt/Receipt'
-import Users from '../Pages/Users/Users'
+import { useDispatch, useSelector } from 'react-redux';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import Home from '../Pages/Home/Home';
+import Payment from '../Pages/Payment/Payment';
+import Receipt from '../Pages/Receipt/Receipt';
+import Users from '../Pages/Users/Users';
+import Login from '../Pages/Login/Login';
 
 const Routers = () => {
 	// const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
 
-	return (
-		<Routes>
-			<Route path="/" element={<Home />} />
-			{/* <Route path="/reset/:token" element={<ResetPage />} /> */}
-			{/* <Route path="/blogs/:id" element={<BlogDetails />} /> */}
-			{/* {isAuthenticated && (
+  return (
+    <Routes>
+      <Route index path='/login' element={<Login />} />
+      <Route path='/' element={<Home />} />
+      {/* <Route path="/reset/:token" element={<ResetPage />} /> */}
+      {/* <Route path="/blogs/:id" element={<BlogDetails />} /> */}
+      {/* {isAuthenticated && (
 				<Route path="/profile" element={<Profile />}>
 					<Route index element={<Dashboard />} />
 					<Route path="blogs" element={<Blogs />} />
@@ -22,12 +24,12 @@ const Routers = () => {
 				</Route>
 			)} */}
 
-			<Route path="/" index element={<Home />} />
-			<Route path="/payment" element={<Payment />} />
-			<Route path="/receipt" element={<Receipt />} />
-			<Route path="/users" element={<Users />} />
+      <Route path='/' index element={<Home />} />
+      <Route path='/payment' element={<Payment />} />
+      <Route path='/receipt' element={<Receipt />} />
+      <Route path='/users' element={<Users />} />
 
-			{/* {isAuthenticated && (
+      {/* {isAuthenticated && (
 		// 		<Route path="/netflix/profile" element={<NetflixProfile />}>
 		// 			<Route index element={<Movies />} />
 		// 			<Route path="movies" element={<Movies />} />
@@ -42,8 +44,8 @@ const Routers = () => {
 		// 			<Route path="*" element={<Series />} />
 		// 		</Route>
 		// 	)} */}
-		</Routes>
-	)
-}
+    </Routes>
+  );
+};
 
-export default Routers
+export default Routers;

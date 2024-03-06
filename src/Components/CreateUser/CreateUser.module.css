@@ -13,6 +13,8 @@
 	justify-content: center;
 }
 
+
+
 @media screen and (max-width: 765px) {
 	.container {
 		margin-block: 2vh;

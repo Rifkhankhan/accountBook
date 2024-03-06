@@ -828,143 +828,24 @@
 // export default PaginationTable;
 
 // table with date filter
+import jsPDF from 'jspdf';
 
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-function PaginationTable({ expanse, handleModel }) {
-	// Sample data, replace it with your actual data
+function PaginationTable({ list, handleModel }) {
+	const [initialData, setInitialData] = useState();
+	
+	useLayoutEffect(() => {
+		setInitialData(list)
+		setData(list)
+	},[list])
 
-	// const initialData = [
-	//   {
-	//     id: 1,
-	//     column1: 'Data 1',
-	//     column2: 'Data 2',
-	//     column3: 'Data 3'
-	//   },
-	//   {
-	//     id: 2,
-	//     column1: 'Data 5',
-	//     column2: 'Data 6',
-	//     column3: 'Data 7'
-	//   },
-	//   {
-	//     id: 3,
-	//     column1: 'Data 1',
-	//     column2: 'Data 2',
-	//     column3: 'Data 3'
-	//   },
-	//   {
-	//     id: 4,
-	//     column1: 'Data 5',
-	//     column2: 'Data 6',
-	//     column3: 'Data 7'
-	//   },
-	//   {
-	//     id: 5,
-	//     column1: 'Data 1',
-	//     column2: 'Data 2',
-	//     column3: 'Data 3'
-	//   },
-	//   {
-	//     id: 6,
-	//     column1: 'Data 5',
-	//     column2: 'Data 6',
-	//     column3: 'Data 7'
-	//   },
-	//   {
-	//     id: 7,
-	//     column1: 'Data 1',
-	//     column2: 'Data 2',
-	//     column3: 'Data 3'
-	//   },
-	//   {
-	//     id: 8,
-	//     column1: 'Data 5',
-	//     column2: 'Data 6',
-	//     column3: 'Data 7'
-	//   },
-	//   {
-	//     id: 9,
-	//     column1: 'Data 1',
-	//     column2: 'Data 2',
-	//     column3: 'Data 3'
-	//   },
-	//   {
-	//     id: 10,
-	//     column1: 'Data 5',
-	//     column2: 'Data 6',
-	//     column3: 'Data 7'
-	//   },
-	//   {
-	//     id: 11,
-	//     column1: 'Data 1',
-	//     column2: 'Data 2',
-	//     column3: 'Data 3'
-	//   },
-	//   {
-	//     id: 12,
-	//     column1: 'Data 5',
-	//     column2: 'Data 6',
-	//     column3: 'Data 7'
-	//   },
-	//   {
-	//     id: 13,
-	//     column1: 'Data 1',
-	//     column2: 'Data 2',
-	//     column3: 'Data 3'
-	//   },
-	//   {
-	//     id: 14,
-	//     column1: 'Data 5',
-	//     column2: 'Data 6',
-	//     column3: 'Data 7'
-	//   },
-	//   {
-	//     id: 15,
-	//     column1: 'Data 1',
-	//     column2: 'Data 2',
-	//     column3: 'Data 3'
-	//   },
-	//   {
-	//     id: 16,
-	//     column1: 'Data 5',
-	//     column2: 'Data 6',
-	//     column3: 'Data 7'
-	//   },
-	//   {
-	//     id: 17,
-	//     column1: 'Data 1',
-	//     column2: 'Data 2',
-	//     column3: 'Data 3'
-	//   },
-	//   {
-	//     id: 18,
-	//     column1: 'Data 5',
-	//     column2: 'Data 6',
-	//     column3: 'Data 7'
-	//   },
-	//   {
-	//     id: 19,
-	//     column1: 'Data 1',
-	//     column2: 'Data 2',
-	//     column3: 'Data 3'
-	//   },
-	//   {
-	//     id: 20,
-	//     column1: 'Data 5',
-	//     column2: 'Data 6',
-	//     column3: 'Data 7'
-	//   }
-	// 	// Add more rows as needed
-	// ];
-
-	const [initialData, setInitialData] = useState(expanse);
 
 	// State variables
-	const [data, setData] = useState(initialData);
+	const [data, setData] = useState();
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(5);
 	const [startDate, setStartDate] = useState(null);
@@ -973,8 +854,7 @@ function PaginationTable({ expanse, handleModel }) {
 	// Calculate current items
 	const indexOfLastItem = currentPage * itemsPerPage;
 	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-	const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-	console.log(currentItems);
+	const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
 	// Change page
 	const paginate = pageNumber => setCurrentPage(pageNumber);
 
@@ -986,7 +866,7 @@ function PaginationTable({ expanse, handleModel }) {
 
 	// Filter data by date range
 	const handleDateFilter = () => {
-		const filteredData = initialData.filter(item => {
+		const filteredData = initialData?.filter(item => {
 			const itemDate = new Date(item.date);
 			return (
 				(!startDate || itemDate >= startDate) &&
@@ -1007,7 +887,7 @@ function PaginationTable({ expanse, handleModel }) {
 
 	// Render pagination buttons
 	const renderPaginationButtons = () => {
-		const totalPageCount = Math.ceil(data.length / itemsPerPage);
+		const totalPageCount = Math.ceil(data?.length / itemsPerPage);
 		const pageNumbers = [];
 		for (let i = 1; i <= totalPageCount; i++) {
 			pageNumbers.push(
@@ -1023,9 +903,12 @@ function PaginationTable({ expanse, handleModel }) {
 		return pageNumbers;
 	};
 
+	const [oppBalance,setOppBalance] = useState(0)
+
+	
 	return (
-		<div className='container'>
-			<div className='row m-1'>
+		<div className='container-fluid my-3'>
+			<div className='row'>
 				<div className='col-auto m-1'>
 					<select
 						value={itemsPerPage}
@@ -1074,23 +957,26 @@ function PaginationTable({ expanse, handleModel }) {
 					</button>
 				</div>
 			</div>
-			<table className='table table-bordered'>
+			<table className='table table-bordered table-hover' id='table' >
 				<thead>
 					<tr>
+						<th>#</th>
 						<th>Date</th>
 						<th>Amount</th>
 						<th>Balance</th>
 					</tr>
-				</thead><tbody>{currentItems.map(item =>
-					<tr key={item.date} onClick={() => handleModel(item)}>
+				</thead>
+				<tbody>{currentItems?.map((item,index) =>
+					<tr  key={item._id} onClick={() =>{ handleModel(item); }}>
+						<td >{index+1}</td>
 						<td>
-							{item.date}
+							{new Date(item.date).toISOString().split('T')[0]}
 						</td>
 						<td>
 							{item.amount}
 						</td>
 						<td>
-							{item.amount}
+							{oppBalance}
 						</td>
 					</tr>
 				)}

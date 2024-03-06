@@ -1,13 +1,25 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './Header.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
 
 function Header () {
   const [scrolled, setScrolled] = useState(false);
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+  const navigate = useNavigate();
 
+	//   useEffect(
+	// 		() => {
+	//   if (!isAuthenticated) {
+	//     navigate('/login');
+	//   }
+	// },
+	// 		[isAuthenticated, navigate]
+	// 	);
 	// State to manage the visibility of the dropdown
-  const [dropdownVisible, setDropdownVisible] = useState(false);
   function handleScroll () {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     if (scrollTop > 50) {
@@ -39,10 +51,7 @@ function Header () {
   };
 
   return (
-    <section
-      className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}
-      onClick={toggleMenu}
-		>
+    <section className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
       <div className={styles.logo}>
         <div className={styles.logohead}>
           <h3>
@@ -88,33 +97,26 @@ function Header () {
 					>
 						Users
 					</Link>
-          <Link
-            to='/users'
-            id='contact'
+          {/* {!isAuthenticated && <Link
+            to='/login'
+            className={`${styles.head} `}
             style={{ textDecorationLine: 'none' }}
-            className={`${styles.head} ${styles.dropdownToggle}`}
-            onClick={() => setDropdownVisible(!dropdownVisible)}
 					>
-						Settings
-					</Link>
-          {dropdownVisible &&
-          <div className={styles.dropdownContent}>
-            {/* Dropdown content */}
-            <Link to='/settings/profile' className={styles.dropdownItem}>
-								Change Password
-							</Link>
-            <Link to='/settings/preferences' className={styles.dropdownItem}>
-								Preferences
-							</Link>
-            {/* Add more dropdown items as needed */}
-          </div>}
+						Login
+					</Link>} */}
+          {/* {isAuthenticated && <Link
+            to='/login'
+            className={`${styles.head} `}
+            style={{ textDecorationLine: 'none' }}
+					>
+						Login
+					</Link>} */}
         </div>
       </div>
 
       {showCloseButton
 				? <button className={styles.closeMenu} onClick={toggleMenu}>
-  <span className={styles.closeLine} />
-  <span className={styles.closeLine} />
+  <FontAwesomeIcon icon={faClose} fontSize='1.3em' color='white' />
 					</button>
 				: <button className={styles.hamburgerMenu} onClick={toggleMenu}>
   <span className={styles.hamburgerLine} />

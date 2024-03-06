@@ -17,17 +17,16 @@ const UsersTable = ({ initialData, handleModel, getIdHandler }) => {
         className={`form-control mb-3 col-12 col-md-6 ${styles.inputTag}`}
         placeholder='Search for you want..'
 			/>
-      <table
-        className='table table-hover thead-dark'
-        style={{ overflow: 'scroll' }}
-			>
+      <table className='table table-hover thead-dark w-100 f-1'>
         <thead className='thead-dark'>
           <tr>
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
             <th>Expanse Permission</th>
+            <th>Expanse Delete Permission</th>
             <th>Receipt Permission</th>
+            <th>Receipt Delete Permission</th>
           </tr>
         </thead>
         <tbody>
@@ -40,7 +39,7 @@ const UsersTable = ({ initialData, handleModel, getIdHandler }) => {
   key={index}
   onClick={() => {
     handleModel();
-    getIdHandler(item.id);
+    getIdHandler(item._id);
   }}
 							>
   <td>
@@ -52,11 +51,45 @@ const UsersTable = ({ initialData, handleModel, getIdHandler }) => {
   <td>
     {item.phone}
   </td>
-  <td>
-    {item.expansePermission ? 'Granted' : 'denied'}
+  <td
+    className={
+										item.expansePermission === 'yes'
+											? 'bg-primary '
+											: 'bg-dark text-light'
+									}
+								>
+    {item.expansePermission === 'yes' ? 'Granted' : 'denied'}
   </td>
-  <td>
-    {item.receiptPermission ? 'Granted' : 'denied'}
+  <td
+    className={
+										item.expanseDeletePermission === 'yes'
+											? 'bg-primary '
+											: 'bg-dark text-light'
+									}
+								>
+    {item.expanseDeletePermission === 'yes'
+										? 'Granted'
+										: 'denied'}
+  </td>
+  <td
+    className={
+										item.receiptPermission === 'yes'
+											? 'bg-primary '
+											: 'bg-dark text-light'
+									}
+								>
+    {item.receiptPermission === 'yes' ? 'Granted' : 'denied'}
+  </td>
+  <td
+    className={
+										item.receiptDeletePermission === 'yes'
+											? 'bg-primary '
+											: 'bg-dark text-light'
+									}
+								>
+    {item.receiptDeletePermission === 'yes'
+										? 'Granted'
+										: 'denied'}
   </td>
 							</tr>
 					)}

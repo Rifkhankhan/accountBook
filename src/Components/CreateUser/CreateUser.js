@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import styles from './CreateUser.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { expanseActins } from '../../store/ExpanseSlice'
+import { expanseActions } from '../../store/ExpanseSlice'
+import { createUser } from '../../Actions/userAction'
 const CreateUser = ({ header }) => {
 	const [formValid, setFormValid] = useState(true)
 	// const notification = useSelector(state => state.customer.notification)
@@ -11,9 +12,13 @@ const CreateUser = ({ header }) => {
 	// Initial state for inputs
 	const initialInputsState = {
 		name: { value: '', isValid: true },
-
-		expansePermission: { value: null, isValid: true },
-		receiptPermission: { value: null, isValid: true }
+		phone: { value: '', isValid: true },
+		expansePermission: { value: 'no', isValid: true },
+		expanseEditPermission: { value: 'no', isValid: true },
+		expanseDeletePermission: { value: 'no', isValid: true },
+		receiptPermission: { value: 'no', isValid: true },
+		receiptEditPermission: { value: 'no', isValid: true },
+		receiptDeletePermission: { value: 'no', isValid: true }
 	}
 
 	// State for inputs
@@ -22,8 +27,13 @@ const CreateUser = ({ header }) => {
 	useEffect(() => {
 		setFormValid(
 			inputs.receiptPermission.isValid &&
+			inputs.expanseEditPermission.isValid &&
+			inputs.expanseDeletePermission.isValid &&
+			inputs.receiptEditPermission.isValid &&
+			inputs.receiptDeletePermission.isValid &&
 				inputs.expansePermission.isValid &&
-				inputs.name.isValid
+				inputs.name.isValid &&
+				inputs.phone.isValid
 		)
 
 		return () => {}
@@ -33,7 +43,8 @@ const CreateUser = ({ header }) => {
 		setInputs(currentInputValue => {
 			return {
 				...currentInputValue,
-				[inputType]: { value: enteredValue, isValid: true }
+				[inputType]: { value: enteredValue , isValid: true }
+
 			}
 		})
 	}
@@ -45,34 +56,34 @@ const CreateUser = ({ header }) => {
 	const submitHandler = () => {
 		const data = {
 			name: inputs.name.value,
-
+			phone: inputs.phone.value,
 			expansePermission: inputs.expansePermission.value,
-			receiptPermission: inputs.receiptPermission.value
+			receiptPermission: inputs.receiptPermission.value,
+			expanseEditPermission: inputs.expanseEditPermission.value,
+			expanseDeletePermission: inputs.expanseDeletePermission.value,
+			receiptDeletePermission: inputs.receiptDeletePermission.value,
+			receiptEditPermission: inputs.receiptEditPermission.value,
+
 		}
 
 		const nameValid = data.name?.trim().length > 0
-		const expansePermissionIsValid = data.expansePermission !== null
-		const receiptPermissionIsValid = data.receiptPermission !== null
-		console.log(data)
-		if (!nameValid || !expansePermissionIsValid || !receiptPermissionIsValid) {
-			setInputs(currentInputs => {
-				return {
+		const phoneValid = data.phone?.trim().length > 9 &&  data.phone?.trim().length <=10
+		
+		if (!nameValid || !phoneValid ) {
+			setInputs(currentInputs => {  
+				return { 
+					...currentInputs,
 					name: { value: currentInputs.name.value, isValid: nameValid },
-					expansePermission: {
-						value: currentInputs.expansePermission.value,
-						isValid: expansePermissionIsValid
-					},
-					receiptPermission: {
-						value: currentInputs.receiptPermission.value,
-						isValid: receiptPermissionIsValid
-					}
+					phone: { value: currentInputs.phone.value, isValid: phoneValid },
+					
 				}
 			})
+			console.log(data);
 			return
 		}
 
-		dispatch(expanseActins.createExpanse(data))
-		// setFormSubmit(true)
+		dispatch(createUser(data))
+		setFormSubmit(true)
 		setInputs(initialInputsState)
 	}
 	return (
@@ -115,39 +126,18 @@ const CreateUser = ({ header }) => {
 							onChange={e => inputTextChangeHandler('name', e.target.value)}
 						/>
 					</div>
-					{/* <div class="form-group col-12 col-md-6 mb-2">
+					<div class="form-group col-12 col-md-6 mb-2">
 						<input
-							type="text"
+							type="Number"
 							class="form-control"
-							placeholder="Last Name"
-							id="date"
-							value={inputs.date.value}
-							onChange={e => inputTextChangeHandler('date', e.target.value)}
+							placeholder="Phone"
+							id="phone"
+							value={inputs.phone.value}
+							onChange={e => inputTextChangeHandler('phone', e.target.value)}
 						/>
-					</div> */}
+					</div>
 				</div>
-				{/* <div class="form-row row">
-					<div class="form-group col-12 col-md-6 mb-2">
-						<input
-							type="email"
-							class="form-control"
-							placeholder="Email"
-							id="date"
-							value={inputs.date.value}
-							onChange={e => inputTextChangeHandler('date', e.target.value)}
-						/>
-					</div>
-					<div class="form-group col-12 col-md-6 mb-2">
-						<input
-							type="number"
-							class="form-control"
-							placeholder="Age"
-							id="date"
-							value={inputs.date.value}
-							onChange={e => inputTextChangeHandler('date', e.target.value)}
-						/>
-					</div>
-				</div> */}
+				
 				<div class="form-row row">
 					<div class="form-group col-12 col-md-6 mb-2">
 						<select
@@ -157,7 +147,7 @@ const CreateUser = ({ header }) => {
 								inputTextChangeHandler('expansePermission', e.target.value)
 							}
 							id="inputGroupSelect01">
-							<option selected>Access Expanses...</option>
+							<option selected value='no'>Access Expanses denied...</option>
 							<option value="yes">Yes</option>
 							<option value="no">No</option>
 						</select>
@@ -170,7 +160,64 @@ const CreateUser = ({ header }) => {
 								inputTextChangeHandler('receiptPermission', e.target.value)
 							}
 							id="inputGroupSelect01">
-							<option selected>Access Incomes...</option>
+							<option selected value='no'>Access Incomes denied...</option>
+							<option value="yes">Yes</option>
+							<option value="no">No</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-row row">
+					<div class="form-group col-12 col-md-6 mb-2">
+						<select
+							class="form-control"
+							value={inputs.expanseEditPermission.value}
+							onChange={e =>
+								inputTextChangeHandler('expanseEditPermission', e.target.value)
+							}
+							id="inputGroupSelect01">
+							<option selected value='no'>Access Edit Expanses denied...</option>
+							<option value="yes">Yes</option>
+							<option value="no">No</option>
+						</select>
+					</div>
+					<div class="form-group col-12 col-md-6 mb-2">
+						<select
+							class="form-control"
+							value={inputs.receiptEditPermission.value}
+							onChange={e =>
+								inputTextChangeHandler('receiptEditPermission', e.target.value)
+							}
+							id="inputGroupSelect01">
+							<option selected value='no'>Access Edit Incomes denied...</option>
+							<option value="yes">Yes</option>
+							<option value="no">No</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-row row">
+					<div class="form-group col-12 col-md-6 mb-2">
+						<select
+							class="form-control"
+							value={inputs.expanseDeletePermission.value}
+							onChange={e =>
+								inputTextChangeHandler('expanseDeletePermission', e.target.value)
+							}
+							id="inputGroupSelect01">
+							<option selected value='no'>Access Delete Expanses denied...</option>
+							<option value="yes">Yes</option>
+							<option value="no">No</option>
+						</select>
+					</div>
+					<div class="form-group col-12 col-md-6 mb-2">
+						<select
+							class="form-control"
+							value={inputs.receiptDeletePermission.value}
+							onChange={e =>
+								inputTextChangeHandler('receiptDeletePermission', e.target.value)
+							}
+							id="inputGroupSelect01">
+							<option  selected value='no'>Access Delete Incomes denied...</option>
 							<option value="yes">Yes</option>
 							<option value="no">No</option>
 						</select>
@@ -181,7 +228,7 @@ const CreateUser = ({ header }) => {
 						<div class="form-group">
 							<button
 								type="button"
-								class="btn btn-primary "
+								className="btn btn-primary "
 								onClick={submitHandler}>
 								Submit
 							</button>

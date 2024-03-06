@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import styles from './ContactForm.module.css'
+import styles from './ExpanseForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { expanseActins } from '../../store/ExpanseSlice'
-const ContactForm = ({ header }) => {
+import { createExpanse } from '../../Actions/ExpanseActions'
+const ExpanseForm = () => {
 	const [formValid, setFormValid] = useState(true)
 	// const notification = useSelector(state => state.customer.notification)
 	const [formSubmit, setFormSubmit] = useState(false)
@@ -13,8 +13,6 @@ const ContactForm = ({ header }) => {
 		amount: { value: '', isValid: true },
 		narration: { value: '', isValid: true },
 		date: { value: '', isValid: true },
-		category: { value: '', isValid: true },
-		type: { value: header === 'dr' ? 'dr' : 'cr', isValid: true }
 	}
 
 	// State for inputs
@@ -24,8 +22,7 @@ const ContactForm = ({ header }) => {
 		setFormValid(
 			inputs.amount.isValid &&
 				inputs.narration.isValid &&
-				inputs.date.isValid &&
-				inputs.category.isValid
+				inputs.date.isValid 
 		)
 
 		return () => {}
@@ -48,7 +45,6 @@ const ContactForm = ({ header }) => {
 		const data = {
 			amount: inputs.amount.value,
 			narration: inputs.narration.value,
-			category: inputs.category?.value,
 			date: inputs.date.value
 		}
 		const dateRegex = /^\d{4}-\d{2}-\d{2}$/
@@ -56,23 +52,19 @@ const ContactForm = ({ header }) => {
 
 		const amountValid = data.amount > 0
 		const narrationValid = data.narration?.trim().length > 0
-		const categoryValid = data.category?.trim().length > 0
 		const dateValid = dateRegex.test(dateString)
 
 		if (
 			!amountValid ||
 			!narrationValid ||
-			!dateValid ||
-			(header === 'cr' && !categoryValid)
+			!dateValid 
+		
 		) {
 			setInputs(currentInputs => {
 				return {
 					amount: { value: currentInputs.amount.value, isValid: amountValid },
 					date: { value: currentInputs.date.value, isValid: dateValid },
-					category: {
-						value: currentInputs.category?.value,
-						isValid: categoryValid
-					},
+				
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
@@ -82,14 +74,14 @@ const ContactForm = ({ header }) => {
 			return
 		}
 
-		dispatch(expanseActins.createExpanse(data))
-		// setFormSubmit(true)
+		dispatch(createExpanse(data))
+		setFormSubmit(true)
 		setInputs(initialInputsState)
 	}
 	return (
 		<div className={`container ${styles.container} `}>
 			<h2 class="row col-md-12 col-sm-6" className={styles.header}>
-				{header === 'dr' ? 'Create Expanse(Dr)' : 'Create Receipt(Cr)'}
+				 Create Expanse(Dr)
 			</h2>
 			{!formValid && (
 				<div className="row ">
@@ -139,7 +131,7 @@ const ContactForm = ({ header }) => {
 					</div>
 				</div>
 
-				{header === 'dr' && (
+				
 					<div class="form-row row">
 						<div class="col-md-12 col-sm-6 my-1">
 							<div class="form-group">
@@ -168,117 +160,12 @@ const ContactForm = ({ header }) => {
 							</div>
 						</div>
 					</div>
-				)}
+		
 
-				{header === 'cr' && (
-					<div class="form-row row">
-						<div class="col-md-6 col-sm-6 my-1">
-							<div class="form-group">
-								<textarea
-									type="narration"
-									class="form-control"
-									id="narration"
-									placeholder="Narration"
-									value={inputs.narration.value}
-									rows={4}
-									onChange={e =>
-										inputTextChangeHandler('narration', e.target.value)
-									}
-								/>
-							</div>
-						</div>
-
-						<div class="col-md-6 col-sm-6 my-3">
-							<div class="form-group">
-								<div class="row mb-1">
-									<input
-										type="radio"
-										id="Cash"
-										name="category"
-										onChange={e => inputTextChangeHandler('category', 'cash')}
-										value={inputs.category?.value}
-										class="col col-2"
-									/>
-									<label
-										for="Cash"
-										class="col col-1"
-										style={{ color: 'white', fontSize: '2vh' }}>
-										Cash
-									</label>
-								</div>
-
-								<div class="row mb-1">
-									<input
-										type="radio"
-										id="Capital"
-										name="category"
-										onChange={e =>
-											inputTextChangeHandler('category', 'capital')
-										}
-										value={inputs.category?.value}
-										class="col col-2"
-									/>
-									<label
-										for="Capital"
-										class="col col-1"
-										style={{ color: 'white', fontSize: '2vh' }}>
-										Capital
-									</label>
-								</div>
-
-								<div class="row mb-1">
-									<input
-										type="radio"
-										id="Loan"
-										name="category"
-										onChange={e => inputTextChangeHandler('category', 'loan')}
-										value={inputs.category?.value}
-										class="col col-2"
-									/>
-									<label
-										for="Loan"
-										class="col col-1"
-										style={{ color: 'white', fontSize: '2vh' }}>
-										Loan
-									</label>
-								</div>
-
-								<div class="row mb-1">
-									<input
-										type="radio"
-										id="Advance"
-										name="category"
-										onChange={e =>
-											inputTextChangeHandler('category', 'advance')
-										}
-										value={inputs.category?.value}
-										class="col col-2"
-									/>
-									<label
-										for="Advance"
-										class="col col-1"
-										style={{ color: 'white', fontSize: '2vh' }}>
-										Advance
-									</label>
-								</div>
-							</div>
-						</div>
-
-						<div class="col-md-2 col-sm-6 my-1">
-							<div class="form-group">
-								<button
-									type="button"
-									class="btn btn-primary "
-									onClick={submitHandler}>
-									Submit
-								</button>
-							</div>
-						</div>
-					</div>
-				)}
+		
 			</form>
 		</div>
 	)
 }
 
-export default ContactForm
+export default ExpanseForm
