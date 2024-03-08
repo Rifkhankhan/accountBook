@@ -30,7 +30,6 @@ const Home = () => {
 	)
 
 	const lastRequest = requestList[requestList?.length - 1]
-	console.log(lastRequest)
 
 	const currentUser = useSelector(state => state.auth.user)
 
@@ -177,7 +176,7 @@ const Home = () => {
 					</div>
 					<div className={`row ${styles.smallCard}`}>
 						<p className="col-12 col-md-5">Opening Balance</p>
-						<p className="col-12 col-md-7">{lastRequest?.balance}</p>
+						<p className="col-12 col-md-7">{lastRequest?.oppBalance}</p>
 					</div>
 				</div>
 			</section>
