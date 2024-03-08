@@ -828,169 +828,179 @@
 // export default PaginationTable;
 
 // table with date filter
-import jsPDF from 'jspdf';
+import jsPDF from 'jspdf'
+import styles from './PaginationTable.module.css'
+import React, { useLayoutEffect, useState } from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
-import React, { useLayoutEffect, useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-
+import 'jspdf-autotable'
 function PaginationTable({ list, handleModel }) {
-	const [initialData, setInitialData] = useState();
-	
+	const [initialData, setInitialData] = useState()
+
 	useLayoutEffect(() => {
 		setInitialData(list)
 		setData(list)
-	},[list])
-
+	}, [list])
 
 	// State variables
-	const [data, setData] = useState();
-	const [currentPage, setCurrentPage] = useState(1);
-	const [itemsPerPage, setItemsPerPage] = useState(5);
-	const [startDate, setStartDate] = useState(null);
-	const [endDate, setEndDate] = useState(null);
+	const [data, setData] = useState()
+	const [currentPage, setCurrentPage] = useState(1)
+	const [itemsPerPage, setItemsPerPage] = useState(5)
+	const [startDate, setStartDate] = useState(null)
+	const [endDate, setEndDate] = useState(null)
 
 	// Calculate current items
-	const indexOfLastItem = currentPage * itemsPerPage;
-	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-	const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
+	const indexOfLastItem = currentPage * itemsPerPage
+	const indexOfFirstItem = indexOfLastItem - itemsPerPage
+	const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem)
 	// Change page
-	const paginate = pageNumber => setCurrentPage(pageNumber);
+	const paginate = pageNumber => setCurrentPage(pageNumber)
 
 	// Change items per page
 	const handleItemsPerPageChange = e => {
-		setItemsPerPage(parseInt(e.target.value));
-		setCurrentPage(1); // Reset to first page when changing items per page
-	};
+		setItemsPerPage(parseInt(e.target.value))
+		setCurrentPage(1) // Reset to first page when changing items per page
+	}
 
 	// Filter data by date range
 	const handleDateFilter = () => {
 		const filteredData = initialData?.filter(item => {
-			const itemDate = new Date(item.date);
+			const itemDate = new Date(item.date)
 			return (
 				(!startDate || itemDate >= startDate) &&
 				(!endDate || itemDate <= endDate)
-			);
-		});
-		setData(filteredData);
-		setCurrentPage(1);
-	};
+			)
+		})
+		setData(filteredData)
+		setCurrentPage(1)
+	}
 
 	// Reset date filter
 	const resetDateFilter = () => {
-		setData(initialData);
-		setStartDate(null);
-		setEndDate(null);
-		setCurrentPage(1);
-	};
+		setData(initialData)
+		setStartDate(null)
+		setEndDate(null)
+		setCurrentPage(1)
+	}
 
 	// Render pagination buttons
 	const renderPaginationButtons = () => {
-		const totalPageCount = Math.ceil(data?.length / itemsPerPage);
-		const pageNumbers = [];
+		const totalPageCount = Math.ceil(data?.length / itemsPerPage)
+		const pageNumbers = []
 		for (let i = 1; i <= totalPageCount; i++) {
 			pageNumbers.push(
 				<button
 					key={i}
 					onClick={() => paginate(i)}
-					className={`btn ${currentPage === i ? 'btn-primary' : 'btn-light'}`}
-				>
+					className={`btn ${currentPage === i ? 'btn-primary' : 'btn-light'}`}>
 					{i}
 				</button>
-			);
+			)
 		}
-		return pageNumbers;
-	};
+		return pageNumbers
+	}
 
-	const [oppBalance,setOppBalance] = useState(0)
+	// export pdf
+	const exportPdf = async () => {
+		const doc = new jsPDF({ orientation: 'landscape' })
 
-	
+		doc.autoTable({ html: '#table' })
+		doc.save('table.pdf')
+	}
+
 	return (
-		<div className='container-fluid my-3'>
-			<div className='row'>
-				<div className='col-auto m-1'>
+		<div className={`container-fluid my-3 ${styles.tableContainer}`}>
+			<div className="row">
+				<div className="col-auto m-1">
 					<select
 						value={itemsPerPage}
 						onChange={handleItemsPerPageChange}
-						className='form-control form-control-sm'
-					>
+						className="form-control form-control-sm">
 						<option value={5}>5</option>
 						<option value={10}>10</option>
 						<option value={15}>15</option>
+						<option value={initialData?.length}>All</option>
 						{/* Add more options as needed */}
 					</select>
 				</div>
 
-				<div className='col-auto'>
+				<div className="col-auto">
 					<DatePicker
-						dateFormat='dd/MM/yyyy'
-						placeholderText='Start Date'
+						dateFormat="dd/MM/yyyy"
+						placeholderText="Start Date"
 						selected={startDate}
 						onChange={date => setStartDate(date)}
-						className='form-control form-control-sm m-1'
+						className="form-control form-control-sm m-1"
 					/>
 				</div>
 
-				<div className='col-auto'>
+				<div className="col-auto">
 					<DatePicker
-						dateFormat='dd/MM/yyyy'
-						placeholderText='End Date'
+						dateFormat="dd/MM/yyyy"
+						placeholderText="End Date"
 						selected={endDate}
 						onChange={date => setEndDate(date)}
-						className='form-control form-control-sm m-1'
+						className="form-control form-control-sm m-1"
 					/>
 				</div>
 
-				<div className='col-auto'>
+				<div className="col-auto">
 					<button
 						onClick={handleDateFilter}
-						className='btn btn-primary btn-sm m-1'
-					>
+						className="btn btn-primary btn-sm m-1">
 						Apply Filter
 					</button>
 					<button
 						onClick={resetDateFilter}
-						className='btn btn-secondary btn-sm m-1'
-					>
+						className="btn btn-secondary btn-sm m-1">
 						Reset Filter
 					</button>
 				</div>
+				<div className="col-auto">
+					<button onClick={exportPdf} className="btn btn-secondary btn-sm m-1">
+						Download
+					</button>
+				</div>
 			</div>
-			<table className='table table-bordered table-hover' id='table' >
+			<table className={`table table-bordered table-hover `} id="table">
 				<thead>
 					<tr>
 						<th>#</th>
 						<th>Date</th>
 						<th>Amount</th>
+						<th>Transfer Type</th>
+						<th>Category</th>
 						<th>Balance</th>
 					</tr>
 				</thead>
-				<tbody>{currentItems?.map((item,index) =>
-					<tr  key={item._id} onClick={() =>{ handleModel(item); }}>
-						<td >{index+1}</td>
-						<td>
-							{new Date(item.date).toISOString().split('T')[0]}
-						</td>
-						<td>
-							{item.amount}
-						</td>
-						<td>
-							{oppBalance}
-						</td>
-					</tr>
-				)}
+				<tbody>
+					{currentItems?.map((item, index) => (
+						<tr
+							key={item._id}
+							onClick={() => {
+								handleModel(item)
+							}}>
+							<td>{index + 1}</td>
+							<td>{new Date(item.date).toISOString().split('T')[0]}</td>
+							<td>{item.amount}</td>
+							<td>{item.requestType}</td>
+							<td>{item.requestForm}</td>
+							<td>{item.balance}</td>
+						</tr>
+					))}
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colSpan='5' className='text-right'>
+						<td colSpan="6" className="text-right">
 							{renderPaginationButtons()}
 						</td>
 					</tr>
 				</tfoot>
 			</table>
 		</div>
-	);
+	)
 }
 
-export default PaginationTable;
+export default PaginationTable

@@ -7,22 +7,23 @@ import swal from 'sweetalert'
 export const logIn = formData => async dispatch => {
 	try {
 		// dispatch(authUiActions.changeAsLoading())
+		console.log(formData)
 		const { data } = await AuthApi.logIn(formData)
 		dispatch(authActions.login(data))
 	} catch (error) {
-		if (error.response.status === 400) {
+		if (error.response?.status === 400) {
 			swal(
 				'Please provide an email and password!',
 				'Check the email and password!',
 				'error'
 			)
-		} else if (error.response.status === 404) {
+		} else if (error.response?.status === 404) {
 			swal(
 				"You don't have Smart Account Book account!",
 				'Please create an account! Or enter valid credentials!',
 				'error'
 			)
-		} else if (error.response.status === 409) {
+		} else if (error.response?.status === 409) {
 			swal('Wrong Password!', 'Please check your password!', 'error')
 		}
 	}
@@ -50,19 +51,19 @@ export const autoLogin = () => async dispatch => {
 	} catch (error) {
 		console.log(error)
 
-		if (error.response.status === 400) {
+		if (error.response?.status === 400) {
 			swal(
 				'Please provide an email and password!',
 				'Check the email and password!',
 				'error'
 			)
-		} else if (error.response.status === 404) {
+		} else if (error.response?.status === 404) {
 			swal(
 				"You don't have HomeDelivery account!",
 				'Please create an account! Or enter valid credentials!',
 				'error'
 			)
-		} else if (error.response.status === 409) {
+		} else if (error.response?.status === 409) {
 			swal('Wrong Password!', 'Please check your password!', 'error')
 		}
 	}

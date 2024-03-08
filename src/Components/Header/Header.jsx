@@ -13,6 +13,8 @@ function Header() {
 
 	const navigate = useNavigate()
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+	const currentUser = useSelector(state => state.auth.user)
+	console.log(currentUser)
 
 	const dispatch = useDispatch()
 
@@ -20,16 +22,6 @@ function Header() {
 		dispatch(autoLogin())
 	}, [])
 
-	useEffect(() => {}, [isAuthenticated])
-
-	//   useEffect(
-	// 		() => {
-	//   if (!isAuthenticated) {
-	//     navigate('/login');
-	//   }
-	// },
-	// 		[isAuthenticated, navigate]
-	// 	);
 	// State to manage the visibility of the dropdown
 	function handleScroll() {
 		const scrollTop = window.pageYOffset || document.documentElement.scrollTop
@@ -89,7 +81,7 @@ function Header() {
 							Home
 						</Link>
 					)}
-					{isAuthenticated && (
+					{isAuthenticated && currentUser.expansePermission === 'yes' && (
 						<Link
 							to="/payment"
 							id="about"
@@ -98,7 +90,7 @@ function Header() {
 							Expense
 						</Link>
 					)}
-					{isAuthenticated && (
+					{isAuthenticated && currentUser.receiptPermission === 'yes' && (
 						<Link
 							to="/receipt"
 							id="services"
@@ -125,7 +117,7 @@ function Header() {
 							Loan
 						</Link>
 					)}
-					{isAuthenticated && (
+					{isAuthenticated && currentUser.isAdmin && (
 						<Link
 							to="/users"
 							id="projects"

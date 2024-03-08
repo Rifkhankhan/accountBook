@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Modal } from 'react-bootstrap'
-import styles from './ExpanseModel.module.css'
+import styles from './LoanModel.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClose, faPen } from '@fortawesome/free-solid-svg-icons'
-import { updateExpanse } from '../../Actions/ExpanseActions'
+import { updateReceipt } from '../../Actions/ReceiptActions'
 import { useDispatch, useSelector } from 'react-redux'
-const ExpanseModel = ({
+import { updateLoan } from '../../Actions/LoanActions'
+
+const LoanModel = ({
 	type,
 	clickedRow,
 	showModal,
@@ -20,18 +22,22 @@ const ExpanseModel = ({
 	// initialInputsState
 	const initialInputsState = {
 		date: {
-			value: new Date(clickedRow?.date).toISOString().split('T')[0],
+			value: new Date(clickedRow?.date).toISOString()?.split('T')[0],
 			isValid: true
 		},
-		amount: { value: clickedRow?.amount, isValid: true },
-		narration: { value: clickedRow?.narration, isValid: true }
+		amount: { value: +clickedRow?.amount, isValid: true },
+		narration: { value: clickedRow?.narration, isValid: true },
+		type: { value: clickedRow?.type, isValid: true }
 	}
 
 	const [inputs, setInputs] = useState(initialInputsState)
 
 	useEffect(() => {
 		setFormValid(
-			inputs.date.isValid && inputs.amount.isValid && inputs.narration.isValid
+			inputs.date.isValid &&
+				inputs.amount.isValid &&
+				inputs.type.isValid &&
+				inputs.narration.isValid
 		)
 
 		return () => {}
@@ -51,14 +57,15 @@ const ExpanseModel = ({
 			date: inputs.date.value,
 
 			narration: inputs.narration.value,
-			amount: +inputs.amount.value
+			amount: +inputs.amount.value,
+			type: inputs.type.value
 		}
 
 		const narrationValid = data.narration?.trim().length > 0
+		const categoryValid = data.type?.trim().length > 0
 		const dateValid = data.date !== null && !isNaN(Date.parse(data.date))
 		const amountValid = +data.amount > 0
-
-		if (!narrationValid || !dateValid || !amountValid) {
+		if (!narrationValid || !dateValid || !amountValid || !categoryValid) {
 			setInputs(currentInputs => {
 				return {
 					date: { value: currentInputs.date.value, isValid: dateValid },
@@ -69,13 +76,20 @@ const ExpanseModel = ({
 					amount: {
 						value: +currentInputs.amount.value,
 						isValid: amountValid
+					},
+					type: {
+						value: currentInputs.type.value,
+						isValid: categoryValid
 					}
 				}
 			})
 			return
 		}
-		dispatch(updateExpanse(clickedRow._id, data))
+
+		dispatch(updateLoan(clickedRow._id, data))
 		setFormSubmit(true)
+		setShowEditModal(false)
+
 		setInputs(initialInputsState)
 		closeHandler()
 	}
@@ -91,8 +105,8 @@ const ExpanseModel = ({
 							backgroundColor: '#7993d2'
 						}}>
 						<Modal.Title style={{ fontSize: '2em' }}>View Details</Modal.Title>
-						{currentUser.expansePermission === 'yes' &&
-							currentUser.expanseEditPermission === 'yes' && (
+						{currentUser.receiptPermission === 'yes' &&
+							currentUser.receiptEditPermission === 'yes' && (
 								<FontAwesomeIcon
 									className={styles.editBtn}
 									icon={faPen}
@@ -100,24 +114,25 @@ const ExpanseModel = ({
 								/>
 							)}
 					</Modal.Header>
-					<Modal.Body
-						style={{
-							marginTop: '0px',
-							marginBlock: '0px',
-							paddingBlock: '0px'
-						}}>
+					<Modal.Body>
 						<div className="row">
-							<div className="col-12 col-md-6">
+							<div className="col-12 col-md-4">
 								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
 									Date
 								</label>
 								<p>{inputs.date.value}</p>
 							</div>
-							<div className="col-12 col-md-6">
+							<div className="col-12 col-md-4">
 								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
 									Amount
 								</label>
 								<p>{inputs.amount.value}</p>
+							</div>
+							<div className="col-12 col-md-4">
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
+									Type
+								</label>
+								<p>{inputs.type.value}</p>
 							</div>
 						</div>
 						<div className="row">
@@ -138,8 +153,8 @@ const ExpanseModel = ({
 						</div>
 					</Modal.Body>
 					<Modal.Footer>
-						{currentUser.expansePermission === 'yes' &&
-							currentUser.expanseDeletePermission === 'yes' && (
+						{currentUser.receiptPermission === 'yes' &&
+							currentUser.receiptDeletePermission === 'yes' && (
 								<Button
 									variant="danger"
 									onClick={() => deleteHandler(clickedRow._id)}>
@@ -211,24 +226,66 @@ const ExpanseModel = ({
 								/>
 							</div>
 						</div>
-						<div className="row">
-							<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
-								Narration
-							</label>
-							<textarea
-								type="text"
-								className="form-control"
-								value={inputs.narration.value}
-								onChange={e =>
-									inputTextChangeHandler('narration', e.target.value)
-								}
-								rows={5}
-								style={{
-									marginInline: 'auto',
-									width: '98%',
-									border: '2px solid blue',
-									borderRadius: '5px'
-								}}></textarea>
+						<div class="form-row row">
+							<div class="col-md-6 col-sm-6 my-1">
+								<div class="form-group">
+									<textarea
+										type="narration"
+										class="form-control"
+										id="narration"
+										placeholder="Narration"
+										value={inputs.narration.value}
+										rows={4}
+										onChange={e =>
+											inputTextChangeHandler('narration', e.target.value)
+										}
+									/>
+								</div>
+							</div>
+
+							<div class="col-md-6 col-sm-6 my-3">
+								<div class="form-group">
+									<div class="row mb-1">
+										<input
+											type="radio"
+											id="eCash"
+											name="type"
+											onChange={e => inputTextChangeHandler('type', 'paid')}
+											value={inputs.type?.value}
+											checked={inputs.type?.value === 'paid'}
+											className="col col-2 "
+										/>
+										<label
+											for="eCash"
+											class="col col-4"
+											style={{
+												color: 'black',
+												fontSize: '2vh',
+												textAlign: 'left'
+											}}>
+											Cash
+										</label>
+									</div>
+
+									<div class="row mb-1">
+										<input
+											type="radio"
+											id="eCapital"
+											name="type"
+											onChange={e => inputTextChangeHandler('type', 'received')}
+											checked={inputs.type?.value === 'received'}
+											value={inputs.type?.value}
+											class="col col-2"
+										/>
+										<label
+											for="eCapital"
+											class="col col-4"
+											style={{ color: 'black', fontSize: '2vh' }}>
+											Received
+										</label>
+									</div>
+								</div>
+							</div>
 						</div>
 					</Modal.Body>
 					<Modal.Footer>
@@ -242,4 +299,4 @@ const ExpanseModel = ({
 	)
 }
 
-export default ExpanseModel
+export default LoanModel

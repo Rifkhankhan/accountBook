@@ -7,16 +7,22 @@ import ReceiptForm from '../../Components/ReceiptForm/ReceiptForm'
 import PaginationTable from '../../Components/PaginationTable/PaginationTable'
 import { useDispatch, useSelector } from 'react-redux'
 import { deleteReceipt, getReceipts } from '../../Actions/ReceiptActions'
-import ReceiptModel from '../../Components/ReceiptModel/ReceiptModel'
+import { deleteAdvance, getAdvances } from '../../Actions/AdvanceActions'
+import AdvanceModel from '../../Components/AdvanceModel/AdvanceModel'
 import AdvanceForm from '../../Components/Advance/AdvanceForm'
 const Advance = () => {
-	const receipts = useSelector(state => state.receipt.receipts)
+	const advances = useSelector(
+		state => state.accountRequest.accountRequests
+	)?.filter(expanse => expanse.requestType === 'advance')
 
+	const [gotAdvance, setGotAdvance] = useState(0)
+	const [todayGotAdvance, setTodayGotAdvance] = useState(0)
+	const [paidAdvance, setPaidAdvance] = useState(0)
+	const [todayPaidAdvance, setTodayPaidAdvance] = useState(0)
 	const [showModal, setShowModal] = useState(false)
 	const [clickedRow, setClickedRow] = useState({})
 	const dispatch = useDispatch()
-	const [totalReceipts, setTotalReceipts] = useState(0)
-	const [todayTotalReceipts, setTodayTotalReceipts] = useState(0)
+
 	const handleModel = id => {
 		setClickedRow(id)
 
@@ -39,6 +45,28 @@ const Advance = () => {
 				new Date(targetDate).toISOString().split('T')[0]
 		)
 
+		// got advances amount and list
+
+		const gotAmountList = expensesForDate.filter(
+			expense => expense.requestForm === 'got'
+		)
+		const gottodayAdvanceAmount = gotAmountList.reduce(
+			(total, current) => total + current.amount,
+			0
+		)
+		setTodayGotAdvance(gottodayAdvanceAmount)
+
+		// paid advances amount and list
+
+		const padiAmountList = expensesForDate.filter(
+			expense => expense.requestForm === 'paid'
+		)
+		const paidAdvanceAmount = padiAmountList.reduce(
+			(total, current) => total + current.amount,
+			0
+		)
+		setTodayPaidAdvance(paidAdvanceAmount)
+
 		// Calculate total amount for the target date
 		const totalExpenseForDate = expensesForDate.reduce(
 			(total, expense) => total + expense.amount,
@@ -49,14 +77,29 @@ const Advance = () => {
 	}
 
 	useLayoutEffect(() => {
-		const total = receipts.reduce((total, current) => total + current.amount, 0)
-		setTotalReceipts(total)
-		setTodayTotalReceipts(getTotalExpenseForDate(receipts, new Date()))
-	}, [receipts])
+		// calcaulate lon amount got
 
-	useLayoutEffect(() => {
-		// dispatch(getReceipts());
-	}, [dispatch])
+		const loanGotList = advances.filter(loan => loan.requestForm === 'got')
+		const gotLoanAmount = loanGotList.reduce(
+			(total, current) => total + current.amount,
+			0
+		)
+
+		setGotAdvance(gotLoanAmount)
+
+		// calcaulate lon amount paid
+
+		const loanPaidList = advances.filter(loan => loan.requestForm === 'paid')
+		const paidLoanAmount = loanPaidList.reduce(
+			(total, current) => total + current.amount,
+			0
+		)
+
+		setPaidAdvance(paidLoanAmount)
+
+		getTotalExpenseForDate(advances, new Date())
+	}, [advances])
+
 	return (
 		<div className={`container-fluid ${styles.home}`}>
 			<div className="row">
@@ -65,52 +108,34 @@ const Advance = () => {
 						<div className={`col-12 col-md-5 mb-2, ${styles.column}`}>
 							<div className="row" style={{ flex: 1, height: '50%' }}>
 								<h3 className="col" style={{ margin: 'auto' }}>
-									Total Advances
+									Total
 								</h3>
-								<FontAwesomeIcon
-									style={{ margin: 'auto', fontSize: '5em' }}
-									className="col"
-									icon={faMoneyBill}
-								/>
+							</div>
+							<div className="row">
+								<h5 className="col-md-6 ">Got</h5>
+								<p className="col-md-6 ">{gotAdvance}</p>
 							</div>
 
-							<h5
-								style={{
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									flex: 1,
-									height: '50%',
-									fontSize: '2em'
-								}}
-								className="col">
-								{totalReceipts}
-							</h5>
+							<div className="row">
+								<h5 className="col-md-6">Paid</h5>
+								<p className="col-md-6">{paidAdvance}</p>
+							</div>
 						</div>
-						<div className={`col-12 col-md-5 ${styles.column}`}>
+						<div className={`col-12 col-md-5 mb-2, ${styles.column}`}>
 							<div className="row" style={{ flex: 1, height: '50%' }}>
 								<h3 className="col" style={{ margin: 'auto' }}>
-									Today Advances
+									Today
 								</h3>
-								<FontAwesomeIcon
-									style={{ margin: 'auto', fontSize: '5em' }}
-									className="col"
-									icon={faSackDollar}
-								/>
+							</div>
+							<div className="row">
+								<h5 className="col-md-6 ">Got</h5>
+								<p className="col-md-6 ">{todayGotAdvance}</p>
 							</div>
 
-							<h5
-								style={{
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									flex: 1,
-									height: '50%',
-									fontSize: '2em'
-								}}
-								className="col">
-								{todayTotalReceipts}
-							</h5>
+							<div className="row">
+								<h5 className="col-md-6">Paid</h5>
+								<p className="col-md-6">{todayPaidAdvance}</p>
+							</div>
 						</div>
 					</section>
 				</div>
@@ -119,17 +144,17 @@ const Advance = () => {
 				</div>
 			</div>
 
-			<section className="container" style={{ margin: 'auto' }}>
+			<section className="container-fluid" style={{ margin: 'auto' }}>
 				<h2 style={{ textAlign: 'left', color: 'white' }}>
 					Advances paid & received
 				</h2>
 				<div className={`col`}>
-					<PaginationTable list={receipts} handleModel={handleModel} />
+					<PaginationTable list={advances} handleModel={handleModel} />
 				</div>
 			</section>
 
 			{showModal && (
-				<ReceiptModel
+				<AdvanceModel
 					clickedRow={clickedRow}
 					showModal={showModal}
 					closeHandler={handleModel}

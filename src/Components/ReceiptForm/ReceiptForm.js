@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import styles from './ReceiptForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { createReceipt } from './../../Actions/ReceiptActions'
+import { createAccountRequest } from '../../Actions/AccountRequestActions'
 const ReceiptForm = ({ header }) => {
 	const [formValid, setFormValid] = useState(true)
 	// const notification = useSelector(state => state.customer.notification)
+	const currentUser = useSelector(state => state.auth.user)
 	const [formSubmit, setFormSubmit] = useState(false)
 	const dispatch = useDispatch()
 	const [error, setHasError] = useState(false)
@@ -13,7 +15,7 @@ const ReceiptForm = ({ header }) => {
 		amount: { value: '', isValid: true },
 		narration: { value: '', isValid: true },
 		date: { value: '', isValid: true },
-		category: { value: '', isValid: true }
+		type: { value: '', isValid: true }
 	}
 
 	// State for inputs
@@ -23,7 +25,7 @@ const ReceiptForm = ({ header }) => {
 		setFormValid(
 			inputs.amount.isValid &&
 				inputs.narration.isValid &&
-				inputs.category.isValid &&
+				inputs.type.isValid &&
 				inputs.date.isValid
 		)
 
@@ -31,6 +33,15 @@ const ReceiptForm = ({ header }) => {
 	}, [inputs])
 
 	const inputTextChangeHandler = (inputType, enteredValue) => {
+		if (inputType === 'date') {
+			const selectedDate = enteredValue
+			const currentTime = new Date().toLocaleTimeString('en-US', {
+				hour12: false
+			})
+			const selectedDateTime = `${selectedDate} ${currentTime}`
+
+			enteredValue = selectedDateTime
+		}
 		setInputs(currentInputValue => {
 			return {
 				...currentInputValue,
@@ -45,31 +56,29 @@ const ReceiptForm = ({ header }) => {
 	// }
 	const submitHandler = () => {
 		const data = {
-			amount: inputs.amount.value,
+			amount: +inputs.amount.value,
 			narration: inputs.narration.value,
-			category: inputs.category.value,
+			type: inputs.type.value,
 			date: inputs.date.value
 		}
-		const dateRegex = /^\d{4}-\d{2}-\d{2}$/
-		const dateString = data.date?.trim()
 
-		const amountValid = data.amount > 0
+		const amountValid = +data.amount > 0
 		const narrationValid = data.narration?.trim().length > 0
-		const categoryValid = data.category?.trim().length > 0
-		const dateValid = dateRegex.test(dateString)
+		const categoryValid = data.type?.trim().length > 0
+		const dateValid = data.date?.trim().length > 0
 
 		if (!amountValid || !narrationValid || !categoryValid || !dateValid) {
 			setInputs(currentInputs => {
 				return {
-					amount: { value: currentInputs.amount.value, isValid: amountValid },
+					amount: { value: +currentInputs.amount.value, isValid: amountValid },
 					date: { value: currentInputs.date.value, isValid: dateValid },
 
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
 					},
-					category: {
-						value: currentInputs.category.value,
+					type: {
+						value: currentInputs.type.value,
 						isValid: categoryValid
 					}
 				}
@@ -77,7 +86,13 @@ const ReceiptForm = ({ header }) => {
 			return
 		}
 
-		dispatch(createReceipt(data))
+		const newData = {
+			...data,
+			userId: currentUser._id,
+			requestType: 'receipt',
+			requestForm: data.type
+		}
+		dispatch(createAccountRequest(newData))
 		setFormSubmit(true)
 		setInputs(initialInputsState)
 	}
@@ -117,7 +132,7 @@ const ReceiptForm = ({ header }) => {
 							type="date"
 							class="form-control"
 							id="date"
-							value={inputs.date.value}
+							value={inputs.date.value ? inputs.date.value.split(' ')[0] : ''}
 							onChange={e => inputTextChangeHandler('date', e.target.value)}
 						/>
 					</div>
@@ -157,9 +172,9 @@ const ReceiptForm = ({ header }) => {
 								<input
 									type="radio"
 									id="Cash"
-									name="category"
-									onChange={e => inputTextChangeHandler('category', 'cash')}
-									value={inputs.category?.value}
+									name="type"
+									onChange={e => inputTextChangeHandler('type', 'cash')}
+									value={inputs.type?.value}
 									class="col col-2"
 								/>
 								<label
@@ -174,9 +189,9 @@ const ReceiptForm = ({ header }) => {
 								<input
 									type="radio"
 									id="Capital"
-									name="category"
-									onChange={e => inputTextChangeHandler('category', 'capital')}
-									value={inputs.category?.value}
+									name="type"
+									onChange={e => inputTextChangeHandler('type', 'capital')}
+									value={inputs.type?.value}
 									class="col col-2"
 								/>
 								<label

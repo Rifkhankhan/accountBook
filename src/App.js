@@ -18,7 +18,6 @@ function App() {
 			<Provider store={store}>
 				<div className="App">
 					<header className="App-header">
-						<Header />
 						{/* <Home /> */}
 						<Routers />
 						<Footer />

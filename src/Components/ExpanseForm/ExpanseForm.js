@@ -2,17 +2,21 @@ import React, { useEffect, useState } from 'react'
 import styles from './ExpanseForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { createExpanse } from '../../Actions/ExpanseActions'
+import { createAccountRequest } from '../../Actions/AccountRequestActions'
 const ExpanseForm = () => {
 	const [formValid, setFormValid] = useState(true)
 	// const notification = useSelector(state => state.customer.notification)
 	const [formSubmit, setFormSubmit] = useState(false)
+	const currentUser = useSelector(state => state.auth.user)
+	const [selectedDateTime, setSelectedDateTime] = useState('')
 	const dispatch = useDispatch()
 	const [error, setHasError] = useState(false)
+
 	// Initial state for inputs
 	const initialInputsState = {
 		amount: { value: '', isValid: true },
 		narration: { value: '', isValid: true },
-		date: { value: '', isValid: true },
+		date: { value: '', isValid: true }
 	}
 
 	// State for inputs
@@ -20,15 +24,23 @@ const ExpanseForm = () => {
 
 	useEffect(() => {
 		setFormValid(
-			inputs.amount.isValid &&
-				inputs.narration.isValid &&
-				inputs.date.isValid 
+			inputs.amount.isValid && inputs.narration.isValid && inputs.date.isValid
 		)
 
 		return () => {}
 	}, [inputs])
 
 	const inputTextChangeHandler = (inputType, enteredValue) => {
+		if (inputType === 'date') {
+			const selectedDate = enteredValue
+			const currentTime = new Date().toLocaleTimeString('en-US', {
+				hour12: false
+			})
+			const selectedDateTime = `${selectedDate} ${currentTime}`
+
+			enteredValue = selectedDateTime
+		}
+
 		setInputs(currentInputValue => {
 			return {
 				...currentInputValue,
@@ -47,24 +59,18 @@ const ExpanseForm = () => {
 			narration: inputs.narration.value,
 			date: inputs.date.value
 		}
-		const dateRegex = /^\d{4}-\d{2}-\d{2}$/
-		const dateString = data.date?.trim()
+
+		const dateValid = data.date?.trim().length > 0
 
 		const amountValid = data.amount > 0
 		const narrationValid = data.narration?.trim().length > 0
-		const dateValid = dateRegex.test(dateString)
 
-		if (
-			!amountValid ||
-			!narrationValid ||
-			!dateValid 
-		
-		) {
+		if (!amountValid || !narrationValid || !dateValid) {
 			setInputs(currentInputs => {
 				return {
 					amount: { value: currentInputs.amount.value, isValid: amountValid },
 					date: { value: currentInputs.date.value, isValid: dateValid },
-				
+
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
@@ -74,14 +80,21 @@ const ExpanseForm = () => {
 			return
 		}
 
-		dispatch(createExpanse(data))
+		// dispatch(createExpanse(data))
+		const newData = {
+			...data,
+			userId: currentUser._id,
+			requestType: 'expense',
+			requestForm: 'expense'
+		}
+		dispatch(createAccountRequest(newData))
 		setFormSubmit(true)
 		setInputs(initialInputsState)
 	}
 	return (
 		<div className={`container ${styles.container} `}>
 			<h2 class="row col-md-12 col-sm-6" className={styles.header}>
-				 Create Expanse(Dr)
+				Create Expanse(Dr)
 			</h2>
 			{!formValid && (
 				<div className="row ">
@@ -114,7 +127,7 @@ const ExpanseForm = () => {
 							type="date"
 							class="form-control"
 							id="date"
-							value={inputs.date.value}
+							value={inputs.date.value ? inputs.date.value.split(' ')[0] : ''}
 							onChange={e => inputTextChangeHandler('date', e.target.value)}
 						/>
 					</div>
@@ -131,38 +144,34 @@ const ExpanseForm = () => {
 					</div>
 				</div>
 
-				
-					<div class="form-row row">
-						<div class="col-md-12 col-sm-6 my-1">
-							<div class="form-group">
-								<textarea
-									type="narration"
-									class="form-control"
-									id="narration"
-									placeholder="Narration"
-									value={inputs.narration.value}
-									rows={4}
-									onChange={e =>
-										inputTextChangeHandler('narration', e.target.value)
-									}
-								/>
-							</div>
-						</div>
-
-						<div class="col-md-2 col-sm-6 my-1">
-							<div class="form-group">
-								<button
-									type="button"
-									class="btn btn-primary "
-									onClick={submitHandler}>
-									Submit
-								</button>
-							</div>
+				<div class="form-row row">
+					<div class="col-md-12 col-sm-6 my-1">
+						<div class="form-group">
+							<textarea
+								type="narration"
+								class="form-control"
+								id="narration"
+								placeholder="Narration"
+								value={inputs.narration.value}
+								rows={4}
+								onChange={e =>
+									inputTextChangeHandler('narration', e.target.value)
+								}
+							/>
 						</div>
 					</div>
-		
 
-		
+					<div class="col-md-2 col-sm-6 my-1">
+						<div class="form-group">
+							<button
+								type="button"
+								class="btn btn-primary "
+								onClick={submitHandler}>
+								Submit
+							</button>
+						</div>
+					</div>
+				</div>
 			</form>
 		</div>
 	)

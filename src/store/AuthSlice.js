@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 export const authSlice = createSlice({
-	name: 'expanse',
+	name: 'auth',
 	initialState: {
 		isAuthenticated: false,
 		token: null,
@@ -9,27 +9,24 @@ export const authSlice = createSlice({
 	},
 	reducers: {
 		login: (state, action) => {
-			console.log(action.payload)
 			if (action.payload.success) {
 				state.isAuthenticated = true
+				state.user = action.payload.user
+				state.token = action.payload.token
+				window.localStorage.setItem('token', action.payload.token)
 			}
-
-			state.user = action.payload.user
-			state.token = action.payload.token
-
-			window.localStorage.setItem('token', action.payload.token)
 		},
 		logout: (state, action) => {
 			state.isAuthenticated = false
 			window.localStorage.removeItem('token')
+			state.user = []
+			state.token = null
 		},
 		autoLogin: (state, action) => {
 			if (action.payload?.success) {
 				state.isAuthenticated = true
-
 				state.user = action.payload.user
 				state.token = action.payload.token
-
 				window.localStorage.setItem('token', action.payload.token)
 			} else {
 				state.isAuthenticated = false

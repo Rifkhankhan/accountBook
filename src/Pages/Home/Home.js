@@ -1,53 +1,127 @@
 import React, { useLayoutEffect, useState } from 'react'
 import styles from './Home.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-	faBuildingColumns,
-	faHandHoldingDollar,
-	faMoneyBill,
-	faSackDollar,
-	faWallet
-} from '@fortawesome/free-solid-svg-icons'
+import { faClose, faPen } from '@fortawesome/free-solid-svg-icons'
 import PaginationTable from '../../Components/PaginationTable/PaginationTable'
 import { useDispatch, useSelector } from 'react-redux'
 import { deleteExpanse, getExpanses } from '../../Actions/ExpanseActions'
 import { deleteReceipt, getReceipts } from '../../Actions/ReceiptActions'
 import ExpanseModel from '../../Components/ExpanseModel/ExpanseModel'
 import ReceiptModel from '../../Components/ReceiptModel/ReceiptModel'
-import WeeklyGraph from '../../Components/WeeklyGraph/WeeklyGraph'
+
+import ResetPasswordModel from '../../Components/ResetPasswordModel/ResetPasswordModel'
+import PieChart from '../../Components/PieChart/PieChart'
+import LineChart from '../../Components/LineChart/LineChart'
+
 const Home = () => {
-	const expanses = useSelector(state => state.expanse.expanses)
-	const receipts = useSelector(state => state.receipt.receipts)
+	const requestList = useSelector(state => state.accountRequest.accountRequests)
+
+	const expanses = requestList?.filter(
+		request => request.requestType === 'expense'
+	)
+
+	const receipts = requestList?.filter(
+		request => request.requestType === 'receipt'
+	)
+
+	const loans = requestList?.filter(request => request.requestType === 'loan')
+	const advances = requestList?.filter(
+		request => request.requestType === 'advance'
+	)
+
+	const lastRequest = requestList[requestList?.length - 1]
+
+	const currentUser = useSelector(state => state.auth.user)
+
 	const [totalExpanses, setTotalExpanses] = useState(0)
 	const [totalIncomes, setTotalIncomes] = useState(0)
-	const [totalAdvance, setTotalAdvance] = useState(0)
+	const [captitalAmount, setCapitalAmount] = useState(0)
 	const [balance, setBalance] = useState(0)
+	const [gotLoan, setGotLoan] = useState(0)
+	const [paidLoan, setPaidLoan] = useState(0)
+	const [gotAdvance, setGotAdvance] = useState(0)
+	const [paidAdvance, setPaidAdvance] = useState(0)
+	const [showPasswordModel, setPasswordModel] = useState(false)
 	const dispatch = useDispatch()
 
 	const [showModal, setShowModal] = useState(false)
 	const [showReceiptModal, setShowReceiptModal] = useState(false)
 	const [clickedRow, setClickedRow] = useState({})
 
+	const today = new Date()
+	const formattedDate = today.toLocaleDateString('en-GB') // Format: dd/mm/yyyy
+
 	useLayoutEffect(() => {
+		// calculate total expenses
 		const totalExpanses = expanses.reduce(
 			(total, current) => total + current.amount,
 			0
 		)
-		const totalReceipts = receipts.reduce(
+		setTotalExpanses(totalExpanses)
+
+		// calculate total incomes
+		const incomeList = receipts.filter(
+			receipt => receipt.requestForm === 'cash'
+		)
+		const incomes = incomeList.reduce(
 			(total, current) => total + current.amount,
 			0
 		)
-		setTotalExpanses(totalExpanses)
-		setTotalIncomes(totalReceipts)
 
-		// Balance
-		setBalance(totalIncomes - totalExpanses)
-	}, [expanses, receipts])
+		setTotalIncomes(incomes)
 
-	useLayoutEffect(() => {
-		//   dispatch(getExpanses());
-		//   dispatch(getReceipts());
-	}, [dispatch])
+		// calcaulate capital amount
+
+		const capitalList = receipts.filter(
+			receipt => receipt.requestForm === 'capital'
+		)
+		const capitalAmount = capitalList.reduce(
+			(total, current) => total + current.amount,
+			0
+		)
+
+		setCapitalAmount(capitalAmount)
+
+		// calcaulate lon amount got
+
+		const loanGotList = loans.filter(loan => loan.requestForm === 'got')
+		const gotLoanAmount = loanGotList.reduce(
+			(total, current) => total + current.amount,
+			0
+		)
+
+		setGotLoan(gotLoanAmount)
+
+		// calcaulate lon amount paid
+
+		const advancePaidList = loans.filter(loan => loan.requestForm === 'paid')
+		const paidLoanAmount = advancePaidList.reduce(
+			(total, current) => total + current.amount,
+			0
+		)
+
+		setPaidLoan(paidLoanAmount)
+
+		// calcaulate advance amount got
+
+		const advanceGotList = advances.filter(loan => loan.requestForm === 'got')
+		const gotAdvanceAmount = advanceGotList.reduce(
+			(total, current) => total + current.amount,
+			0
+		)
+
+		setGotAdvance(gotAdvanceAmount)
+
+		// calcaulate advance amount paid
+
+		const loanPaidList = advances.filter(loan => loan.requestForm === 'paid')
+		const paidAdvanceAmount = loanPaidList.reduce(
+			(total, current) => total + current.amount,
+			0
+		)
+
+		setPaidAdvance(paidAdvanceAmount)
+	}, [expanses, receipts, loans, advances])
 
 	const handleExpenseModel = row => {
 		setClickedRow(row)
@@ -72,161 +146,284 @@ const Home = () => {
 		setShowModal(current => !current)
 		dispatch(deleteExpanse(id))
 	}
+
+	const handlePasswordModel = () => {
+		setPasswordModel(current => !current)
+	}
+
 	return (
 		<div className={`container ${styles.home}`}>
-			<section className={`row ${styles.homeComponent}`}>
-				<div className={`col-12 col-md-3 mb-2, ${styles.column}`}>
-					<div className="row" style={{ border: '1px solid white' }}>
-						<h3 className="col" style={{ margin: 'auto' }}>
+			<section className={`container ${styles.oppComponent}`}>
+				<div className="col-12 col-md-4">
+					<div className={`row ${styles.smallCard}`}>
+						<p className="col-12 col-md-5">Date :</p>
+						<p className="col-12 col-md-7 " style={{ textAlign: 'left' }}>
+							{formattedDate}
+						</p>
+					</div>
+					<div
+						className={`row ${styles.smallCard}`}
+						style={{ position: 'relative' }}>
+						<p className="col-12 col-md-5">User:</p>
+						<p className="col-12 col-md-7 " style={{ textAlign: 'left' }}>
+							{currentUser.name}
+						</p>
+						<FontAwesomeIcon
+							className={styles.profileEditBtn}
+							icon={faPen}
+							onClick={handlePasswordModel}
+						/>
+					</div>
+					<div className={`row ${styles.smallCard}`}>
+						<p className="col-12 col-md-5">Opening Balance</p>
+						<p className="col-12 col-md-7">{lastRequest?.oppBalance}</p>
+					</div>
+				</div>
+			</section>
+			<section className={`row container-fluid ${styles.homeComponent}`}>
+				<div className={`col-11 col-md-3 , ${styles.card}`}>
+					<div className="row py-3 m-auto">
+						<h3
+							style={{
+								fontWeight: 600,
+								fontSize: '2em'
+							}}>
 							Balance
 						</h3>
 					</div>
+					<div className="row" style={{ width: '100%', margin: 'auto' }}>
+						<div className="row" style={{ width: '100%', margin: 'auto' }}>
+							<p className="col-3" style={{ fontSize: '1.5em' }}>
+								Capital
+							</p>
+							<p
+								className="col-9 "
+								style={{ textAlign: 'right', fontSize: '1.5em' }}>
+								: {captitalAmount}
+							</p>
+						</div>
+						<div className="row" style={{ width: '100%', margin: 'auto' }}>
+							<p className="col-3" style={{ fontSize: '1.5em' }}>
+								Income
+							</p>
+							<p
+								className="col-9 "
+								style={{ textAlign: 'right', fontSize: '1.5em' }}>
+								: {totalIncomes}
+							</p>
+						</div>
 
-					<p
+						<div className="row" style={{ width: '100%', margin: 'auto' }}>
+							<p className="col-3" style={{ fontSize: '1.5em' }}>
+								Paid Advance
+							</p>
+							<p
+								className="col-9 "
+								style={{ textAlign: 'right', fontSize: '1.5em' }}>
+								: {paidAdvance}
+							</p>
+						</div>
+
+						<div className="row" style={{ width: '100%', margin: 'auto' }}>
+							<p className="col-3" style={{ fontSize: '1.5em' }}>
+								Got Advance
+							</p>
+							<p
+								className="col-9 "
+								style={{ textAlign: 'right', fontSize: '1.5em' }}>
+								: {gotAdvance}
+							</p>
+						</div>
+						<div className="row" style={{ width: '100%', margin: 'auto' }}>
+							<p className="col-3" style={{ fontSize: '1.5em' }}>
+								Loan
+							</p>
+							<p
+								className="col-9 "
+								style={{ textAlign: 'right', fontSize: '1.5em' }}>
+								: {gotLoan - paidLoan}
+							</p>
+						</div>
+					</div>
+					<div
+						className="row"
 						style={{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							fontSize: '1em',
-							border: '1px solid white'
-						}}
-						className="col">
-						{balance}
-					</p>
+							fontSize: '1.5em',
+							fontWeight: 500
+						}}>
+						<span style={{ paddingBlock: '2vh' }}>{lastRequest?.balance}</span>
+					</div>
 				</div>
-				<div className={`col-12 col-md-3 ${styles.column}`}>
-					<div className="row" style={{ flex: 1, height: '50%' }}>
-						<h3 className="col" style={{ margin: 'auto' }}>
-							Incomes
+
+				<div className={`col-11 col-md-3 , ${styles.card}`}>
+					<div className="row py-3 m-auto">
+						<h3
+							style={{
+								fontWeight: 600,
+								fontSize: '2em'
+							}}>
+							Advances
 						</h3>
-						<FontAwesomeIcon
-							style={{ margin: 'auto', fontSize: '5em' }}
-							className="col"
-							icon={faSackDollar}
-						/>
 					</div>
 
-					<h5
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							flex: 1,
-							height: '50%',
-							fontSize: '2em'
-						}}
-						className="col">
-						{totalIncomes}
-					</h5>
+					<div className="row  " style={{ width: '100%', margin: 'auto' }}>
+						<div className="row" style={{ width: '100%', margin: 'auto' }}>
+							<p className="col-3" style={{ fontSize: '1.5em' }}>
+								Got
+							</p>
+							<p
+								className="col "
+								style={{ textAlign: 'left', fontSize: '1.5em' }}>
+								: {gotLoan}
+							</p>
+						</div>
+						<div className="row" style={{ width: '100%', margin: 'auto' }}>
+							<p className="col-3" style={{ fontSize: '1.5em' }}>
+								Paid
+							</p>
+							<p
+								className="col text-left"
+								style={{ textAlign: 'left', fontSize: '1.5em' }}>
+								{' '}
+								: {paidAdvance}
+							</p>
+						</div>
+					</div>
+				</div>
+				<div className={`col-11 col-md-3 , ${styles.card}`}>
+					<div className="row py-3 m-auto">
+						<h3
+							style={{
+								fontWeight: 600,
+								fontSize: '2em'
+							}}>
+							Loans
+						</h3>
+					</div>
+
+					<div className="row  " style={{ width: '100%', margin: 'auto' }}>
+						<div className="row" style={{ width: '100%', margin: 'auto' }}>
+							<p className="col-3" style={{ fontSize: '1.5em' }}>
+								Got
+							</p>
+							<p
+								className="col "
+								style={{ textAlign: 'left', fontSize: '1.5em' }}>
+								: {gotLoan}
+							</p>
+						</div>
+						<div className="row" style={{ width: '100%', margin: 'auto' }}>
+							<p className="col-3" style={{ fontSize: '1.5em' }}>
+								Paid
+							</p>
+							<p
+								className="col text-left"
+								style={{ textAlign: 'left', fontSize: '1.5em' }}>
+								{' '}
+								: {paidLoan}
+							</p>
+						</div>
+					</div>
 				</div>
 
-				<div className={`col-12 col-md-3 ${styles.column}`}>
-					<div className="row" style={{ flex: 1, height: '50%' }}>
-						<h3 className="col" style={{ margin: 'auto' }}>
+				<div
+					className={`col-11 col-md-3 , ${styles.card}`}
+					style={{
+						display: 'flex',
+						flexDirection: 'column',
+						justifyContent: 'space-between',
+						paddingBlock: '3vh'
+					}}>
+					<div className="row">
+						<h3
+							style={{
+								fontSize: '2em',
+								fontWeight: 600
+							}}>
 							Expenses
 						</h3>
-						<FontAwesomeIcon
-							style={{ margin: 'auto', fontSize: '5em' }}
-							className="col"
-							icon={faBuildingColumns}
-						/>
 					</div>
 
-					<h5
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							flex: 1,
-							height: '50%',
-							fontSize: '2em'
-						}}
-						className="col">
-						{totalExpanses}
-					</h5>
+					<div className="row">
+						<span
+							style={{
+								fontSize: '1.5em',
+								fontWeight: 500
+							}}>
+							{totalExpanses}
+						</span>
+					</div>
 				</div>
-
-				<div className={`col-12 col-md-3 ${styles.column}`}>
-					<div className="row" style={{ flex: 1, height: '50%' }}>
-						<h3 className="col" style={{ margin: 'auto' }}>
-							Loan Amount
+				<div
+					className={`col-11 col-md-3 , ${styles.card}`}
+					style={{
+						display: 'flex',
+						flexDirection: 'column',
+						justifyContent: 'space-between',
+						paddingBlock: '3	vh'
+					}}>
+					<div className="row">
+						<h3
+							style={{
+								fontSize: '2em',
+								fontWeight: 600
+							}}>
+							Income
 						</h3>
-						<FontAwesomeIcon
-							style={{ margin: 'auto', fontSize: '5em' }}
-							className="col"
-							icon={faWallet}
-						/>
 					</div>
 
-					<h5
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							flex: 1,
-							height: '50%',
-							fontSize: '2em'
-						}}
-						className="col-12">
-						150,000,000
-					</h5>
-				</div>
-
-				<div className={`col-12 col-md-3 ${styles.column}`}>
-					<div className="row" style={{ flex: 1, height: '50%' }}>
-						<h3 className="col" style={{ margin: 'auto' }}>
-							Advance
-						</h3>
-						<FontAwesomeIcon
-							style={{ margin: 'auto', fontSize: '5em' }}
-							className="col"
-							icon={faHandHoldingDollar}
-						/>
+					<div className="row">
+						<span
+							style={{
+								fontSize: '1.5em',
+								fontWeight: 500
+							}}>
+							{totalIncomes}
+						</span>
 					</div>
-
-					<h5
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							flex: 1,
-							height: '50%',
-							fontSize: '2em'
-						}}
-						className="col-12">
-						{totalAdvance}
-					</h5>
 				</div>
 			</section>
 
-			<section className="container-fluid" style={{ margin: 'auto' }}>
-				<h2 style={{ textAlign: 'left', color: 'white' }}>Expenses</h2>
+			<section className={`container-fluid `}>
+				<h2 style={{ textAlign: 'left', color: 'white' }}>Account Works</h2>
+				<div className={`col-12 `}>
+					<PaginationTable
+						list={requestList}
+						handleModel={handleExpenseModel}
+					/>
+				</div>
+			</section>
+
+			<section
+				className={`container-fluid py-5 ${styles.pieChartContainer}`}
+				style={{ margin: 'auto' }}>
+				<h2 style={{ textAlign: 'left', color: 'white' }}>Pir Chart</h2>
 				<div className={`col-12`}>
-					<PaginationTable list={expanses} handleModel={handleExpenseModel} />
+					<PieChart
+						headDatas={[
+							totalExpanses,
+							totalIncomes,
+							gotAdvance,
+							paidAdvance,
+							gotLoan,
+							paidLoan
+						]}
+					/>
 				</div>
 			</section>
 
-			<section className="container-fluid" style={{ margin: 'auto' }}>
-				<h2 style={{ textAlign: 'left', color: 'white' }}>Incomes</h2>
+			<section
+				className={`container-fluid py-5 ${styles.pieChartContainer}`}
+				style={{ margin: 'auto' }}>
+				<h2 style={{ textAlign: 'left', color: 'white' }}>Line Chart</h2>
 				<div className={`col-12`}>
-					<PaginationTable list={receipts} handleModel={handleReceiptModel} />
+					<LineChart
+						expenses={expanses}
+						receipts={receipts}
+						requestList={requestList}
+					/>
 				</div>
 			</section>
-
-			<section className="container-fluid" style={{ margin: 'auto' }}>
-				<h2 style={{ textAlign: 'left', color: 'white' }}>Total Advance</h2>
-				<div className={`col-12`}>
-					<PaginationTable list={expanses} handleModel={handleModel} />
-				</div>
-			</section>
-
-			<section className="container-fluid" style={{ margin: 'auto' }}>
-				<h2 style={{ textAlign: 'left', color: 'white' }}>Total Loans</h2>
-				<div className={`col-12`}>
-					<PaginationTable list={expanses} handleModel={handleModel} />
-				</div>
-			</section>
-
 			{showModal && (
 				<ExpanseModel
 					clickedRow={clickedRow}
@@ -242,6 +439,13 @@ const Home = () => {
 					showModal={showReceiptModal}
 					closeHandler={handleReceiptModel}
 					deleteHandler={deleteReceiptHandler}
+				/>
+			)}
+			{showPasswordModel && (
+				<ResetPasswordModel
+					selectedUser={currentUser}
+					showModal={showPasswordModel}
+					closeHandler={handlePasswordModel}
 				/>
 			)}
 		</div>

@@ -5,6 +5,7 @@ import { userSlice } from './UserSlice'
 import { authSlice } from './AuthSlice'
 import { advanceSlice } from './AdvanceSlice'
 import { loanSlice } from './LoanSlice'
+import { accountRequestSlice } from './AccountRequestSlice'
 
 export const store = configureStore({
 	reducer: {
@@ -13,7 +14,8 @@ export const store = configureStore({
 		user: userSlice.reducer,
 		advance: advanceSlice.reducer,
 		loan: loanSlice.reducer,
-		auth: authSlice.reducer
+		auth: authSlice.reducer,
+		accountRequest: accountRequestSlice.reducer
 	}
 })
 
