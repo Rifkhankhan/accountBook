@@ -6,6 +6,7 @@ import { faClose, faPen } from '@fortawesome/free-solid-svg-icons'
 import { updateReceipt } from '../../Actions/ReceiptActions'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateLoan } from '../../Actions/LoanActions'
+import { createAccountRequest } from '../../Actions/AccountRequestActions'
 
 const LoanModel = ({
 	type,
@@ -27,16 +28,17 @@ const LoanModel = ({
 		},
 		amount: { value: +clickedRow?.amount, isValid: true },
 		narration: { value: clickedRow?.narration, isValid: true },
-		type: { value: clickedRow?.type, isValid: true }
+		requestForm: { value: clickedRow?.requestForm, isValid: true },
+		userId: { value: currentUser?._id, isValid: true },
+		requestType: { value: clickedRow?.requestType, isValid: true }
 	}
 
 	const [inputs, setInputs] = useState(initialInputsState)
 
 	useEffect(() => {
 		setFormValid(
-			inputs.date.isValid &&
-				inputs.amount.isValid &&
-				inputs.type.isValid &&
+			inputs.amount.isValid &&
+				inputs.requestForm.isValid &&
 				inputs.narration.isValid
 		)
 
@@ -58,17 +60,18 @@ const LoanModel = ({
 
 			narration: inputs.narration.value,
 			amount: +inputs.amount.value,
-			type: inputs.type.value
+			requestForm: inputs.requestForm.value,
+			userId: inputs.userId.value,
+			requestType: inputs.requestType.value
 		}
 
 		const narrationValid = data.narration?.trim().length > 0
-		const categoryValid = data.type?.trim().length > 0
-		const dateValid = data.date !== null && !isNaN(Date.parse(data.date))
+		const categoryValid = data.requestForm?.trim().length > 0
+
 		const amountValid = +data.amount > 0
-		if (!narrationValid || !dateValid || !amountValid || !categoryValid) {
+		if (!narrationValid || !amountValid || !categoryValid) {
 			setInputs(currentInputs => {
 				return {
-					date: { value: currentInputs.date.value, isValid: dateValid },
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
@@ -77,8 +80,8 @@ const LoanModel = ({
 						value: +currentInputs.amount.value,
 						isValid: amountValid
 					},
-					type: {
-						value: currentInputs.type.value,
+					requestForm: {
+						value: currentInputs.requestForm.value,
 						isValid: categoryValid
 					}
 				}
@@ -86,7 +89,7 @@ const LoanModel = ({
 			return
 		}
 
-		dispatch(updateLoan(clickedRow._id, data))
+		dispatch(createAccountRequest(clickedRow._id, data))
 		setFormSubmit(true)
 		setShowEditModal(false)
 
@@ -105,8 +108,8 @@ const LoanModel = ({
 							backgroundColor: '#7993d2'
 						}}>
 						<Modal.Title style={{ fontSize: '2em' }}>View Details</Modal.Title>
-						{currentUser.receiptPermission === 'yes' &&
-							currentUser.receiptEditPermission === 'yes' && (
+						{currentUser.loanPermission === 'yes' &&
+							currentUser.loanEditPermission === 'yes' && (
 								<FontAwesomeIcon
 									className={styles.editBtn}
 									icon={faPen}
@@ -132,7 +135,9 @@ const LoanModel = ({
 								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
 									Type
 								</label>
-								<p>{inputs.type.value}</p>
+								<p>
+									{inputs.requestForm.value === 'got' ? 'Received' : 'Paid'}
+								</p>
 							</div>
 						</div>
 						<div className="row">
@@ -153,8 +158,8 @@ const LoanModel = ({
 						</div>
 					</Modal.Body>
 					<Modal.Footer>
-						{currentUser.receiptPermission === 'yes' &&
-							currentUser.receiptDeletePermission === 'yes' && (
+						{currentUser.loanPermission === 'yes' &&
+							currentUser.loanDeletePermission === 'yes' && (
 								<Button
 									variant="danger"
 									onClick={() => deleteHandler(clickedRow._id)}>
@@ -206,6 +211,7 @@ const LoanModel = ({
 									Date
 								</label>
 								<input
+									disabled
 									type="date"
 									className="form-control"
 									value={inputs.date.value}
@@ -249,10 +255,12 @@ const LoanModel = ({
 										<input
 											type="radio"
 											id="eCash"
-											name="type"
-											onChange={e => inputTextChangeHandler('type', 'paid')}
-											value={inputs.type?.value}
-											checked={inputs.type?.value === 'paid'}
+											name="requestForm"
+											onChange={e =>
+												inputTextChangeHandler('requestForm', 'paid')
+											}
+											value={inputs.requestForm?.value}
+											checked={inputs.requestForm?.value === 'paid'}
 											className="col col-2 "
 										/>
 										<label
@@ -263,7 +271,7 @@ const LoanModel = ({
 												fontSize: '2vh',
 												textAlign: 'left'
 											}}>
-											Cash
+											Pay
 										</label>
 									</div>
 
@@ -271,17 +279,19 @@ const LoanModel = ({
 										<input
 											type="radio"
 											id="eCapital"
-											name="type"
-											onChange={e => inputTextChangeHandler('type', 'received')}
-											checked={inputs.type?.value === 'received'}
-											value={inputs.type?.value}
+											name="requestForm"
+											onChange={e =>
+												inputTextChangeHandler('requestForm', 'got')
+											}
+											checked={inputs.requestForm?.value === 'got'}
+											value={inputs.requestForm?.value}
 											class="col col-2"
 										/>
 										<label
 											for="eCapital"
 											class="col col-4"
 											style={{ color: 'black', fontSize: '2vh' }}>
-											Received
+											Receive
 										</label>
 									</div>
 								</div>

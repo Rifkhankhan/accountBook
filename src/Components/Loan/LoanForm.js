@@ -183,7 +183,7 @@ const LoanForm = ({ header }) => {
 									for="Cash"
 									class="col col-1"
 									style={{ color: 'white', fontSize: '2vh' }}>
-									Get
+									Receive
 								</label>
 							</div>
 

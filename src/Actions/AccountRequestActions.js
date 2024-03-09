@@ -4,8 +4,8 @@ import { advanceActions } from '../store/AdvanceSlice'
 import { AccountRequestActions } from '../store/AccountRequestSlice'
 
 export const createAccountRequest = formData => async dispatch => {
+	dispatch(AccountRequestActions.handleLoading())
 	try {
-		// dispatch(uiActions.changeAsLoading())
 		const { data } = await AccountRequestApis.createAccountRequest(formData)
 		// dispatch(uiActions.changeAsLoading())
 		if (data.success) {
@@ -13,126 +13,81 @@ export const createAccountRequest = formData => async dispatch => {
 		}
 	} catch (error) {
 		if (error.response?.status === 400) {
-			swal(
-				'Please provide an email and password!',
-				'Check the email and password!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 404) {
-			swal(
-				"You don't have HomeDelivery account!",
-				'Please create an account! Or enter valid credentials!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 409) {
-			swal('Wrong Password!', 'Please check your password!', 'error')
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		}
 	}
+	dispatch(AccountRequestActions.handleLoading())
 }
 
 export const getAccountRequests = () => async dispatch => {
+	dispatch(AccountRequestActions.handleLoading())
 	try {
-		// dispatch(uiActions.changeAsLoading())
 		const { data } = await AccountRequestApis.getAccountRequests()
-		dispatch(AccountRequestActions.getAccountRequests(data))
-		// dispatch(uiActions.changeAsLoading())
-	} catch (error) {
-		console.log(error)
 
+		if (data.success) {
+			dispatch(AccountRequestActions.getAccountRequests(data.product))
+		}
+	} catch (error) {
 		if (error.response?.status === 400) {
-			swal(
-				'Please provide an email and password!',
-				'Check the email and password!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 404) {
-			swal(
-				"You don't have HomeDelivery account!",
-				'Please create an account! Or enter valid credentials!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 409) {
-			swal('Wrong Password!', 'Please check your password!', 'error')
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		}
 	}
+	dispatch(AccountRequestActions.handleLoading())
 }
 export const getAccountRequest = id => async dispatch => {
+	dispatch(AccountRequestActions.handleLoading())
 	try {
-		// dispatch(uiActions.changeAsLoading())
 		const { data } = await AccountRequestApis.getAccountRequest(id)
-		// dispatch(CustomerAction.getCustomer(data))
-		// dispatch(uiActions.changeAsLoading())
+		dispatch(AccountRequestActions.handleLoading())
 	} catch (error) {
-		console.log(error)
-
 		if (error.response?.status === 400) {
-			swal(
-				'Please provide an email and password!',
-				'Check the email and password!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 404) {
-			swal(
-				"You don't have HomeDelivery account!",
-				'Please create an account! Or enter valid credentials!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 409) {
-			swal('Wrong Password!', 'Please check your password!', 'error')
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		}
 	}
+	dispatch(AccountRequestActions.handleLoading())
 }
 export const updateAccountRequest = (id, formData) => async dispatch => {
+	dispatch(AccountRequestActions.handleLoading())
 	try {
 		const { data } = await AccountRequestApis.updateAccountRequest(id, formData)
 		dispatch(AccountRequestActions.updateAccountRequest({ id, formData }))
-		// dispatch(CustomerAction.updateCustomer(data))
-		// dispatch(uiActions.changeAsLoading())
 	} catch (error) {
-		console.log(error)
-
 		if (error.response?.status === 400) {
-			swal(
-				'Please provide an email and password!',
-				'Check the email and password!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 404) {
-			swal(
-				"You don't have HomeDelivery account!",
-				'Please create an account! Or enter valid credentials!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 409) {
-			swal('Wrong Password!', 'Please check your password!', 'error')
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		}
 	}
+	dispatch(AccountRequestActions.handleLoading())
 }
 
 export const deleteAccountRequest = id => async dispatch => {
+	dispatch(AccountRequestActions.handleLoading())
 	try {
 		const { data } = await AccountRequestApis.disableAccountRequest(id)
 		dispatch(AccountRequestActions.deleteAccountRequest(id))
-
-		// dispatch(CustomerAction.updateCustomer(data))
-		// dispatch(uiActions.changeAsLoading())
 	} catch (error) {
-		console.log(error)
-
 		if (error.response?.status === 400) {
-			swal(
-				'Please provide an email and password!',
-				'Check the email and password!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 404) {
-			swal(
-				"You don't have HomeDelivery account!",
-				'Please create an account! Or enter valid credentials!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 409) {
-			swal('Wrong Password!', 'Please check your password!', 'error')
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		}
 	}
+	dispatch(AccountRequestActions.handleLoading())
 }

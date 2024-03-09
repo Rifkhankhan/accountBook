@@ -1,70 +1,61 @@
+import { AccountRequestActions } from '../store/AccountRequestSlice'
 import { authActions } from '../store/AuthSlice'
+
 import * as AuthApi from './../Apis/AuthRequest'
 import swal from 'sweetalert'
 // import { authUiActions } from '.././Redux/UI Slice/auth-ui-slice'
 // import { authActions } from '../Redux/authSlice'
 
 export const logIn = formData => async dispatch => {
+	dispatch(authActions.handleLoading())
 	try {
-		// dispatch(authUiActions.changeAsLoading())
-		console.log(formData)
 		const { data } = await AuthApi.logIn(formData)
 		dispatch(authActions.login(data))
 	} catch (error) {
 		if (error.response?.status === 400) {
-			swal(
-				'Please provide an email and password!',
-				'Check the email and password!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 404) {
-			swal(
-				"You don't have Smart Account Book account!",
-				'Please create an account! Or enter valid credentials!',
-				'error'
-			)
+			swal("You don't have Account", 'Try again please!', 'error')
 		} else if (error.response?.status === 409) {
-			swal('Wrong Password!', 'Please check your password!', 'error')
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
+		} else if (error.response?.status === 500) {
+			swal('Internal Server Error', 'Check Your network!', 'error')
 		}
 	}
-	// dispatch(authUiActions.changeAsLoadingFinished())
+	dispatch(authActions.handleLoading())
 }
 
 export const logout = () => async dispatch => {
-	// dispatch(authUiActions.changeAsLoading())
+	dispatch(authActions.handleLoading())
+
 	await AuthApi.logout()
 	dispatch(authActions.logout())
-
-	// dispatch(authUiActions.changeAsLoadingFinished())
+	dispatch(authActions.handleLoading())
 }
 
 export const autoLogin = () => async dispatch => {
-	const token = window.localStorage.getItem('token')
 	try {
+		dispatch(authActions.handleLoading())
+		const token = window.localStorage.getItem('token')
+
 		// dispatch(authUiActions.changeAsLoading())
 		if (token) {
 			const { data } = await AuthApi.autoLogin(token)
 			dispatch(authActions.autoLogin(data))
+			// dispatch(AccountRequestActions.handleLoading())
 		} else {
 			dispatch(authActions.autoLogin())
+			// dispatch(AccountRequestActions.handleLoading())
 		}
+		dispatch(authActions.handleLoading())
 	} catch (error) {
-		console.log(error)
-
 		if (error.response?.status === 400) {
-			swal(
-				'Please provide an email and password!',
-				'Check the email and password!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 404) {
-			swal(
-				"You don't have HomeDelivery account!",
-				'Please create an account! Or enter valid credentials!',
-				'error'
-			)
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		} else if (error.response?.status === 409) {
-			swal('Wrong Password!', 'Please check your password!', 'error')
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		}
 	}
+	dispatch(authActions.handleLoading())
 }

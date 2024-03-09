@@ -7,12 +7,24 @@ import PaginationTable from '../../Components/PaginationTable/PaginationTable'
 import ExpanseForm from '../../Components/ExpanseForm/ExpanseForm'
 import { deleteExpanse, getExpanses } from '../../Actions/ExpanseActions'
 import ExpanseModel from '../../Components/ExpanseModel/ExpanseModel'
-import PDFComponent from '../../Components/PDFComponent/PDFComponent'
-import { getAccountRequests } from '../../Actions/AccountRequestActions'
+
+import LoadingSpinner from '../../Components/LoadingSpinner/LoadingSpinner'
+import {
+	deleteAccountRequest,
+	updateAccountRequest
+} from '../../Actions/AccountRequestActions'
 const Payment = () => {
-	const expenses = useSelector(
+	const expenses = useSelector(state => state.accountRequest.accountRequests)
+		?.filter(request => request.requestForm === 'expenses')
+		?.filter(request => request.status === true)
+
+	const expensesTable = useSelector(
 		state => state.accountRequest.accountRequests
-	)?.filter(expanse => expanse.requestType === 'expense')
+	)?.filter(request => request.status === true)
+
+	useEffect(() => {}, [expenses])
+
+	const isLoading = useSelector(state => state.accountRequest.isLoading)
 
 	const dispatch = useDispatch()
 	const [showModal, setShowModal] = useState(false)
@@ -25,10 +37,19 @@ const Payment = () => {
 		setShowModal(current => !current)
 	}
 
+	const closeHandler = () => {
+		setShowModal(current => !current)
+	}
+
+	const submitHandlerProp = (id, data) => {
+		dispatch(updateAccountRequest(id, data))
+		setShowModal(current => !current)
+	}
+
 	const deleteHandler = id => {
 		handleModel()
 
-		dispatch(deleteExpanse(id))
+		dispatch(deleteAccountRequest(id))
 	}
 
 	// Function to calculate total expense for a specific date
@@ -126,7 +147,11 @@ const Payment = () => {
 			<section className="container-fluid" style={{ margin: 'auto' }}>
 				<h2 style={{ textAlign: 'left', color: 'white' }}>Expenses</h2>
 				<div className={`col-12`}>
-					<PaginationTable list={expenses} handleModel={handleModel} />
+					<PaginationTable
+						list={expensesTable}
+						handleModel={handleModel}
+						tableType="expense"
+					/>
 				</div>
 			</section>
 
@@ -135,10 +160,13 @@ const Payment = () => {
 				<ExpanseModel
 					clickedRow={clickedRow}
 					showModal={showModal}
-					closeHandler={handleModel}
+					closeHandler={closeHandler}
 					deleteHandler={deleteHandler}
+					submitHandlerProp={submitHandlerProp}
 				/>
 			)}
+
+			{isLoading && <LoadingSpinner />}
 		</div>
 	)
 }

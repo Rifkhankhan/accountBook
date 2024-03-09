@@ -7,6 +7,7 @@ import { updateReceipt } from '../../Actions/ReceiptActions'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateLoan } from '../../Actions/LoanActions'
 import { updateAdvance } from '../../Actions/AdvanceActions'
+import { updateAccountRequest } from '../../Actions/AccountRequestActions'
 const AdvanceModel = ({
 	type,
 	clickedRow,
@@ -27,7 +28,9 @@ const AdvanceModel = ({
 		},
 		amount: { value: +clickedRow?.amount, isValid: true },
 		narration: { value: clickedRow?.narration, isValid: true },
-		type: { value: clickedRow?.type, isValid: true }
+		requestForm: { value: clickedRow?.requestForm, isValid: true },
+		userId: { value: currentUser?._id, isValid: true },
+		requestType: { value: clickedRow?.requestType, isValid: true }
 	}
 
 	const [inputs, setInputs] = useState(initialInputsState)
@@ -36,7 +39,7 @@ const AdvanceModel = ({
 		setFormValid(
 			inputs.date.isValid &&
 				inputs.amount.isValid &&
-				inputs.type.isValid &&
+				inputs.requestForm.isValid &&
 				inputs.narration.isValid
 		)
 
@@ -58,17 +61,17 @@ const AdvanceModel = ({
 
 			narration: inputs.narration.value,
 			amount: +inputs.amount.value,
-			type: inputs.type.value
+			userId: inputs.userId.value,
+			requestForm: inputs.requestForm.value,
+			requestType: inputs.requestType.value
 		}
 
 		const narrationValid = data.narration?.trim().length > 0
-		const categoryValid = data.type?.trim().length > 0
-		const dateValid = data.date !== null && !isNaN(Date.parse(data.date))
+		const categoryValid = data.requestForm?.trim().length > 0
 		const amountValid = data.amount > 0
-		if (!narrationValid || !dateValid || !amountValid || !categoryValid) {
+		if (!narrationValid || !amountValid || !categoryValid) {
 			setInputs(currentInputs => {
 				return {
-					date: { value: currentInputs.date.value, isValid: dateValid },
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
@@ -77,8 +80,8 @@ const AdvanceModel = ({
 						value: +currentInputs.amount.value,
 						isValid: amountValid
 					},
-					type: {
-						value: currentInputs.category.value,
+					requestForm: {
+						value: currentInputs.requestForm.value,
 						isValid: categoryValid
 					}
 				}
@@ -86,8 +89,8 @@ const AdvanceModel = ({
 			return
 		}
 
-		console.log(data)
-		dispatch(updateAdvance(clickedRow._id, data))
+		dispatch(updateAccountRequest(clickedRow._id, data))
+
 		setFormSubmit(true)
 		setShowEditModal(false)
 
@@ -106,8 +109,8 @@ const AdvanceModel = ({
 							backgroundColor: '#7993d2'
 						}}>
 						<Modal.Title style={{ fontSize: '2em' }}>View Details</Modal.Title>
-						{currentUser.receiptPermission === 'yes' &&
-							currentUser.receiptEditPermission === 'yes' && (
+						{currentUser.advancePermission === 'yes' &&
+							currentUser.advanceEditPermission === 'yes' && (
 								<FontAwesomeIcon
 									className={styles.editBtn}
 									icon={faPen}
@@ -133,7 +136,9 @@ const AdvanceModel = ({
 								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
 									Type
 								</label>
-								<p>{inputs.type.value}</p>
+								<p>
+									{inputs.requestForm.value === 'got' ? 'Received' : 'Paid'}
+								</p>
 							</div>
 						</div>
 						<div className="row">
@@ -154,8 +159,8 @@ const AdvanceModel = ({
 						</div>
 					</Modal.Body>
 					<Modal.Footer>
-						{currentUser.receiptPermission === 'yes' &&
-							currentUser.receiptDeletePermission === 'yes' && (
+						{currentUser.advancePermission === 'yes' &&
+							currentUser.advanceDeletePermission === 'yes' && (
 								<Button
 									variant="danger"
 									onClick={() => deleteHandler(clickedRow._id)}>
@@ -207,6 +212,7 @@ const AdvanceModel = ({
 									Date
 								</label>
 								<input
+									disabled
 									type="date"
 									className="form-control"
 									value={inputs.date.value}
@@ -250,10 +256,12 @@ const AdvanceModel = ({
 										<input
 											type="radio"
 											id="eCash"
-											name="category"
-											onChange={e => inputTextChangeHandler('category', 'cash')}
-											value={inputs.category?.value}
-											checked={inputs.category?.value === 'cash'}
+											name="requestForm"
+											onChange={e =>
+												inputTextChangeHandler('requestForm', 'got')
+											}
+											value={inputs.requestForm?.value}
+											checked={inputs.requestForm?.value === 'got'}
 											className="col col-2 "
 										/>
 										<label
@@ -264,7 +272,7 @@ const AdvanceModel = ({
 												fontSize: '2vh',
 												textAlign: 'left'
 											}}>
-											Cash
+											Receive
 										</label>
 									</div>
 
@@ -272,57 +280,19 @@ const AdvanceModel = ({
 										<input
 											type="radio"
 											id="eCapital"
-											name="category"
+											name="requestForm"
 											onChange={e =>
-												inputTextChangeHandler('category', 'capital')
+												inputTextChangeHandler('requestForm', 'paid')
 											}
-											checked={inputs.category?.value === 'capital'}
-											value={inputs.category?.value}
+											checked={inputs.requestForm?.value === 'paid'}
+											value={inputs.requestForm?.value}
 											class="col col-2"
 										/>
 										<label
 											for="eCapital"
 											class="col col-4"
 											style={{ color: 'black', fontSize: '2vh' }}>
-											Capital
-										</label>
-									</div>
-
-									<div class="row mb-1">
-										<input
-											type="radio"
-											id="eLoan"
-											name="category"
-											onChange={e => inputTextChangeHandler('category', 'loan')}
-											value={inputs.category?.value}
-											checked={inputs.category?.value === 'loan'}
-											class="col col-2"
-										/>
-										<label
-											for="eLoan"
-											class="col col-4"
-											style={{ color: 'black', fontSize: '2vh' }}>
-											Loan
-										</label>
-									</div>
-
-									<div class="row mb-1">
-										<input
-											type="radio"
-											id="eAdvance"
-											name="category"
-											onChange={e =>
-												inputTextChangeHandler('category', 'advance')
-											}
-											value={inputs.category?.value}
-											class="col col-2"
-											checked={inputs.category?.value === 'advance'}
-										/>
-										<label
-											for="eAdvance"
-											class="col col-4"
-											style={{ color: 'black', fontSize: '2vh' }}>
-											Advance
+											Pay
 										</label>
 									</div>
 								</div>

@@ -17,7 +17,13 @@ const CreateUser = ({ header }) => {
 		expanseDeletePermission: { value: 'no', isValid: true },
 		receiptPermission: { value: 'no', isValid: true },
 		receiptEditPermission: { value: 'no', isValid: true },
-		receiptDeletePermission: { value: 'no', isValid: true }
+		receiptDeletePermission: { value: 'no', isValid: true },
+		advancePermission: { value: 'no', isValid: true },
+		advanceEditPermission: { value: 'no', isValid: true },
+		advanceDeletePermission: { value: 'no', isValid: true },
+		loanPermission: { value: 'no', isValid: true },
+		loanEditPermission: { value: 'no', isValid: true },
+		loanDeletePermission: { value: 'no', isValid: true }
 	}
 
 	// State for inputs
@@ -26,11 +32,17 @@ const CreateUser = ({ header }) => {
 	useEffect(() => {
 		setFormValid(
 			inputs.receiptPermission.isValid &&
-				inputs.expanseEditPermission.isValid &&
-				inputs.expanseDeletePermission.isValid &&
 				inputs.receiptEditPermission.isValid &&
 				inputs.receiptDeletePermission.isValid &&
+				inputs.expanseDeletePermission.isValid &&
+				inputs.expanseEditPermission.isValid &&
 				inputs.expansePermission.isValid &&
+				inputs.advanceDeletePermission.isValid &&
+				inputs.advanceEditPermission.isValid &&
+				inputs.advancePermission.isValid &&
+				inputs.loanDeletePermission.isValid &&
+				inputs.loanEditPermission.isValid &&
+				inputs.loanPermission.isValid &&
 				inputs.name.isValid
 		)
 
@@ -54,11 +66,17 @@ const CreateUser = ({ header }) => {
 		const data = {
 			name: inputs.name.value,
 			expansePermission: inputs.expansePermission.value,
-			receiptPermission: inputs.receiptPermission.value,
 			expanseEditPermission: inputs.expanseEditPermission.value,
 			expanseDeletePermission: inputs.expanseDeletePermission.value,
+			receiptPermission: inputs.receiptPermission.value,
 			receiptDeletePermission: inputs.receiptDeletePermission.value,
-			receiptEditPermission: inputs.receiptEditPermission.value
+			receiptEditPermission: inputs.receiptEditPermission.value,
+			advancePermission: inputs.advancePermission.value,
+			advanceDeletePermission: inputs.advanceDeletePermission.value,
+			advanceEditPermission: inputs.advanceEditPermission.value,
+			loanPermission: inputs.loanPermission.value,
+			loanDeletePermission: inputs.loanDeletePermission.value,
+			loanEditPermission: inputs.loanEditPermission.value
 		}
 
 		const nameValid = data.name?.trim().length > 0
@@ -157,6 +175,38 @@ const CreateUser = ({ header }) => {
 					<div class="form-group col-12 col-md-6 mb-2">
 						<select
 							class="form-control"
+							value={inputs.advancePermission.value}
+							onChange={e =>
+								inputTextChangeHandler('advancePermission', e.target.value)
+							}
+							id="inputGroupSelect01">
+							<option selected value="no">
+								Access advancePermission denied...
+							</option>
+							<option value="yes">Yes</option>
+							<option value="no">No</option>
+						</select>
+					</div>
+					<div class="form-group col-12 col-md-6 mb-2">
+						<select
+							class="form-control"
+							value={inputs.loanPermission.value}
+							onChange={e =>
+								inputTextChangeHandler('loanPermission', e.target.value)
+							}
+							id="inputGroupSelect01">
+							<option selected value="no">
+								Access Loan denied...
+							</option>
+							<option value="yes">Yes</option>
+							<option value="no">No</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-row row">
+					<div class="form-group col-12 col-md-6 mb-2">
+						<select
+							class="form-control"
 							value={inputs.expanseEditPermission.value}
 							onChange={e =>
 								inputTextChangeHandler('expanseEditPermission', e.target.value)
@@ -189,16 +239,13 @@ const CreateUser = ({ header }) => {
 					<div class="form-group col-12 col-md-6 mb-2">
 						<select
 							class="form-control"
-							value={inputs.expanseDeletePermission.value}
+							value={inputs.advanceEditPermission.value}
 							onChange={e =>
-								inputTextChangeHandler(
-									'expanseDeletePermission',
-									e.target.value
-								)
+								inputTextChangeHandler('advanceEditPermission', e.target.value)
 							}
 							id="inputGroupSelect01">
 							<option selected value="no">
-								Access Delete Expanses denied...
+								Access Edit Advance denied...
 							</option>
 							<option value="yes">Yes</option>
 							<option value="no">No</option>
@@ -207,16 +254,48 @@ const CreateUser = ({ header }) => {
 					<div class="form-group col-12 col-md-6 mb-2">
 						<select
 							class="form-control"
-							value={inputs.receiptDeletePermission.value}
+							value={inputs.loanEditPermission.value}
+							onChange={e =>
+								inputTextChangeHandler('loanEditPermission', e.target.value)
+							}
+							id="inputGroupSelect01">
+							<option selected value="no">
+								Access Edit Loan denied...
+							</option>
+							<option value="yes">Yes</option>
+							<option value="no">No</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-row row">
+					<div class="form-group col-12 col-md-6 mb-2">
+						<select
+							class="form-control"
+							value={inputs.advanceDeletePermission.value}
 							onChange={e =>
 								inputTextChangeHandler(
-									'receiptDeletePermission',
+									'advanceDeletePermission',
 									e.target.value
 								)
 							}
 							id="inputGroupSelect01">
 							<option selected value="no">
-								Access Delete Incomes denied...
+								Access Delete Advance denied...
+							</option>
+							<option value="yes">Yes</option>
+							<option value="no">No</option>
+						</select>
+					</div>
+					<div class="form-group col-12 col-md-6 mb-2">
+						<select
+							class="form-control"
+							value={inputs.loanDeletePermission.value}
+							onChange={e =>
+								inputTextChangeHandler('loanDeletePermission', e.target.value)
+							}
+							id="inputGroupSelect01">
+							<option selected value="no">
+								Access Delete Loan denied...
 							</option>
 							<option value="yes">Yes</option>
 							<option value="no">No</option>

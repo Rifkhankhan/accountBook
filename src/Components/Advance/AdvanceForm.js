@@ -201,7 +201,7 @@ const AdvanceForm = ({ header }) => {
 									for="Received"
 									class="col col-1"
 									style={{ color: 'white', fontSize: '2vh' }}>
-									Get
+									Receive
 								</label>
 							</div>
 						</div>

@@ -828,23 +828,55 @@
 // export default PaginationTable;
 
 // table with date filter
-import jsPDF from 'jspdf'
 import styles from './PaginationTable.module.css'
 import React, { useLayoutEffect, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import jsPDF from 'jspdf'
+import image from './../../Images/SCIT_LOGO.png'
 
 import 'jspdf-autotable'
-function PaginationTable({ list, handleModel }) {
-	const [initialData, setInitialData] = useState()
-
+function PaginationTable({ list, handleModel, tableType }) {
 	useLayoutEffect(() => {
-		setInitialData(list)
-		setData(list)
+		if (tableType) {
+			setInitialData([
+				...calculateBalance().filter(
+					request => request.requestType === tableType
+				)
+			])
+			setData([
+				...calculateBalance().filter(
+					request => request.requestType === tableType
+				)
+			])
+		} else {
+			setInitialData([...calculateBalance()])
+			setData([...calculateBalance()])
+		}
 	}, [list])
 
+	// Function to calculate balance
+	const calculateBalance = () => {
+		let balance = 0
+		return list.map(transaction => {
+			// Update balance based on transaction type
+
+			if (
+				transaction.requestType === 'receipt' ||
+				transaction.requestForm === 'got'
+			) {
+				balance += transaction.amount
+			} else {
+				balance -= transaction.amount
+			}
+			// Add balance property to transaction object
+			return { ...transaction, balance }
+		})
+	}
+
 	// State variables
+	const [initialData, setInitialData] = useState()
 	const [data, setData] = useState()
 	const [currentPage, setCurrentPage] = useState(1)
 	const [itemsPerPage, setItemsPerPage] = useState(5)
@@ -904,11 +936,38 @@ function PaginationTable({ list, handleModel }) {
 
 	// export pdf
 	const exportPdf = async () => {
-		const doc = new jsPDF({ orientation: 'landscape' })
+		// Get current date
+		const currentDate = new Date()
 
-		doc.autoTable({ html: '#table' })
+		// Format the date as needed (e.g., YYYY-MM-DD)
+		const formattedDate = currentDate.toISOString().slice(0, 10) // This will give you the date in YYYY-MM-DD format
+
+		const doc = new jsPDF({ orientation: 'landscape' })
+		const logo = new Image()
+		logo.src = image // Provide the path to your logo image
+		doc.addImage(logo, 'PNG', 15, 10, 30, 30) // Adjust coordinates and dimensions as needed
+		// Add other custom elements
+		doc.setFontSize(16)
+		doc.text('Date: ' + formattedDate, 200, 15)
+		doc.text('Smart Account Book', 50, 15)
+		// Add the date to the PDF document
+
+		if (tableType === '') {
+			doc.text('Smart Account Book Work Sheet', 50, 25)
+		} else if (tableType === 'expense') {
+			doc.text('Expenses Table', 50, 25)
+		} else if (tableType === 'receipt') {
+			doc.text('Income Table', 50, 25)
+		} else if (tableType === 'loan') {
+			doc.text('Loan Table', 50, 25)
+		} else if (tableType === 'advance') {
+			doc.text('Advance Table', 50, 25)
+		}
+		doc.autoTable({ html: '#table', startY: 50 }) // Adjust startY as needed
 		doc.save('table.pdf')
 	}
+
+	// calculate the balance
 
 	return (
 		<div className={`container-fluid my-3 ${styles.tableContainer}`}>
@@ -984,10 +1043,14 @@ function PaginationTable({ list, handleModel }) {
 							}}>
 							<td>{index + 1}</td>
 							<td>{new Date(item.date).toISOString().split('T')[0]}</td>
-							<td>{item.amount}</td>
-							<td>{item.requestType}</td>
-							<td>{item.requestForm}</td>
-							<td>{item.balance}</td>
+							<td style={{ textTransform: 'capitalize' }}>{item.amount}</td>
+							<td style={{ textTransform: 'capitalize' }}>
+								{item.requestType}
+							</td>
+							<td style={{ textTransform: 'capitalize' }}>
+								{item.requestForm === 'got' ? 'Received' : item.requestForm}
+							</td>
+							<td style={{ textTransform: 'capitalize' }}>{item.balance}</td>
 						</tr>
 					))}
 				</tbody>

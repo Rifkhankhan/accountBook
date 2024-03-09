@@ -12,6 +12,7 @@ const ExpanseForm = () => {
 	const dispatch = useDispatch()
 	const [error, setHasError] = useState(false)
 
+	//  set
 	// Initial state for inputs
 	const initialInputsState = {
 		amount: { value: '', isValid: true },
@@ -94,7 +95,7 @@ const ExpanseForm = () => {
 	return (
 		<div className={`container ${styles.container} `}>
 			<h2 class="row col-md-12 col-sm-6" className={styles.header}>
-				Create Expanse(Dr)
+				Create Expense(Dr)
 			</h2>
 			{!formValid && (
 				<div className="row ">

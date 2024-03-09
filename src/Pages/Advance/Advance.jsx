@@ -10,10 +10,15 @@ import { deleteReceipt, getReceipts } from '../../Actions/ReceiptActions'
 import { deleteAdvance, getAdvances } from '../../Actions/AdvanceActions'
 import AdvanceModel from '../../Components/AdvanceModel/AdvanceModel'
 import AdvanceForm from '../../Components/Advance/AdvanceForm'
+import { deleteAccountRequest } from '../../Actions/AccountRequestActions'
 const Advance = () => {
-	const advances = useSelector(
+	const advances = useSelector(state => state.accountRequest.accountRequests)
+		?.filter(expanse => expanse.requestType === 'advance')
+		?.filter(request => request.status === true)
+
+	const TableAdvances = useSelector(
 		state => state.accountRequest.accountRequests
-	)?.filter(expanse => expanse.requestType === 'advance')
+	)?.filter(request => request.status === true)
 
 	const [gotAdvance, setGotAdvance] = useState(0)
 	const [todayGotAdvance, setTodayGotAdvance] = useState(0)
@@ -32,7 +37,7 @@ const Advance = () => {
 	const deleteHandler = id => {
 		handleModel()
 
-		dispatch(deleteReceipt(id))
+		dispatch(deleteAccountRequest(id))
 	}
 
 	// Function to calculate total expense for a specific date
@@ -106,35 +111,97 @@ const Advance = () => {
 				<div className="col-12 col-md-5">
 					<section className={`row ${styles.homeComponent}`}>
 						<div className={`col-12 col-md-5 mb-2, ${styles.column}`}>
-							<div className="row" style={{ flex: 1, height: '50%' }}>
-								<h3 className="col" style={{ margin: 'auto' }}>
+							<div
+								className="row"
+								style={{
+									height: '25%',
+									paddingInline: '5vh'
+								}}>
+								<h3
+									className="col"
+									style={{
+										margin: 'auto',
+										fontSize: '3.5vh',
+										borderBottom: '1px solid white',
+										paddingBlock: '1vh',
+										marginBlock: '1vh'
+									}}>
 									Total
 								</h3>
 							</div>
-							<div className="row">
-								<h5 className="col-md-6 ">Got</h5>
-								<p className="col-md-6 ">{gotAdvance}</p>
-							</div>
+							<div
+								style={{
+									height: '75%',
+									display: 'flex',
+									justifyContent: 'center',
+									alignItems: 'flex-start',
+									flexDirection: 'column',
+									margin: 'auto'
+								}}>
+								<div className="row" style={{ marginInline: 'auto' }}>
+									<h5 className="col-md-6 " style={{ textAlign: 'center' }}>
+										Received
+									</h5>
+									<p className="col-md-6 " style={{ textAlign: 'center' }}>
+										{gotAdvance}
+									</p>
+								</div>
 
-							<div className="row">
-								<h5 className="col-md-6">Paid</h5>
-								<p className="col-md-6">{paidAdvance}</p>
+								<div className="row" style={{ marginInline: 'auto' }}>
+									<h5 className="col-md-6" style={{ textAlign: 'center' }}>
+										Paid
+									</h5>
+									<p className="col-md-6" style={{ textAlign: 'center' }}>
+										{paidAdvance}
+									</p>
+								</div>
 							</div>
 						</div>
 						<div className={`col-12 col-md-5 mb-2, ${styles.column}`}>
-							<div className="row" style={{ flex: 1, height: '50%' }}>
-								<h3 className="col" style={{ margin: 'auto' }}>
+							<div
+								className="row"
+								style={{
+									height: '25%',
+									paddingInline: '5vh'
+								}}>
+								<h3
+									className="col"
+									style={{
+										margin: 'auto',
+										fontSize: '3.5vh',
+										borderBottom: '1px solid white',
+										paddingBlock: '1vh',
+										marginBlock: '1vh'
+									}}>
 									Today
 								</h3>
 							</div>
-							<div className="row">
-								<h5 className="col-md-6 ">Got</h5>
-								<p className="col-md-6 ">{todayGotAdvance}</p>
-							</div>
+							<div
+								style={{
+									height: '75%',
+									display: 'flex',
+									justifyContent: 'center',
+									alignItems: 'flex-start',
+									flexDirection: 'column',
+									margin: 'auto'
+								}}>
+								<div className="row" style={{ marginInline: 'auto' }}>
+									<h5 className="col-md-6 " style={{ textAlign: 'center' }}>
+										Received
+									</h5>
+									<p className="col-md-6 " style={{ textAlign: 'center' }}>
+										{todayGotAdvance}
+									</p>
+								</div>
 
-							<div className="row">
-								<h5 className="col-md-6">Paid</h5>
-								<p className="col-md-6">{todayPaidAdvance}</p>
+								<div className="row" style={{ marginInline: 'auto' }}>
+									<h5 className="col-md-6" style={{ textAlign: 'center' }}>
+										Paid
+									</h5>
+									<p className="col-md-6" style={{ textAlign: 'center' }}>
+										{todayPaidAdvance}
+									</p>
+								</div>
 							</div>
 						</div>
 					</section>
@@ -149,7 +216,11 @@ const Advance = () => {
 					Advances paid & received
 				</h2>
 				<div className={`col`}>
-					<PaginationTable list={advances} handleModel={handleModel} />
+					<PaginationTable
+						list={TableAdvances}
+						handleModel={handleModel}
+						tableType="advance"
+					/>
 				</div>
 			</section>
 

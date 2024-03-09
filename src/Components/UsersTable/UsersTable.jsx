@@ -30,53 +30,53 @@ const UsersTable = ({ initialData, handleModel, getIdHandler }) => {
 					</tr>
 				</thead>
 				<tbody>
-					{initialData.map(
+					{initialData?.map(
 						(item, index) =>
-							(item.name.toLowerCase().includes(filter.toLowerCase()) ||
-								item.email.toLowerCase().includes(filter.toLowerCase()) ||
-								item.phone.toLowerCase().includes(filter.toLowerCase())) && (
+							(item.name?.toLowerCase().includes(filter.toLowerCase()) ||
+								item?.email.toLowerCase().includes(filter.toLowerCase()) ||
+								item?.phone.toLowerCase().includes(filter.toLowerCase())) && (
 								<tr
 									key={index}
 									onClick={() => {
 										handleModel()
-										getIdHandler(item._id)
+										getIdHandler(item?._id)
 									}}>
-									<td>{item.name}</td>
-									<td>{item.email}</td>
-									<td>{item.phone}</td>
+									<td>{item?.name}</td>
+									<td>{item?.email}</td>
+									<td>{item?.phone}</td>
 									<td
 										className={
-											item.expansePermission === 'yes'
+											item?.expansePermission === 'yes'
 												? 'bg-primary '
 												: 'bg-dark text-light'
 										}>
-										{item.expansePermission === 'yes' ? 'Granted' : 'denied'}
+										{item?.expansePermission === 'yes' ? 'Granted' : 'denied'}
 									</td>
 									<td
 										className={
-											item.expanseDeletePermission === 'yes'
+											item?.expanseDeletePermission === 'yes'
 												? 'bg-primary '
 												: 'bg-dark text-light'
 										}>
-										{item.expanseDeletePermission === 'yes'
+										{item?.expanseDeletePermission === 'yes'
 											? 'Granted'
 											: 'denied'}
 									</td>
 									<td
 										className={
-											item.receiptPermission === 'yes'
+											item?.receiptPermission === 'yes'
 												? 'bg-primary '
 												: 'bg-dark text-light'
 										}>
-										{item.receiptPermission === 'yes' ? 'Granted' : 'denied'}
+										{item?.receiptPermission === 'yes' ? 'Granted' : 'denied'}
 									</td>
 									<td
 										className={
-											item.receiptDeletePermission === 'yes'
+											item?.receiptDeletePermission === 'yes'
 												? 'bg-primary '
 												: 'bg-dark text-light'
 										}>
-										{item.receiptDeletePermission === 'yes'
+										{item?.receiptDeletePermission === 'yes'
 											? 'Granted'
 											: 'denied'}
 									</td>

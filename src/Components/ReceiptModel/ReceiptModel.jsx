@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClose, faPager, faPen } from '@fortawesome/free-solid-svg-icons'
 import { updateReceipt } from '../../Actions/ReceiptActions'
 import { useDispatch, useSelector } from 'react-redux'
+import { updateAccountRequest } from '../../Actions/AccountRequestActions'
 const ReceiptModel = ({
 	type,
 	clickedRow,
@@ -25,16 +26,17 @@ const ReceiptModel = ({
 		},
 		amount: { value: clickedRow?.amount, isValid: true },
 		narration: { value: clickedRow?.narration, isValid: true },
-		category: { value: clickedRow?.category, isValid: true }
+		userId: { value: currentUser?._id, isValid: true },
+		requestForm: { value: clickedRow?.requestForm, isValid: true },
+		requestType: { value: clickedRow?.requestType, isValid: true }
 	}
 
 	const [inputs, setInputs] = useState(initialInputsState)
 
 	useEffect(() => {
 		setFormValid(
-			inputs.date.isValid &&
-				inputs.amount.isValid &&
-				inputs.category.isValid &&
+			inputs.amount.isValid &&
+				inputs.requestForm.isValid &&
 				inputs.narration.isValid
 		)
 
@@ -56,17 +58,17 @@ const ReceiptModel = ({
 
 			narration: inputs.narration.value,
 			amount: inputs.amount.value,
-			category: inputs.category.value
+			userId: inputs.userId.value,
+			requestForm: inputs.requestForm.value,
+			requestType: inputs.requestType.value
 		}
 
 		const narrationValid = data.narration?.trim().length > 0
-		const categoryValid = data.category?.trim().length > 0
-		const dateValid = data.date !== null && !isNaN(Date.parse(data.date))
+		const categoryValid = data.requestForm?.trim().length > 0
 		const amountValid = data.amount > 0
-		if (!narrationValid || !dateValid || !amountValid || !categoryValid) {
+		if (!narrationValid || !amountValid || !categoryValid) {
 			setInputs(currentInputs => {
 				return {
-					date: { value: currentInputs.date.value, isValid: dateValid },
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
@@ -75,8 +77,8 @@ const ReceiptModel = ({
 						value: currentInputs.amount.value,
 						isValid: amountValid
 					},
-					category: {
-						value: currentInputs.category.value,
+					requestForm: {
+						value: currentInputs.requestForm.value,
 						isValid: categoryValid
 					}
 				}
@@ -84,8 +86,7 @@ const ReceiptModel = ({
 			return
 		}
 
-		console.log(data)
-		dispatch(updateReceipt(clickedRow._id, data))
+		dispatch(updateAccountRequest(clickedRow._id, data))
 		setFormSubmit(true)
 		setShowEditModal(false)
 
@@ -129,9 +130,9 @@ const ReceiptModel = ({
 							</div>
 							<div className="col-12 col-md-4">
 								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
-									Category
+									RequestForm
 								</label>
-								<p>{inputs.category.value}</p>
+								<p>{inputs.requestForm.value}</p>
 							</div>
 						</div>
 						<div className="row">
@@ -205,10 +206,10 @@ const ReceiptModel = ({
 									Date
 								</label>
 								<input
+									disabled
 									type="date"
-									className="form-control"
 									value={inputs.date.value}
-									onChange={e => inputTextChangeHandler('date', e.target.value)}
+									className="form-control"
 								/>
 							</div>
 							<div className="col-12 col-md-6">
@@ -248,10 +249,12 @@ const ReceiptModel = ({
 										<input
 											type="radio"
 											id="eCash"
-											name="category"
-											onChange={e => inputTextChangeHandler('category', 'cash')}
-											value={inputs.category?.value}
-											checked={inputs.category?.value === 'cash'}
+											name="requestForm"
+											onChange={e =>
+												inputTextChangeHandler('requestForm', 'cash')
+											}
+											value={inputs.requestForm?.value}
+											checked={inputs.requestForm?.value === 'cash'}
 											className="col col-2 "
 										/>
 										<label
@@ -270,12 +273,12 @@ const ReceiptModel = ({
 										<input
 											type="radio"
 											id="eCapital"
-											name="category"
+											name="requestForm"
 											onChange={e =>
-												inputTextChangeHandler('category', 'capital')
+												inputTextChangeHandler('requestForm', 'capital')
 											}
-											checked={inputs.category?.value === 'capital'}
-											value={inputs.category?.value}
+											checked={inputs.requestForm?.value === 'capital'}
+											value={inputs.requestForm?.value}
 											class="col col-2"
 										/>
 										<label
@@ -283,44 +286,6 @@ const ReceiptModel = ({
 											class="col col-4"
 											style={{ color: 'black', fontSize: '2vh' }}>
 											Capital
-										</label>
-									</div>
-
-									<div class="row mb-1">
-										<input
-											type="radio"
-											id="eLoan"
-											name="category"
-											onChange={e => inputTextChangeHandler('category', 'loan')}
-											value={inputs.category?.value}
-											checked={inputs.category?.value === 'loan'}
-											class="col col-2"
-										/>
-										<label
-											for="eLoan"
-											class="col col-4"
-											style={{ color: 'black', fontSize: '2vh' }}>
-											Loan
-										</label>
-									</div>
-
-									<div class="row mb-1">
-										<input
-											type="radio"
-											id="eAdvance"
-											name="category"
-											onChange={e =>
-												inputTextChangeHandler('category', 'advance')
-											}
-											value={inputs.category?.value}
-											class="col col-2"
-											checked={inputs.category?.value === 'advance'}
-										/>
-										<label
-											for="eAdvance"
-											class="col col-4"
-											style={{ color: 'black', fontSize: '2vh' }}>
-											Advance
 										</label>
 									</div>
 								</div>

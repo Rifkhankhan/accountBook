@@ -44,42 +44,28 @@ const LineChart = ({ expenses, receipts, requestList }) => {
 	// for expense
 
 	const [amountByDate, setAmountByDate] = useState({})
-
-	useEffect(() => {
-		const amounts = {}
-		expenses.forEach(expense => {
-			if (!amounts[expense.date]) {
-				amounts[expense.date] = 0
-			}
-			amounts[expense.date] += expense.amount
-		})
-		setAmountByDate(amounts)
-	}, [expenses])
-
-	// for receipts
-
 	const [receiptByDate, setReceiptByDate] = useState({})
-
-	useEffect(() => {
-		const amounts = {}
-		receipts.forEach(expense => {
-			if (!amounts[expense.date]) {
-				amounts[expense.date] = 0
-			}
-			amounts[expense.date] += expense.amount
-		})
-		setReceiptByDate(amounts)
-	}, [receipts])
-
-	// Convert object to array of values
-	const amounts = Object.values(amountByDate)
-	const receiptsLists = Object.values(receiptByDate)
-
-	// for balance
-
 	const [listByDate, setListByDate] = useState({})
 
 	useEffect(() => {
+		const expensesamounts = {}
+		expenses.forEach(expense => {
+			if (!expensesamounts[expense.date]) {
+				expensesamounts[expense.date] = 0
+			}
+			expensesamounts[expense.date] += expense.amount
+		})
+		setAmountByDate(expensesamounts)
+
+		const receiptsamounts = {}
+		receipts.forEach(expense => {
+			if (!receiptsamounts[expense.date]) {
+				receiptsamounts[expense.date] = 0
+			}
+			receiptsamounts[expense.date] += expense.amount
+		})
+		setReceiptByDate(receiptsamounts)
+
 		const balances = {}
 		requestList.forEach(expense => {
 			if (!balances[expense.date]) {
@@ -88,9 +74,11 @@ const LineChart = ({ expenses, receipts, requestList }) => {
 			balances[expense.date] += expense.amount
 		})
 		setListByDate(balances)
-	}, [requestList])
+	}, [expenses, receipts, requestList])
 
 	// Convert object to array of values
+	const amounts = Object.values(amountByDate)
+	const receiptsLists = Object.values(receiptByDate)
 	const balanceList = Object.values(listByDate)
 
 	const data = {
@@ -138,10 +126,10 @@ const LineChart = ({ expenses, receipts, requestList }) => {
 		maintainAspectRatio: true, // This will allow you to set custom width and height
 		responsive: true,
 		width: 400, // Set your desired width
-		height: 1500 // Set your desired height]
+		height: 300 // Set your desired height]
 	}
 	return (
-		<div className="container">
+		<div className="">
 			<Line data={data} options={options} />
 		</div>
 	)

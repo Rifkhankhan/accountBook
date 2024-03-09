@@ -6,7 +6,7 @@ import { faClose, faPen } from '@fortawesome/free-solid-svg-icons'
 import { updateReceipt } from '../../Actions/ReceiptActions'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateLoan } from '../../Actions/LoanActions'
-import { updateUser } from '../../Actions/userAction'
+import { updatePassword, updateUser } from '../../Actions/userAction'
 
 const ResetPasswordModel = ({ selectedUser, showModal, closeHandler }) => {
 	const currentUser = useSelector(state => state.auth.user)
@@ -55,7 +55,7 @@ const ResetPasswordModel = ({ selectedUser, showModal, closeHandler }) => {
 			return
 		}
 
-		dispatch(updateUser(selectedUser._id, data))
+		dispatch(updatePassword(currentUser._id, data))
 		setFormSubmit(true)
 		setShowEditModal(false)
 

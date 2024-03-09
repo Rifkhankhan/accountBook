@@ -10,10 +10,15 @@ import { deleteReceipt, getReceipts } from '../../Actions/ReceiptActions'
 import ReceiptModel from '../../Components/ReceiptModel/ReceiptModel'
 import { getLoans } from '../../Actions/LoanActions'
 import LoanModel from '../../Components/LoanModel/LoanModel'
+import { deleteAccountRequest } from '../../Actions/AccountRequestActions'
 const Loan = () => {
-	const loans = useSelector(
+	const loans = useSelector(state => state.accountRequest.accountRequests)
+		?.filter(expanse => expanse.requestType === 'loan')
+		?.filter(request => request.status === true)
+
+	const TableLoan = useSelector(
 		state => state.accountRequest.accountRequests
-	)?.filter(expanse => expanse.requestType === 'loan')
+	)?.filter(request => request.status === true)
 
 	const [gotLoan, setGotLoan] = useState(0)
 	const [paidLoan, setPaidLoan] = useState(0)
@@ -33,7 +38,7 @@ const Loan = () => {
 	const deleteHandler = id => {
 		handleModel()
 
-		dispatch(deleteReceipt(id))
+		dispatch(deleteAccountRequest(id))
 	}
 
 	// Function to calculate total expense for a specific date
@@ -110,35 +115,97 @@ const Loan = () => {
 				<div className="col-12 col-md-5">
 					<section className={`row ${styles.homeComponent}`}>
 						<div className={`col-12 col-md-5 mb-2, ${styles.column}`}>
-							<div className="row" style={{ flex: 1, height: '50%' }}>
-								<h3 className="col" style={{ margin: 'auto' }}>
-									Total Loans
+							<div
+								className="row"
+								style={{
+									height: '25%',
+									paddingInline: '5vh'
+								}}>
+								<h3
+									className="col"
+									style={{
+										margin: 'auto',
+										fontSize: '3.5vh',
+										borderBottom: '1px solid white',
+										paddingBlock: '1vh',
+										marginBlock: '1vh'
+									}}>
+									Total
 								</h3>
 							</div>
-							<div className="row">
-								<h5 className="col-md-6 ">Got</h5>
-								<p className="col-md-6 ">{gotLoan}</p>
-							</div>
+							<div
+								style={{
+									height: '75%',
+									display: 'flex',
+									justifyContent: 'center',
+									alignItems: 'flex-start',
+									flexDirection: 'column',
+									margin: 'auto'
+								}}>
+								<div className="row" style={{ marginInline: 'auto' }}>
+									<h5 className="col-md-6 " style={{ textAlign: 'center' }}>
+										Received
+									</h5>
+									<p className="col-md-6 " style={{ textAlign: 'center' }}>
+										{gotLoan}
+									</p>
+								</div>
 
-							<div className="row">
-								<h5 className="col-md-6">Paid</h5>
-								<p className="col-md-6">{paidLoan}</p>
+								<div className="row" style={{ marginInline: 'auto' }}>
+									<h5 className="col-md-6" style={{ textAlign: 'center' }}>
+										Paid
+									</h5>
+									<p className="col-md-6" style={{ textAlign: 'center' }}>
+										{gotLoan}
+									</p>
+								</div>
 							</div>
 						</div>
 						<div className={`col-12 col-md-5 mb-2, ${styles.column}`}>
-							<div className="row" style={{ flex: 1, height: '50%' }}>
-								<h3 className="col" style={{ margin: 'auto' }}>
-									Today Loans
+							<div
+								className="row"
+								style={{
+									height: '25%',
+									paddingInline: '5vh'
+								}}>
+								<h3
+									className="col"
+									style={{
+										margin: 'auto',
+										fontSize: '3.5vh',
+										borderBottom: '1px solid white',
+										paddingBlock: '1vh',
+										marginBlock: '1vh'
+									}}>
+									Today
 								</h3>
 							</div>
-							<div className="row">
-								<h5 className="col-md-6 ">Got</h5>
-								<p className="col-md-6 ">{todayGotLoan}</p>
-							</div>
+							<div
+								style={{
+									height: '75%',
+									display: 'flex',
+									justifyContent: 'center',
+									alignItems: 'flex-start',
+									flexDirection: 'column',
+									margin: 'auto'
+								}}>
+								<div className="row" style={{ marginInline: 'auto' }}>
+									<h5 className="col-md-6 " style={{ textAlign: 'center' }}>
+										Received
+									</h5>
+									<p className="col-md-6 " style={{ textAlign: 'center' }}>
+										{todayGotLoan}
+									</p>
+								</div>
 
-							<div className="row">
-								<h5 className="col-md-6">Paid</h5>
-								<p className="col-md-6">{todayPaidLoan}</p>
+								<div className="row" style={{ marginInline: 'auto' }}>
+									<h5 className="col-md-6" style={{ textAlign: 'center' }}>
+										Paid
+									</h5>
+									<p className="col-md-6" style={{ textAlign: 'center' }}>
+										{todayPaidLoan}
+									</p>
+								</div>
 							</div>
 						</div>
 					</section>
@@ -151,7 +218,11 @@ const Loan = () => {
 			<section className="container-fluid" style={{ margin: 'auto' }}>
 				<h2 style={{ textAlign: 'left', color: 'white' }}>Total Loans</h2>
 				<div className={`col`}>
-					<PaginationTable list={loans} handleModel={handleModel} />
+					<PaginationTable
+						list={TableLoan}
+						handleModel={handleModel}
+						tableType="loan"
+					/>
 				</div>
 			</section>
 

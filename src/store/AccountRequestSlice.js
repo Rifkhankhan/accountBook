@@ -3,9 +3,13 @@ import { createSlice } from '@reduxjs/toolkit'
 export const accountRequestSlice = createSlice({
 	name: 'accountRequest',
 	initialState: {
+		isLoading: false,
 		accountRequests: []
 	},
 	reducers: {
+		handleLoading: (state, action) => {
+			state.isLoading = !state.isLoading
+		},
 		createAccountRequest: (state, action) => {
 			console.log(action.payload)
 			state.accountRequests.push(action.payload)
@@ -39,7 +43,9 @@ export const accountRequestSlice = createSlice({
 					updatedAdvance, // updated object
 					...state.accountRequests.slice(index + 1) // elements after the updated object
 				]
+
 				state.accountRequests = updatedAdvances
+				window.location.reload()
 			}
 		}
 	}

@@ -5,7 +5,8 @@ export const authSlice = createSlice({
 	initialState: {
 		isAuthenticated: false,
 		token: null,
-		user: []
+		user: [],
+		isLoading: false
 	},
 	reducers: {
 		login: (state, action) => {
@@ -15,6 +16,9 @@ export const authSlice = createSlice({
 				state.token = action.payload.token
 				window.localStorage.setItem('token', action.payload.token)
 			}
+		},
+		handleLoading: (state, action) => {
+			state.isLoading = !state.isLoading
 		},
 		logout: (state, action) => {
 			state.isAuthenticated = false

@@ -8,7 +8,8 @@ const API = axios.create({ baseURL: 'https://account-back-4krv.onrender.com' })
 export const createAccountRequest = formData =>
 	API.post('/accountRequest', formData)
 export const getAccountRequest = id => API.get(`/accountRequest/${id}`)
-export const disableAccountRequest = id => API.put(`/accountRequest/${id}`)
+export const disableAccountRequest = id =>
+	API.put(`/accountRequest/disable/${id}`)
 export const getAccountRequests = () => API.get('/accountRequest')
 export const updateAccountRequest = (id, formData) =>
 	API.put(`/accountRequest/${id}`, formData)

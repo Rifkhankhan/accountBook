@@ -6,13 +6,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { authActions } from '../../store/AuthSlice'
 import { useNavigate } from 'react-router-dom'
 import { logIn } from '../../Actions/AuthAction'
-
+import LoadingSpinner from './../../Components/LoadingSpinner/LoadingSpinner'
 const Login = props => {
 	const [formSubmit, setFormSubmit] = useState(false)
 	const dispatch = useDispatch()
 	const [formValid, setFormValid] = useState(true)
 	const navigate = useNavigate()
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+	const isLoading = useSelector(state => state.auth.isLoading)
+	console.log(isLoading)
 
 	const initialInputsState = {
 		name: { value: '', isValid: true },
@@ -50,7 +52,7 @@ const Login = props => {
 		}
 
 		const nameValid = data.name?.trim().length > 0
-		const passwordValid = data.password?.trim().length > 6
+		const passwordValid = data.password?.trim().length >= 6
 
 		if (!nameValid || !passwordValid) {
 			setInputs(currentInputs => {
@@ -123,6 +125,8 @@ const Login = props => {
 					</div>
 				</form>
 			</div>
+
+			{isLoading && <LoadingSpinner />}
 		</div>
 	)
 }

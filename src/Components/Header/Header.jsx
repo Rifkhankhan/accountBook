@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClose } from '@fortawesome/free-solid-svg-icons'
 import { authActions } from '../../store/AuthSlice'
 import { autoLogin } from '../../Actions/AuthAction'
+import { getAccountRequests } from '../../Actions/AccountRequestActions'
 
 function Header() {
 	const [scrolled, setScrolled] = useState(false)
@@ -14,14 +15,12 @@ function Header() {
 	const navigate = useNavigate()
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
 	const currentUser = useSelector(state => state.auth.user)
-	console.log(currentUser)
 
 	const dispatch = useDispatch()
 
 	useEffect(() => {
-		dispatch(autoLogin())
-	}, [])
-
+		dispatch(getAccountRequests())
+	}, [dispatch])
 	// State to manage the visibility of the dropdown
 	function handleScroll() {
 		const scrollTop = window.pageYOffset || document.documentElement.scrollTop
@@ -49,11 +48,10 @@ function Header() {
 
 	const headerClicked = e => {
 		const btns = document.getElementsByClassName('head')
-
-		console.log(btns)
 	}
 
 	const logOutHandler = () => {
+		toggleMenu()
 		dispatch(authActions.logout())
 	}
 
@@ -61,9 +59,8 @@ function Header() {
 		<section className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
 			<div className={styles.logo}>
 				<div className={styles.logohead}>
-					<h3>
-						<span className={styles.hightlight}>S</span>ma
-						<span className={styles.hightlight}>R</span>t
+					<h3 style={{ fontSize: '3.5vh' }} className={styles.hightlight}>
+						SMART
 					</h3>
 					<p className={styles.subhead} style={{ margin: 0, padding: 0 }}>
 						Account Book
@@ -146,44 +143,87 @@ function Header() {
 				</div>
 			</div>
 
-			{showCloseButton ? (
-				<button className={styles.closeMenu} onClick={toggleMenu}>
-					<FontAwesomeIcon icon={faClose} fontSize="1.3em" color="white" />
-				</button>
-			) : (
-				<button className={styles.hamburgerMenu} onClick={toggleMenu}>
-					<span className={styles.hamburgerLine} />
-					<span className={styles.hamburgerLine} />
-					<span className={styles.hamburgerLine} />
-				</button>
-			)}
+			{showCloseButton
+				? isAuthenticated && (
+						<button className={styles.closeMenu} onClick={toggleMenu}>
+							<FontAwesomeIcon icon={faClose} fontSize="1.3em" color="white" />
+						</button>
+				  )
+				: isAuthenticated && (
+						<button className={styles.hamburgerMenu} onClick={toggleMenu}>
+							<span className={styles.hamburgerLine} />
+							<span className={styles.hamburgerLine} />
+							<span className={styles.hamburgerLine} />
+						</button>
+				  )}
 
 			<nav className={`${styles.nav} ${menuOpen ? styles.menuOpen : ''}`}>
 				<ul className={styles.navList}>
 					<li className={styles.navItem}>
-						<a href="#home" className={styles.navLink}>
-							Home
-						</a>
+						{isAuthenticated && (
+							<Link
+								to="/"
+								className={styles.navLink}
+								onClick={toggleMenu}
+								style={{ textDecorationLine: 'none' }}>
+								Home
+							</Link>
+						)}
 					</li>
 					<li className={styles.navItem}>
-						<a href="#about" className={styles.navLink}>
-							About
-						</a>
+						{isAuthenticated && (
+							<Link
+								to="/payment"
+								className={styles.navLink}
+								onClick={toggleMenu}
+								style={{ textDecorationLine: 'none' }}>
+								Expense
+							</Link>
+						)}
 					</li>
 					<li className={styles.navItem}>
-						<a href="#services" className={styles.navLink}>
-							Services
-						</a>
+						{isAuthenticated && (
+							<Link
+								to="/receipt"
+								className={styles.navLink}
+								onClick={toggleMenu}
+								style={{ textDecorationLine: 'none' }}>
+								Receipt
+							</Link>
+						)}
 					</li>
 					<li className={styles.navItem}>
-						<a href="#projects" className={styles.navLink}>
-							Projects
-						</a>
+						{isAuthenticated && (
+							<Link
+								to="/advance"
+								className={styles.navLink}
+								onClick={toggleMenu}
+								style={{ textDecorationLine: 'none' }}>
+								Advance
+							</Link>
+						)}
 					</li>
 					<li className={styles.navItem}>
-						<a href="#contact" className={styles.navLink}>
-							Contact
-						</a>
+						{isAuthenticated && (
+							<Link
+								to="/loan"
+								className={styles.navLink}
+								onClick={toggleMenu}
+								style={{ textDecorationLine: 'none' }}>
+								Loan
+							</Link>
+						)}
+					</li>
+					<li className={styles.navItem}>
+						{isAuthenticated && (
+							<Link
+								to="/login"
+								className={styles.navLink}
+								onClick={logOutHandler}
+								style={{ textDecorationLine: 'none' }}>
+								Logout
+							</Link>
+						)}
 					</li>
 				</ul>
 			</nav>

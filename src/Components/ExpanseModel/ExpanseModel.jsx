@@ -5,14 +5,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClose, faPen } from '@fortawesome/free-solid-svg-icons'
 import { updateExpanse } from '../../Actions/ExpanseActions'
 import { useDispatch, useSelector } from 'react-redux'
+import { updateAccountRequest } from '../../Actions/AccountRequestActions'
 const ExpanseModel = ({
-	type,
 	clickedRow,
 	showModal,
 	closeHandler,
-	deleteHandler
+	deleteHandler,
+	submitHandlerProp
 }) => {
 	const currentUser = useSelector(state => state.auth.user)
+	const list = useSelector(state => state.accountRequest.accountRequests)
 	const [showEditModal, setShowEditModal] = useState(false)
 	const [formSubmit, setFormSubmit] = useState(false)
 	const [formValid, setFormValid] = useState(true)
@@ -24,7 +26,12 @@ const ExpanseModel = ({
 			isValid: true
 		},
 		amount: { value: clickedRow?.amount, isValid: true },
-		narration: { value: clickedRow?.narration, isValid: true }
+		narration: { value: clickedRow?.narration, isValid: true },
+
+		userId: { value: currentUser?._id, isValid: true },
+
+		requestForm: { value: clickedRow?.requestForm, isValid: true },
+		requestType: { value: clickedRow?.requestType, isValid: true }
 	}
 
 	const [inputs, setInputs] = useState(initialInputsState)
@@ -48,20 +55,21 @@ const ExpanseModel = ({
 
 	const submitHandler = () => {
 		const data = {
-			date: inputs.date.value,
-
 			narration: inputs.narration.value,
-			amount: +inputs.amount.value
+			amount: +inputs.amount.value,
+			date: inputs.date.value,
+			userId: inputs.userId.value,
+			requestForm: inputs.requestForm.value,
+			requestType: inputs.requestType.value
 		}
 
 		const narrationValid = data.narration?.trim().length > 0
-		const dateValid = data.date !== null && !isNaN(Date.parse(data.date))
+
 		const amountValid = +data.amount > 0
 
-		if (!narrationValid || !dateValid || !amountValid) {
+		if (!narrationValid || !amountValid) {
 			setInputs(currentInputs => {
 				return {
-					date: { value: currentInputs.date.value, isValid: dateValid },
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
@@ -74,10 +82,13 @@ const ExpanseModel = ({
 			})
 			return
 		}
-		dispatch(updateExpanse(clickedRow._id, data))
+
+		submitHandlerProp(clickedRow._id, data)
+
+		// dispatch(updateAccountRequest(clickedRow._id, data))
+		// closeHandler()
 		setFormSubmit(true)
-		setInputs(initialInputsState)
-		closeHandler()
+		// setInputs(initialInputsState)
 	}
 
 	return (
@@ -191,10 +202,10 @@ const ExpanseModel = ({
 									Date
 								</label>
 								<input
+									disabled
 									type="date"
 									className="form-control"
 									value={inputs.date.value}
-									onChange={e => inputTextChangeHandler('date', e.target.value)}
 								/>
 							</div>
 							<div className="col-12 col-md-6">

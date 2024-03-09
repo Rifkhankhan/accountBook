@@ -8,9 +8,9 @@ const PieChart = ({ headDatas }) => {
 		labels: [
 			'Expenses',
 			'Income',
-			'Got Advance',
+			'Received Advance',
 			'Paid Advance',
-			'Got Loans',
+			'Received Loans',
 			'Paid Loans'
 		],
 		datasets: [
@@ -52,17 +52,9 @@ const PieChart = ({ headDatas }) => {
 		maintainAspectRatio: true, // This will allow you to set custom width and height
 		responsive: true,
 		width: 400, // Set your desired width
-		height: 300, // Set your desired height]
-		minWidth: 400,
-		minHeight: 300,
-		maxHeight: 450,
-		maxWidth: 400
+		height: 300 // Set your desired height]
 	}
-	return (
-		<div className="container">
-			<Pie data={data} options={options} width={100} height={100}></Pie>
-		</div>
-	)
+	return <Pie data={data} options={options} width={100} height={100}></Pie>
 }
 
 export default PieChart
