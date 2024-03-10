@@ -953,7 +953,7 @@ function PaginationTable({ list, handleModel, tableType }) {
 		// Add the date to the PDF document
 
 		if (tableType === undefined) {
-			doc.text('Summery Report', 50, 25)
+			doc.text('Summary Report', 50, 25)
 		} else if (tableType === 'expense') {
 			doc.text('Expense Report', 50, 25)
 		} else if (tableType === 'receipt') {
@@ -965,7 +965,7 @@ function PaginationTable({ list, handleModel, tableType }) {
 		}
 		doc.autoTable({ html: '#table', startY: 50 }) // Adjust startY as needed
 		if (tableType === undefined) {
-			const filename = 'Summery Report.pdf'
+			const filename = 'Summary Report.pdf'
 			doc.save(filename)
 		} else {
 			const filename = `${tableType}.pdf`

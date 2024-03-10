@@ -10,7 +10,8 @@ import { deleteReceipt, getReceipts } from '../../Actions/ReceiptActions'
 import ReceiptModel from '../../Components/ReceiptModel/ReceiptModel'
 import {
 	deleteAccountRequest,
-	getAccountRequests
+	getAccountRequests,
+	updateAccountRequest
 } from '../../Actions/AccountRequestActions'
 const Receipt = () => {
 	const receipts = useSelector(state => state.accountRequest.accountRequests)
@@ -38,12 +39,19 @@ const Receipt = () => {
 	}
 
 	const deleteHandler = id => {
+		console.log(id)
 		handleModel()
 		dispatch(deleteAccountRequest(id))
 
 		// dispatch(deleteReceipt(id))
 	}
 
+	const submitHandlerProp = (id, data) => {
+		console.log(id)
+		console.log(data)
+		handleModel()
+		dispatch(updateAccountRequest(id, data))
+	}
 	// Function to calculate total expense for a specific date
 	const getTotalExpenseForDate = (expenses, targetDate, type) => {
 		// Filter expenses for the target date
@@ -217,6 +225,7 @@ const Receipt = () => {
 					showModal={showModal}
 					closeHandler={handleModel}
 					deleteHandler={deleteHandler}
+					submitHandlerProp={submitHandlerProp}
 				/>
 			)}
 		</div>

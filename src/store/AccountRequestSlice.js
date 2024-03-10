@@ -44,8 +44,7 @@ export const accountRequestSlice = createSlice({
 					...state.accountRequests.slice(index + 1) // elements after the updated object
 				]
 
-				state.accountRequests = updatedAdvances
-				window.location.reload()
+				state.accountRequests = [...updatedAdvances]
 			}
 		}
 	}

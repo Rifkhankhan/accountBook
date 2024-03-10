@@ -11,7 +11,8 @@ const ReceiptModel = ({
 	clickedRow,
 	showModal,
 	closeHandler,
-	deleteHandler
+	deleteHandler,
+	submitHandlerProp
 }) => {
 	const currentUser = useSelector(state => state.auth.user)
 	const [showEditModal, setShowEditModal] = useState(false)
@@ -51,6 +52,9 @@ const ReceiptModel = ({
 			}
 		})
 	}
+	const subHandler = data => {
+		submitHandlerProp(clickedRow._id, data)
+	}
 
 	const submitHandler = () => {
 		const data = {
@@ -86,12 +90,17 @@ const ReceiptModel = ({
 			return
 		}
 
-		dispatch(updateAccountRequest(clickedRow._id, data))
+		// dispatch(updateAccountRequest(clickedRow._id, data))
+		subHandler(data)
 		setFormSubmit(true)
 		setShowEditModal(false)
 
 		setInputs(initialInputsState)
 		closeHandler()
+	}
+
+	const delHandler = () => {
+		deleteHandler(clickedRow._id)
 	}
 
 	return (
@@ -155,9 +164,7 @@ const ReceiptModel = ({
 					<Modal.Footer>
 						{currentUser.receiptPermission === 'yes' &&
 							currentUser.receiptDeletePermission === 'yes' && (
-								<Button
-									variant="danger"
-									onClick={() => deleteHandler(clickedRow._id)}>
+								<Button variant="danger" onClick={delHandler}>
 									Delete
 								</Button>
 							)}
