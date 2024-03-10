@@ -47,7 +47,6 @@ export const autoLogin = () => async dispatch => {
 			dispatch(authActions.autoLogin())
 			// dispatch(AccountRequestActions.handleLoading())
 		}
-		dispatch(authActions.handleLoading())
 	} catch (error) {
 		if (error.response?.status === 400) {
 			swal('Oops! Something Wrong', 'Try again please!', 'error')

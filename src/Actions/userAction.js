@@ -11,12 +11,10 @@ export const activateToggle = id => async dispatch => {
 
 	try {
 		// dispatch(authUiActions.changeAsLoading())
-		dispatch(authActions.handleLoading())
 		const { data } = await UserApi.activateToggle(id)
 		if (data.success) {
 			dispatch(userActions.activateToggle(id))
 		}
-		dispatch(authActions.handleLoading())
 	} catch (error) {
 		console.log(error)
 
@@ -80,7 +78,6 @@ export const getUser = id => async dispatch => {
 	dispatch(authActions.handleLoading())
 	try {
 		const { data } = await UserApi.getCustomer(id)
-		dispatch(authActions.handleLoading())
 	} catch (error) {
 		console.log(error)
 
@@ -101,7 +98,6 @@ export const updateUser = (id, formData) => async dispatch => {
 	try {
 		const { data } = await UserApi.updateCustomer(id, formData)
 		dispatch(userActions.updateUser({ id, formData }))
-		dispatch(authActions.handleLoading())
 	} catch (error) {
 		console.log(error)
 
