@@ -46,10 +46,6 @@ function Header() {
 		setShowCloseButton(!showCloseButton)
 	}
 
-	const headerClicked = e => {
-		const btns = document.getElementsByClassName('head')
-	}
-
 	const logOutHandler = () => {
 		setMenuOpen(false)
 		setShowCloseButton(false)
@@ -161,19 +157,19 @@ function Header() {
 				</div>
 			</div>
 
-			{showCloseButton ? (
-				<button className={styles.closeMenu} onClick={toggleMenu}>
-					<FontAwesomeIcon icon={faClose} fontSize="1.3em" color="white" />
-				</button>
-			) : (
-				isAuthenticated && (
-					<button className={styles.hamburgerMenu} onClick={toggleMenu}>
-						<span className={styles.hamburgerLine} />
-						<span className={styles.hamburgerLine} />
-						<span className={styles.hamburgerLine} />
-					</button>
-				)
-			)}
+			{isAuthenticated
+				? showCloseButton && (
+						<button className={styles.closeMenu} onClick={toggleMenu}>
+							<FontAwesomeIcon icon={faClose} fontSize="1.3em" color="white" />
+						</button>
+				  )
+				: !showCloseButton && (
+						<button className={styles.hamburgerMenu} onClick={toggleMenu}>
+							<span className={styles.hamburgerLine} />
+							<span className={styles.hamburgerLine} />
+							<span className={styles.hamburgerLine} />
+						</button>
+				  )}
 
 			<nav className={`${styles.nav} ${menuOpen ? styles.menuOpen : ''}`}>
 				<ul className={styles.navList}>
