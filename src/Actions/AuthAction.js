@@ -26,16 +26,13 @@ export const logIn = formData => async dispatch => {
 }
 
 export const logout = () => async dispatch => {
-	dispatch(authActions.handleLoading())
-
 	await AuthApi.logout()
 	dispatch(authActions.logout())
-	dispatch(authActions.handleLoading())
 }
 
 export const autoLogin = () => async dispatch => {
+	dispatch(authActions.handleLoading())
 	try {
-		dispatch(authActions.handleLoading())
 		const token = window.localStorage.getItem('token')
 
 		// dispatch(authUiActions.changeAsLoading())
