@@ -191,6 +191,21 @@
 	}
 }
 
+/* Add this to your CSS file */
+@media screen and (min-width: 950px) {
+	.closeMenu {
+		display: none; /* Hide close button on screens larger than 768px */
+	}
+
+	.hamburgerMenu {
+		display: none; /* Hide hamburger menu on screens larger than 768px */
+	}
+
+	.nav {
+		display: none !important; /* Ensure navigation menu is always visible */
+	}
+}
+
 .hamburgerMenu {
 	position: relative;
 	width: 30px;

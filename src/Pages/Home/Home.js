@@ -417,7 +417,7 @@ const Home = () => {
 										margin: 'auto',
 										fontSize: '3vh'
 									}}>
-									{totalIncomes}cr
+									{totalIncomes}
 								</p>
 							</div>
 						</div>
@@ -483,7 +483,7 @@ const Home = () => {
 										margin: 'auto',
 										fontSize: '3vh'
 									}}>
-									{totalExpanses}dr
+									{totalExpanses}
 								</p>
 							</div>
 						</div>
@@ -549,7 +549,7 @@ const Home = () => {
 										margin: 'auto',
 										fontSize: '3vh'
 									}}>
-									{paidAdvance}dr -{gotAdvance}cr
+									{paidAdvance} -{gotAdvance}
 								</p>
 							</div>
 						</div>
@@ -616,7 +616,7 @@ const Home = () => {
 										margin: 'auto',
 										fontSize: '3vh'
 									}}>
-									{gotLoan}cr -{paidLoan}dr
+									{gotLoan} -{paidLoan}
 								</p>
 							</div>
 						</div>

@@ -33,6 +33,11 @@ function Header() {
 
 	useEffect(() => {
 		window.addEventListener('scroll', handleScroll)
+
+		if (isAuthenticated) {
+			setMenuOpen(false)
+			setShowCloseButton(false)
+		}
 		return () => {
 			window.removeEventListener('scroll', handleScroll)
 		}
@@ -46,9 +51,13 @@ function Header() {
 		setShowCloseButton(!showCloseButton)
 	}
 
+	const headerClicked = e => {
+		const btns = document.getElementsByClassName('head')
+	}
+
 	const logOutHandler = () => {
-		setMenuOpen(false)
-		setShowCloseButton(false)
+		setMenuOpen(!menuOpen)
+		setShowCloseButton(!showCloseButton)
 
 		dispatch(authActions.logout())
 	}
@@ -157,19 +166,19 @@ function Header() {
 				</div>
 			</div>
 
-			{isAuthenticated
-				? showCloseButton && (
-						<button className={styles.closeMenu} onClick={toggleMenu}>
-							<FontAwesomeIcon icon={faClose} fontSize="1.3em" color="white" />
-						</button>
-				  )
-				: !showCloseButton && (
-						<button className={styles.hamburgerMenu} onClick={toggleMenu}>
-							<span className={styles.hamburgerLine} />
-							<span className={styles.hamburgerLine} />
-							<span className={styles.hamburgerLine} />
-						</button>
-				  )}
+			{showCloseButton ? (
+				<button className={styles.closeMenu} onClick={toggleMenu}>
+					<FontAwesomeIcon icon={faClose} fontSize="1.3em" color="white" />
+				</button>
+			) : (
+				isAuthenticated && (
+					<button className={styles.hamburgerMenu} onClick={toggleMenu}>
+						<span className={styles.hamburgerLine} />
+						<span className={styles.hamburgerLine} />
+						<span className={styles.hamburgerLine} />
+					</button>
+				)
+			)}
 
 			<nav className={`${styles.nav} ${menuOpen ? styles.menuOpen : ''}`}>
 				<ul className={styles.navList}>

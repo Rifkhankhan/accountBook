@@ -153,7 +153,7 @@ const Loan = () => {
 										Paid
 									</h5>
 									<p className="col-md-6" style={{ textAlign: 'center' }}>
-										{gotLoan}
+										{paidLoan}
 									</p>
 								</div>
 							</div>
