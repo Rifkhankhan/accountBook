@@ -20,6 +20,7 @@ const ExpanseModel = ({
 	const dispatch = useDispatch()
 	// initialInputsState
 	const initialInputsState = {
+		...clickedRow,
 		date: {
 			value: new Date(clickedRow?.date).toISOString().split('T')[0],
 			isValid: true
@@ -54,6 +55,7 @@ const ExpanseModel = ({
 
 	const submitHandler = () => {
 		const data = {
+			...clickedRow,
 			narration: inputs.narration.value,
 			amount: +inputs.amount.value,
 			date: inputs.date.value,
@@ -82,7 +84,7 @@ const ExpanseModel = ({
 			return
 		}
 
-		dispatch(updateAccountRequest(clickedRow._id, data))
+		dispatch(updateAccountRequest(data))
 		closeHandler()
 		setFormSubmit(true)
 		setInputs(initialInputsState)

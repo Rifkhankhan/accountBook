@@ -11,18 +11,21 @@ const ReceiptModel = ({
 	clickedRow,
 	showModal,
 	closeHandler,
-	deleteHandler,
-	submitHandlerProp
+	deleteHandler
 }) => {
 	const currentUser = useSelector(state => state.auth.user)
 	const [showEditModal, setShowEditModal] = useState(false)
 	const [formSubmit, setFormSubmit] = useState(false)
 	const [formValid, setFormValid] = useState(true)
 	const dispatch = useDispatch()
+
+	
+
 	// initialInputsState
 	const initialInputsState = {
+		...clickedRow,
 		date: {
-			value: new Date(clickedRow?.date).toISOString()?.split('T')[0],
+			value: new Date(clickedRow.date).toISOString().split('T')[0],
 			isValid: true
 		},
 		amount: { value: clickedRow?.amount, isValid: true },
@@ -31,6 +34,8 @@ const ReceiptModel = ({
 		requestForm: { value: clickedRow?.requestForm, isValid: true },
 		requestType: { value: clickedRow?.requestType, isValid: true }
 	}
+
+	
 
 	const [inputs, setInputs] = useState(initialInputsState)
 
@@ -45,6 +50,15 @@ const ReceiptModel = ({
 	}, [inputs])
 
 	const inputTextChangeHandler = (inputType, enteredValue) => {
+		if (inputType === 'date') {
+			const selectedDate = enteredValue
+			const currentTime = new Date().toLocaleTimeString('en-US', {
+				hour12: false
+			})
+			const selectedDateTime = `${selectedDate} ${currentTime}`
+
+			enteredValue = selectedDateTime
+		}
 		setInputs(currentInputValue => {
 			return {
 				...currentInputValue,
@@ -52,12 +66,10 @@ const ReceiptModel = ({
 			}
 		})
 	}
-	const subHandler = data => {
-		submitHandlerProp(clickedRow._id, data)
-	}
 
 	const submitHandler = () => {
 		const data = {
+			...clickedRow,
 			date: inputs.date.value,
 
 			narration: inputs.narration.value,
@@ -70,12 +82,17 @@ const ReceiptModel = ({
 		const narrationValid = data.narration?.trim().length > 0
 		const categoryValid = data.requestForm?.trim().length > 0
 		const amountValid = data.amount > 0
+		const dateValid = data.date?.trim().length > 0
 		if (!narrationValid || !amountValid || !categoryValid) {
 			setInputs(currentInputs => {
 				return {
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
+					},
+					date: {
+						value: currentInputs.date.value,
+						isValid: dateValid
 					},
 					amount: {
 						value: currentInputs.amount.value,
@@ -90,10 +107,9 @@ const ReceiptModel = ({
 			return
 		}
 
-		// dispatch(updateAccountRequest(clickedRow._id, data))
-		subHandler(data)
+		dispatch(updateAccountRequest(data))
 		setFormSubmit(true)
-		setShowEditModal(false)
+		// setShowEditModal(false)j
 
 		setInputs(initialInputsState)
 		closeHandler()
@@ -213,10 +229,10 @@ const ReceiptModel = ({
 									Date
 								</label>
 								<input
-									disabled
 									type="date"
 									value={inputs.date.value}
 									className="form-control"
+									onChange={e => inputTextChangeHandler('date', e.target.value)}
 								/>
 							</div>
 							<div className="col-12 col-md-6">

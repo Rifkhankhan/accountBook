@@ -27,13 +27,12 @@ export const accountRequestSlice = createSlice({
 		},
 		updateAccountRequest: (state, action) => {
 			const updatedAdvance = {
-				_id: action.payload.id,
-				...action.payload.formData
+				...action.payload
 			}
 
 			// Find the index of the object to update
 			const index = state.accountRequests.findIndex(
-				accountRequest => accountRequest._id === action.payload.id
+				accountRequest => accountRequest._id === action.payload._id
 			)
 
 			if (index !== -1) {

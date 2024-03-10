@@ -95,6 +95,7 @@ export const getUser = id => async dispatch => {
 }
 export const updateUser = (id, formData) => async dispatch => {
 	dispatch(authActions.handleLoading())
+
 	try {
 		const { data } = await UserApi.updateCustomer(id, formData)
 		dispatch(userActions.updateUser({ id, formData }))
@@ -110,6 +111,7 @@ export const updateUser = (id, formData) => async dispatch => {
 		} else if (error.response?.status === 500) {
 			swal('Internal Server Error', 'Check Your network!', 'error')
 		}
+		swal('Oops! Something Wrong', error.message, 'error')
 	}
 	dispatch(authActions.handleLoading())
 }
@@ -136,8 +138,6 @@ export const resetPassword = id => async dispatch => {
 }
 
 export const updatePassword = (id, formData) => async dispatch => {
-	console.log(id)
-	console.log(formData)
 	dispatch(authActions.handleLoading())
 	try {
 		await UserApi.updatePassword(id, formData)

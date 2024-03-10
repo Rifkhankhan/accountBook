@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import styles from './Receipt.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMoneyBill, faSackDollar } from '@fortawesome/free-solid-svg-icons'
@@ -14,13 +14,17 @@ import {
 	updateAccountRequest
 } from '../../Actions/AccountRequestActions'
 const Receipt = () => {
+	const currentUser = useSelector(state => state.auth.user)
+
 	const receipts = useSelector(state => state.accountRequest.accountRequests)
 		?.filter(expanse => expanse.requestType === 'receipt')
 		?.filter(request => request.status === true)
 
 	const TableReceipt = useSelector(
 		state => state.accountRequest.accountRequests
-	)?.filter(request => request.status === true)
+	)
+		?.filter(expanse => expanse.requestType === 'receipt')
+		?.filter(request => request.status === true)
 
 	const [showModal, setShowModal] = useState(false)
 	const [clickedRow, setClickedRow] = useState({})
@@ -39,19 +43,12 @@ const Receipt = () => {
 	}
 
 	const deleteHandler = id => {
-		console.log(id)
 		handleModel()
 		dispatch(deleteAccountRequest(id))
 
 		// dispatch(deleteReceipt(id))
 	}
 
-	const submitHandlerProp = (id, data) => {
-		console.log(id)
-		console.log(data)
-		handleModel()
-		dispatch(updateAccountRequest(id, data))
-	}
 	// Function to calculate total expense for a specific date
 	const getTotalExpenseForDate = (expenses, targetDate, type) => {
 		// Filter expenses for the target date
@@ -225,7 +222,6 @@ const Receipt = () => {
 					showModal={showModal}
 					closeHandler={handleModel}
 					deleteHandler={deleteHandler}
-					submitHandlerProp={submitHandlerProp}
 				/>
 			)}
 		</div>

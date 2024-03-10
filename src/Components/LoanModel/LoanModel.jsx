@@ -26,6 +26,7 @@ const LoanModel = ({
 	// initialInputsState
 	const initialInputsState = {
 		date: {
+			...clickedRow,
 			value: new Date(clickedRow?.date).toISOString()?.split('T')[0],
 			isValid: true
 		},
@@ -59,6 +60,7 @@ const LoanModel = ({
 
 	const submitHandler = () => {
 		const data = {
+			...clickedRow,
 			narration: inputs.narration.value,
 			amount: +inputs.amount.value,
 			requestForm: inputs.requestForm.value,
@@ -90,7 +92,7 @@ const LoanModel = ({
 			return
 		}
 
-		dispatch(updateAccountRequest(clickedRow._id, data))
+		dispatch(updateAccountRequest(data))
 		setFormSubmit(true)
 		setShowEditModal(false)
 

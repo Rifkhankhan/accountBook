@@ -42,6 +42,7 @@ const Payment = () => {
 	}
 
 	const submitHandlerProp = (id, data) => {
+		console.log(data)
 		dispatch(updateAccountRequest(id, data))
 		setShowModal(current => !current)
 	}

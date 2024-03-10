@@ -21,6 +21,7 @@ export const logIn = formData => async dispatch => {
 		} else if (error.response?.status === 500) {
 			swal('Internal Server Error', 'Check Your network!', 'error')
 		}
+		swal('Oops! Something Wrong', 'Try again please!', 'error')
 	}
 	dispatch(authActions.handleLoading())
 }

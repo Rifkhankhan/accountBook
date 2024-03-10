@@ -6,9 +6,6 @@ const API = axios.create({ baseURL: 'https://account-back-4krv.onrender.com' })
 
 // export const getUser = (userId) => API.get(`user/${userId}`);
 
-export const logIn = formData => API.post('/user/login', formData)
-export const autoLogin = formData => API.post('/user/autologin', formData)
-
 export const createCustomer = formData => API.post('/user/createUser', formData)
 export const getCustomer = id => API.get(`/user/${id}`)
 export const deleteCustomer = id => API.delete(`/user/${id}`)

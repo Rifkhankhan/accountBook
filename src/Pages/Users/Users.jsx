@@ -14,7 +14,6 @@ import ResetPasswordModel from '../../Components/ResetPasswordModel/ResetPasswor
 const Users = () => {
 	const users = useSelector(state => state.user.users)
 	const currentUser = useSelector(state => state.auth.user)
-	console.log(currentUser)
 
 	const dispatch = useDispatch()
 	const [showModal, setShowModal] = useState(false)

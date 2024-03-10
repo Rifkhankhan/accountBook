@@ -59,12 +59,18 @@ export const getAccountRequest = id => async dispatch => {
 	}
 	dispatch(AccountRequestActions.handleLoading())
 }
-export const updateAccountRequest = (id, formData) => async dispatch => {
+export const updateAccountRequest = formData => async dispatch => {
 	dispatch(AccountRequestActions.handleLoading())
+
 	try {
-		const { data } = await AccountRequestApis.updateAccountRequest(id, formData)
-		dispatch(AccountRequestActions.updateAccountRequest({ id, formData }))
-		swal('Successfully Updated!', 'Now You can Continue', 'success')
+		const { data } = await AccountRequestApis.updateAccountRequest(
+			formData._id,
+			formData
+		)
+		if (data) {
+			dispatch(AccountRequestActions.updateAccountRequest(formData))
+			swal('Successfully Updated!', 'Now You can Continue', 'success')
+		}
 	} catch (error) {
 		if (error.response?.status === 400) {
 			swal('Oops! Something Wrong', 'Try again please!', 'error')

@@ -22,6 +22,7 @@ const AdvanceModel = ({
 	const dispatch = useDispatch()
 	// initialInputsState
 	const initialInputsState = {
+		...clickedRow,
 		date: {
 			value: new Date(clickedRow?.date).toISOString()?.split('T')[0],
 			isValid: true
@@ -56,6 +57,7 @@ const AdvanceModel = ({
 
 	const submitHandler = () => {
 		const data = {
+			...clickedRow,
 			date: inputs.date.value,
 
 			narration: inputs.narration.value,
@@ -88,7 +90,7 @@ const AdvanceModel = ({
 			return
 		}
 
-		dispatch(updateAccountRequest(clickedRow._id, data))
+		dispatch(updateAccountRequest(data))
 
 		setFormSubmit(true)
 		setShowEditModal(false)

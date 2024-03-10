@@ -11,7 +11,7 @@ import { updateAccountRequest } from '../../Actions/AccountRequestActions'
 const Model = ({ showModal, closeHandler, selectedUser }) => {
 	const users = useSelector(state => state.user.users)
 	const currentUser = useSelector(state => state.auth.user)
-	console.log(currentUser)
+
 	const [showEditModal, setShowEditModal] = useState(false)
 	const [formSubmit, setFormSubmit] = useState(false) // for response
 	const [formValid, setFormValid] = useState(true)
@@ -97,12 +97,30 @@ const Model = ({ showModal, closeHandler, selectedUser }) => {
 			receiptPermission: inputs.receiptPermission.value,
 			receiptDeletePermission: inputs.receiptDeletePermission.value,
 			receiptEditPermission: inputs.receiptEditPermission.value,
-			advancePermission: inputs.advancePermission.value,
-			advanceDeletePermission: inputs.advanceDeletePermission.value,
-			advanceEditPermission: inputs.advanceEditPermission.value,
-			loanPermission: inputs.loanPermission.value,
-			loanDeletePermission: inputs.loanDeletePermission.value,
-			loanEditPermission: inputs.loanEditPermission.value
+			advancePermission:
+				inputs.advancePermission.value === null
+					? 'no'
+					: inputs.advancePermission.value,
+			advanceDeletePermission:
+				inputs.advanceDeletePermission.value === null
+					? 'no'
+					: inputs.advanceDeletePermission.value,
+			advanceEditPermission:
+				inputs.advanceEditPermission.value === null
+					? 'no'
+					: inputs.advanceEditPermission.value,
+			loanPermission:
+				inputs.loanPermission.value === null
+					? 'no'
+					: inputs.loanPermission.value,
+			loanDeletePermission:
+				inputs.loanDeletePermission.value === null
+					? 'no'
+					: inputs.loanDeletePermission.value,
+			loanEditPermission:
+				inputs.loanEditPermission.value === null
+					? 'no'
+					: inputs.loanEditPermission.value
 		}
 
 		const nameValid = data.name?.trim().length > 0
@@ -116,7 +134,7 @@ const Model = ({ showModal, closeHandler, selectedUser }) => {
 			return
 		}
 
-		dispatch(updateAccountRequest(selectedUser._id, data))
+		dispatch(updateUser(selectedUser._id, data))
 		setFormSubmit(true)
 		setShowEditModal(false)
 		closeHandler()
