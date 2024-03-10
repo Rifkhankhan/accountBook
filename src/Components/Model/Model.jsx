@@ -7,6 +7,7 @@ import man from './../../Images/man.png'
 import { resetPassword, updateUser } from '../../Actions/userAction'
 import { useDispatch, useSelector } from 'react-redux'
 import { activateToggle } from '../../Actions/userAction'
+import { updateAccountRequest } from '../../Actions/AccountRequestActions'
 const Model = ({ showModal, closeHandler, selectedUser }) => {
 	const users = useSelector(state => state.user.users)
 	const currentUser = useSelector(state => state.auth.user)
@@ -115,7 +116,7 @@ const Model = ({ showModal, closeHandler, selectedUser }) => {
 			return
 		}
 
-		dispatch(updateUser(selectedUser._id, data))
+		dispatch(updateAccountRequest(selectedUser._id, data))
 		setFormSubmit(true)
 		setShowEditModal(false)
 		closeHandler()
