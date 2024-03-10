@@ -65,6 +65,7 @@ const Home = () => {
 
 	const today = new Date()
 	const formattedDate = today.toLocaleDateString('en-GB') // Format: dd/mm/yyyy
+	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
 
 	useLayoutEffect(() => {
 		getOpeningBalance(requestList)
@@ -199,11 +200,103 @@ const Home = () => {
 		}
 	}, [])
 
+	// set timer
+
+	const [remainingTime, setRemainingTime] = useState(0)
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			const savedTime = localStorage.getItem('loginTime')
+			const savedRemainingTime = parseInt(
+				localStorage.getItem('remainingTime'),
+				10
+			)
+			const currentTime = new Date().getTime()
+			const elapsedTime = (currentTime - parseInt(savedTime, 10)) / 1000
+
+			const newRemainingTime = Math.max(savedRemainingTime - elapsedTime, 0)
+
+			const interval = setInterval(() => {
+				setRemainingTime(prevTime => Math.max(prevTime - 1, 0))
+			}, 1000)
+			setRemainingTime(newRemainingTime)
+
+			return () => clearInterval(interval)
+		}
+	}, [])
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			const interval = setInterval(() => {
+				setRemainingTime(prevTime => Math.max(prevTime - 1, 0))
+			}, 1000)
+
+			return () => clearInterval(interval)
+		}
+	}, [isAuthenticated])
+	// Format remaining time into minutes and seconds
+	const formatTime = () => {
+		const minutes = Math.floor(remainingTime / 60)
+		const seconds = remainingTime % 60
+		return `${minutes.toString().padStart(2, '0')}:${seconds
+			.toString()
+			.padStart(2, '0')}`
+	}
+
 	return (
 		<div className={`container ${styles.home}`}>
-			<div className="container-fluid">
+			<section className={`container  text-light`} style={{ margin: 'auto' }}>
+				<div
+					className="row "
+					style={{
+						margin: 'auto',
+						display: 'flex',
+						justifyContent: 'space-between'
+					}}>
+					<div className={`col-3 ${styles.smallCard}`}>
+						<p className="col-2 " style={{ margin: 'auto' }}>
+							Date
+						</p>
+						<p
+							className="col-8  "
+							style={{ textAlign: 'left', margin: 'auto' }}>
+							: {formattedDate}
+						</p>
+					</div>
+					<div
+						className={`col-3 ${styles.smallCard}`}
+						style={{ position: 'relative' }}>
+						<p className="col-2 " style={{ textAlign: 'left', margin: 'auto' }}>
+							User
+						</p>
+						<p
+							className="col-8  "
+							style={{ textAlign: 'left', margin: 'auto' }}>
+							: {currentUser.name}
+						</p>
+						<FontAwesomeIcon
+							className={styles.profileEditBtn}
+							icon={faPen}
+							onClick={handlePasswordModel}
+						/>
+					</div>
+					<div className={`col-3 ${styles.smallCard}`}>
+						<p className="col-3 " style={{ textAlign: 'left', margin: 'auto' }}>
+							Opening Balance
+						</p>
+						<p className="col-8 " style={{ textAlign: 'left', margin: 'auto' }}>
+							: {openingBalance}
+						</p>
+					</div>
+					{/* <div className={`row ${styles.smallCard}`}>
+						<p className="col-12 col-md-5">Opening Balance</p>
+						<p>Remaining Time: {formatTime(remainingTime)}</p>
+					</div> */}
+				</div>
+			</section>
+			<div className="container-fluid my-3">
 				<div className="row">
-					<div className="col-md-6 col-12" style={{ margin: 'auto' }}>
+					<div className="col-md-6 col-12 my-2" style={{ margin: 'auto' }}>
 						<h2 style={{ textAlign: 'left', color: 'white' }}>Pie Chart</h2>
 						<div
 							className={`col-12`}
@@ -229,7 +322,7 @@ const Home = () => {
 						</div>
 					</div>
 
-					<div className="col-md-6 col-12" style={{ margin: 'auto' }}>
+					<div className="col-md-6 col-12 my-2" style={{ margin: 'auto' }}>
 						<h2 style={{ textAlign: 'left', color: 'white' }}>Line Chart</h2>
 						<div
 							className={`col-12`}
@@ -252,109 +345,6 @@ const Home = () => {
 				</div>
 			</div>
 
-			<section className={`container px-4 text-light`}>
-				<div className="col-12 col-md-4">
-					<div className={`row ${styles.smallCard}`}>
-						<p className="col-12 col-md-5">Date :</p>
-						<p className="col-12 col-md-7 " style={{ textAlign: 'left' }}>
-							{formattedDate}
-						</p>
-					</div>
-					<div
-						className={`row ${styles.smallCard}`}
-						style={{ position: 'relative' }}>
-						<p className="col-12 col-md-5">User:</p>
-						<p className="col-12 col-md-7 " style={{ textAlign: 'left' }}>
-							{currentUser.name}
-						</p>
-						<FontAwesomeIcon
-							className={styles.profileEditBtn}
-							icon={faPen}
-							onClick={handlePasswordModel}
-						/>
-					</div>
-					<div className={`row ${styles.smallCard}`}>
-						<p className="col-12 col-md-5">Opening Balance</p>
-						<p className="col-12 col-md-7">{openingBalance}</p>
-					</div>
-				</div>
-			</section>
-
-			{/* <section>
-				<div className={`col-11 col-md-3 , ${styles.card}`}>
-					<div className="row py-3 m-auto">
-						<h3
-							style={{
-								fontWeight: 600,
-								fontSize: '2em'
-							}}>
-							Balance
-						</h3>
-					</div>
-					<div className="row" style={{ width: '100%', margin: 'auto' }}>
-						<div className="row" style={{ width: '100%', margin: 'auto' }}>
-							<p className="col-3" style={{ fontSize: '1.5em' }}>
-								Capital
-							</p>
-							<p
-								className="col-9 "
-								style={{ textAlign: 'right', fontSize: '1.5em' }}>
-								: {captitalAmount}
-							</p>
-						</div>
-						<div className="row" style={{ width: '100%', margin: 'auto' }}>
-							<p className="col-3" style={{ fontSize: '1.5em' }}>
-								Income
-							</p>
-							<p
-								className="col-9 "
-								style={{ textAlign: 'right', fontSize: '1.5em' }}>
-								: {totalIncomes}
-							</p>
-						</div>
-
-						<div className="row" style={{ width: '100%', margin: 'auto' }}>
-							<p className="col-3" style={{ fontSize: '1.5em' }}>
-								Paid Advance
-							</p>
-							<p
-								className="col-9 "
-								style={{ textAlign: 'right', fontSize: '1.5em' }}>
-								: {paidAdvance}
-							</p>
-						</div>
-
-						<div className="row" style={{ width: '100%', margin: 'auto' }}>
-							<p className="col-3" style={{ fontSize: '1.5em' }}>
-								Received Advance
-							</p>
-							<p
-								className="col-9 "
-								style={{ textAlign: 'right', fontSize: '1.5em' }}>
-								: {gotAdvance}
-							</p>
-						</div>
-						<div className="row" style={{ width: '100%', margin: 'auto' }}>
-							<p className="col-3" style={{ fontSize: '1.5em' }}>
-								Loan
-							</p>
-							<p
-								className="col-9 "
-								style={{ textAlign: 'right', fontSize: '1.5em' }}>
-								: {gotLoan - paidLoan}
-							</p>
-						</div>
-					</div>
-					<div
-						className="row"
-						style={{
-							fontSize: '1.5em',
-							fontWeight: 500
-						}}>
-						<span style={{ paddingBlock: '2vh' }}>{lastRequest?.balance}</span>
-					</div>
-				</div>
-			</section> */}
 			<div className="container-fluid" style={{ marginInline: 'auto' }}>
 				<div
 					className="row"
@@ -633,7 +623,7 @@ const Home = () => {
 					</div>
 				</div>
 			</div>
-			<section className={`container-fluid `}>
+			<section className={`container-fluid mt-3`}>
 				<h2 style={{ textAlign: 'left', color: 'white' }}>Account Works</h2>
 				<div className={`col-12 `}>
 					<PaginationTable

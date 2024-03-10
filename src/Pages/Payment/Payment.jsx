@@ -15,7 +15,7 @@ import {
 } from '../../Actions/AccountRequestActions'
 const Payment = () => {
 	const expenses = useSelector(state => state.accountRequest.accountRequests)
-		?.filter(request => request.requestForm === 'expenses')
+		?.filter(request => request.requestForm === 'expense')
 		?.filter(request => request.status === true)
 
 	const expensesTable = useSelector(
@@ -87,7 +87,7 @@ const Payment = () => {
 								<h3
 									className="col"
 									style={{ margin: 'auto', fontSize: '1.3em' }}>
-									Total Expanses
+									Total Expenses
 								</h3>
 								<FontAwesomeIcon
 									style={{ margin: 'auto', fontSize: '3em' }}
@@ -114,7 +114,7 @@ const Payment = () => {
 								<h3
 									className="col"
 									style={{ margin: 'auto', fontSize: '1.3em' }}>
-									Today Expanses
+									Today Expenses
 								</h3>
 								<FontAwesomeIcon
 									style={{ margin: 'auto', fontSize: '3em' }}

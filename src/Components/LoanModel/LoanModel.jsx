@@ -6,7 +6,10 @@ import { faClose, faPen } from '@fortawesome/free-solid-svg-icons'
 import { updateReceipt } from '../../Actions/ReceiptActions'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateLoan } from '../../Actions/LoanActions'
-import { createAccountRequest } from '../../Actions/AccountRequestActions'
+import {
+	createAccountRequest,
+	updateAccountRequest
+} from '../../Actions/AccountRequestActions'
 
 const LoanModel = ({
 	type,
@@ -56,8 +59,6 @@ const LoanModel = ({
 
 	const submitHandler = () => {
 		const data = {
-			date: inputs.date.value,
-
 			narration: inputs.narration.value,
 			amount: +inputs.amount.value,
 			requestForm: inputs.requestForm.value,
@@ -89,7 +90,7 @@ const LoanModel = ({
 			return
 		}
 
-		dispatch(createAccountRequest(clickedRow._id, data))
+		dispatch(updateAccountRequest(clickedRow._id, data))
 		setFormSubmit(true)
 		setShowEditModal(false)
 

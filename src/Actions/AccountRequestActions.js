@@ -10,6 +10,7 @@ export const createAccountRequest = formData => async dispatch => {
 		// dispatch(uiActions.changeAsLoading())
 		if (data.success) {
 			dispatch(AccountRequestActions.createAccountRequest(data.product))
+			swal('Successfully Created!', 'Now You can Continue', 'success')
 		}
 	} catch (error) {
 		if (error.response?.status === 400) {
@@ -63,6 +64,7 @@ export const updateAccountRequest = (id, formData) => async dispatch => {
 	try {
 		const { data } = await AccountRequestApis.updateAccountRequest(id, formData)
 		dispatch(AccountRequestActions.updateAccountRequest({ id, formData }))
+		swal('Successfully Updated!', 'Now You can Continue', 'success')
 	} catch (error) {
 		if (error.response?.status === 400) {
 			swal('Oops! Something Wrong', 'Try again please!', 'error')
@@ -80,6 +82,7 @@ export const deleteAccountRequest = id => async dispatch => {
 	try {
 		const { data } = await AccountRequestApis.disableAccountRequest(id)
 		dispatch(AccountRequestActions.deleteAccountRequest(id))
+		swal('Successfully Deleted!', 'Now You can Continue', 'success')
 	} catch (error) {
 		if (error.response?.status === 400) {
 			swal('Oops! Something Wrong', 'Try again please!', 'error')

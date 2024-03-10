@@ -51,20 +51,38 @@ function Header() {
 	}
 
 	const logOutHandler = () => {
-		toggleMenu()
+		setMenuOpen(false)
+		setShowCloseButton(false)
+
 		dispatch(authActions.logout())
 	}
 
 	return (
 		<section className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
-			<div className={styles.logo}>
-				<div className={styles.logohead}>
-					<h3 style={{ fontSize: '3.5vh' }} className={styles.hightlight}>
+			<div className={`container ${styles.logo}`}>
+				<div className={`col-4 ${styles.logohead}`}>
+					<h3
+						style={{ fontSize: '1em', margin: 0, padding: 0 }}
+						className={styles.hightlight}>
 						SMART
 					</h3>
 					<p className={styles.subhead} style={{ margin: 0, padding: 0 }}>
 						Account Book
 					</p>
+				</div>
+
+				<div className="col-8" style={{ display: 'flex' }}>
+					<p
+						className={`col-6  ${styles.contact}`}
+						style={{ textAlign: 'left', float: 'left', margin: 'auto' }}>
+						Contact Us : +94716972318; +94742625427
+					</p>
+					<a
+						href="https://scitglobal.com/"
+						className={`col-6  ${styles.contact}`}
+						style={{ textAlign: 'center', textDecoration: 'none' }}>
+						Web : www.scitglobal.com
+					</a>
 				</div>
 			</div>
 			<div className={styles.headers}>
@@ -96,7 +114,7 @@ function Header() {
 							Receipt
 						</Link>
 					)}
-					{isAuthenticated && (
+					{isAuthenticated && currentUser.advancePermission === 'yes' && (
 						<Link
 							to="/advance"
 							id="services"
@@ -105,7 +123,7 @@ function Header() {
 							Advance
 						</Link>
 					)}
-					{isAuthenticated && (
+					{isAuthenticated && currentUser.loanPermission === 'yes' && (
 						<Link
 							to="/loan"
 							id="services"
@@ -143,19 +161,19 @@ function Header() {
 				</div>
 			</div>
 
-			{showCloseButton
-				? isAuthenticated && (
-						<button className={styles.closeMenu} onClick={toggleMenu}>
-							<FontAwesomeIcon icon={faClose} fontSize="1.3em" color="white" />
-						</button>
-				  )
-				: isAuthenticated && (
-						<button className={styles.hamburgerMenu} onClick={toggleMenu}>
-							<span className={styles.hamburgerLine} />
-							<span className={styles.hamburgerLine} />
-							<span className={styles.hamburgerLine} />
-						</button>
-				  )}
+			{showCloseButton ? (
+				<button className={styles.closeMenu} onClick={toggleMenu}>
+					<FontAwesomeIcon icon={faClose} fontSize="1.3em" color="white" />
+				</button>
+			) : (
+				isAuthenticated && (
+					<button className={styles.hamburgerMenu} onClick={toggleMenu}>
+						<span className={styles.hamburgerLine} />
+						<span className={styles.hamburgerLine} />
+						<span className={styles.hamburgerLine} />
+					</button>
+				)
+			)}
 
 			<nav className={`${styles.nav} ${menuOpen ? styles.menuOpen : ''}`}>
 				<ul className={styles.navList}>
@@ -171,7 +189,7 @@ function Header() {
 						)}
 					</li>
 					<li className={styles.navItem}>
-						{isAuthenticated && (
+						{isAuthenticated && currentUser.expansePermission === 'yes' && (
 							<Link
 								to="/payment"
 								className={styles.navLink}
@@ -182,7 +200,7 @@ function Header() {
 						)}
 					</li>
 					<li className={styles.navItem}>
-						{isAuthenticated && (
+						{isAuthenticated && currentUser.receiptPermission === 'yes' && (
 							<Link
 								to="/receipt"
 								className={styles.navLink}
@@ -193,7 +211,7 @@ function Header() {
 						)}
 					</li>
 					<li className={styles.navItem}>
-						{isAuthenticated && (
+						{isAuthenticated && currentUser.advancePermission === 'yes' && (
 							<Link
 								to="/advance"
 								className={styles.navLink}
@@ -204,7 +222,7 @@ function Header() {
 						)}
 					</li>
 					<li className={styles.navItem}>
-						{isAuthenticated && (
+						{isAuthenticated && currentUser.loanPermission === 'yes' && (
 							<Link
 								to="/loan"
 								className={styles.navLink}

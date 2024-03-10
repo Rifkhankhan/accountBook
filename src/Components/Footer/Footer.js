@@ -10,7 +10,7 @@ const Footer = props => {
 					<div class="col-sm-12">
 						<div class="copyright-box">
 							<p class="copyright py-0">
-								2024; Copyright <strong>SCIT GLOBAL</strong>. All Rights
+								2024, Copyright <strong>SCIT GLOBAL</strong>. All Rights
 								Reserved
 							</p>
 							<div class="credits text-light">

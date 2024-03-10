@@ -149,7 +149,7 @@ const CreateUser = ({ header }) => {
 							}
 							id="inputGroupSelect01">
 							<option selected value="no">
-								Access Expanses denied...
+								Access Expenses denied...
 							</option>
 							<option value="yes">Yes</option>
 							<option value="no">No</option>
@@ -213,7 +213,7 @@ const CreateUser = ({ header }) => {
 							}
 							id="inputGroupSelect01">
 							<option selected value="no">
-								Access Edit Expanses denied...
+								Access Edit Expenses denied...
 							</option>
 							<option value="yes">Yes</option>
 							<option value="no">No</option>
@@ -261,6 +261,44 @@ const CreateUser = ({ header }) => {
 							id="inputGroupSelect01">
 							<option selected value="no">
 								Access Edit Loan denied...
+							</option>
+							<option value="yes">Yes</option>
+							<option value="no">No</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-row row">
+					<div class="form-group col-12 col-md-6 mb-2">
+						<select
+							class="form-control"
+							value={inputs.expanseDeletePermission.value}
+							onChange={e =>
+								inputTextChangeHandler(
+									'expanseDeletePermission',
+									e.target.value
+								)
+							}
+							id="inputGroupSelect01">
+							<option selected value="no">
+								Access Delete Expense denied...
+							</option>
+							<option value="yes">Yes</option>
+							<option value="no">No</option>
+						</select>
+					</div>
+					<div class="form-group col-12 col-md-6 mb-2">
+						<select
+							class="form-control"
+							value={inputs.receiptDeletePermission.value}
+							onChange={e =>
+								inputTextChangeHandler(
+									'receiptDeletePermission',
+									e.target.value
+								)
+							}
+							id="inputGroupSelect01">
+							<option selected value="no">
+								Access Delete Receipt denied...
 							</option>
 							<option value="yes">Yes</option>
 							<option value="no">No</option>

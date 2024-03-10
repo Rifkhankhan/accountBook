@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from 'react'
-import styles from './PieChart.module.css'
+import React from 'react'
 import { Chart, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'react-chartjs-2'
+import styles from './PieChart.module.css'
+
 Chart.register(ArcElement, Tooltip, Legend)
+
 const PieChart = ({ headDatas }) => {
 	const data = {
 		labels: [
@@ -15,14 +17,7 @@ const PieChart = ({ headDatas }) => {
 		],
 		datasets: [
 			{
-				data: [
-					headDatas[0],
-					headDatas[1],
-					headDatas[2],
-					headDatas[3],
-					headDatas[4],
-					headDatas[5]
-				],
+				data: headDatas,
 				backgroundColor: [
 					'rgb(255, 99, 132)',
 					'rgb(54, 162, 235)',
@@ -35,10 +30,15 @@ const PieChart = ({ headDatas }) => {
 		]
 	}
 
+	const isMobile = window.innerWidth <= 600
+
 	const options = {
 		plugins: {
 			legend: {
-				position: 'right'
+				position: isMobile ? 'top' : 'right',
+				labels: {
+					color: 'white'
+				}
 			}
 		},
 		layout: {
@@ -49,12 +49,24 @@ const PieChart = ({ headDatas }) => {
 				bottom: 20
 			}
 		},
-		maintainAspectRatio: true, // This will allow you to set custom width and height
+		elements: {
+			point: {
+				backgroundColor: 'white' // Change point background color
+			}
+		},
+		maintainAspectRatio: false, // Set to false to allow full parent size
 		responsive: true,
-		width: 400, // Set your desired width
-		height: 300 // Set your desired height]
+		width: 400,
+		height: 300
 	}
-	return <Pie data={data} options={options} width={100} height={100}></Pie>
+
+	return (
+		<div
+			className={styles.chartContainer}
+			style={{ width: '100%', height: '100%' }}>
+			<Pie data={data} options={options} />
+		</div>
+	)
 }
 
 export default PieChart

@@ -952,19 +952,26 @@ function PaginationTable({ list, handleModel, tableType }) {
 		doc.text('Smart Account Book', 50, 15)
 		// Add the date to the PDF document
 
-		if (tableType === '') {
-			doc.text('Smart Account Book Work Sheet', 50, 25)
+		if (tableType === undefined) {
+			doc.text('Summery Report', 50, 25)
 		} else if (tableType === 'expense') {
-			doc.text('Expenses Table', 50, 25)
+			doc.text('Expense Report', 50, 25)
 		} else if (tableType === 'receipt') {
-			doc.text('Income Table', 50, 25)
+			doc.text('Income Report', 50, 25)
 		} else if (tableType === 'loan') {
-			doc.text('Loan Table', 50, 25)
+			doc.text('Loan Report', 50, 25)
 		} else if (tableType === 'advance') {
-			doc.text('Advance Table', 50, 25)
+			doc.text('Advance Report', 50, 25)
 		}
 		doc.autoTable({ html: '#table', startY: 50 }) // Adjust startY as needed
-		doc.save('table.pdf')
+		if (tableType === undefined) {
+			const filename = 'Summery Report.pdf'
+			doc.save(filename)
+		} else {
+			const filename = `${tableType}.pdf`
+
+			doc.save(filename)
+		}
 	}
 
 	// calculate the balance

@@ -37,8 +37,7 @@ const AdvanceModel = ({
 
 	useEffect(() => {
 		setFormValid(
-			inputs.date.isValid &&
-				inputs.amount.isValid &&
+			inputs.amount.isValid &&
 				inputs.requestForm.isValid &&
 				inputs.narration.isValid
 		)

@@ -12,7 +12,7 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding-inline: 30px;
+	padding-inline: .5em;
 	max-height: 10vh;
 	color: white !important;
 	border-bottom: 1px solid white;
@@ -45,23 +45,26 @@
 
 .logo {
 	padding-block: 10px;
+	float: left !important;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
 }
 
 .logohead {
 	display: flex;
-	align-items: center;
 	flex-direction: column;
-	justify-content: flex-start;
 	padding: 0;
 	margin: 0;
-	justify-content: center;
+	padding-inline: 0;
+	text-align: center;
 }
 
 .logohead h3 {
-	font-size: 30px;
 	color: #f00;
 	margin: 0;
 	padding: 0;
+	text-align: center;
 }
 
 .hightlight {
@@ -69,16 +72,42 @@
 }
 
 .subhead {
-	font-size: 0.8em;
 	margin-top: 5px;
-	font-size: 20px;
+	font-size: .7em;
 	color: white;
 }
 
+.logo {
+	display: flex;
+	.contact {
+		font-size: 0.6em;
+		display: flex !important;
+		margin: auto;
+		float: left;
+		animation: blink 1s infinite; /* Blink animation */
+	}
+	.contact:last-child {
+		cursor: pointer;
+	}
+}
+@keyframes blink {
+	0% {
+		color: red;
+	}
+	50% {
+		color: yellow;
+	}
+	100% {
+		color: white;
+	}
+}
+
 .headers {
-	float: left;
+	width: 100%;
+	float: right;
 	/* margin-top: 10px; */
 	color: black;
+	text-align: right;
 }
 
 .nav {
@@ -98,7 +127,7 @@
 
 .menuOpen {
 	transform: translateX(0);
-	padding-top: 50%;
+	padding-top: 30%;
 	font-size: 2vh;
 }
 
@@ -122,7 +151,7 @@
 	display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 950px) {
 	.headers {
 		display: none;
 	}

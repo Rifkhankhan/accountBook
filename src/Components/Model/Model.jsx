@@ -186,7 +186,7 @@ const Model = ({ showModal, closeHandler, selectedUser }) => {
 								<label
 									style={{ fontWeight: 600, fontSize: '1.5em' }}
 									className="col-12 col-md-12">
-									Expanse Permission
+									Expense Permission
 								</label>
 								<p>
 									{selectedUser.expansePermission === 'yes'
@@ -233,7 +233,7 @@ const Model = ({ showModal, closeHandler, selectedUser }) => {
 								<label
 									style={{ fontWeight: 600, fontSize: '1.5em' }}
 									className="col-12 col-md-12">
-									Expanse Edit Permission
+									Expense Edit Permission
 								</label>
 								<p>
 									{selectedUser.expanseEditPermission === 'yes'
@@ -281,7 +281,7 @@ const Model = ({ showModal, closeHandler, selectedUser }) => {
 								<label
 									style={{ fontWeight: 600, fontSize: '1.5em' }}
 									className="col-12 col-md-12">
-									Expanse Delete Permission
+									Expense Delete Permission
 								</label>
 								<p>
 									{selectedUser.expanseDeletePermission === 'yes'
@@ -447,7 +447,7 @@ const Model = ({ showModal, closeHandler, selectedUser }) => {
 								<label
 									style={{ fontWeight: 600, fontSize: '1.3em' }}
 									className="col-12 col-md-6">
-									Expanse Permission
+									Expense Permission
 								</label>
 								<select
 									class="form-control"
@@ -558,7 +558,7 @@ const Model = ({ showModal, closeHandler, selectedUser }) => {
 								<label
 									style={{ fontWeight: 600, fontSize: '1.3em' }}
 									className="col-12 col-md-12">
-									Expanse Edit Permission
+									Expense Edit Permission
 								</label>
 								<select
 									class="form-control"
@@ -677,7 +677,7 @@ const Model = ({ showModal, closeHandler, selectedUser }) => {
 								<label
 									style={{ fontWeight: 600, fontSize: '1.3em' }}
 									className="col-12 col-md-12">
-									Expanse Delete Permission
+									Expense Delete Permission
 								</label>
 								<select
 									class="form-control"

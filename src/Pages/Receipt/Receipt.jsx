@@ -179,7 +179,7 @@ const Receipt = () => {
 										Cash
 									</h5>
 									<p className="col-md-6 " style={{ textAlign: 'center' }}>
-										{totalTodayCapital}
+										{totalTodayCash}
 									</p>
 								</div>
 
@@ -188,7 +188,7 @@ const Receipt = () => {
 										Capital
 									</h5>
 									<p className="col-md-6" style={{ textAlign: 'center' }}>
-										{totalTodayCash}
+										{totalTodayCapital}
 									</p>
 								</div>
 							</div>

@@ -23,8 +23,8 @@ const UsersTable = ({ initialData, handleModel, getIdHandler }) => {
 						<th>Name</th>
 						<th>Email</th>
 						<th>Phone</th>
-						<th>Expanse Permission</th>
-						<th>Expanse Delete Permission</th>
+						<th>Expense Permission</th>
+						<th>Expense Delete Permission</th>
 						<th>Receipt Permission</th>
 						<th>Receipt Delete Permission</th>
 					</tr>

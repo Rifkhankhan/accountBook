@@ -49,7 +49,7 @@ const LineChart = ({ expenses, receipts, requestList }) => {
 
 	useEffect(() => {
 		const expensesamounts = {}
-		expenses.forEach(expense => {
+		expenses?.forEach(expense => {
 			if (!expensesamounts[expense.date]) {
 				expensesamounts[expense.date] = 0
 			}
@@ -58,7 +58,7 @@ const LineChart = ({ expenses, receipts, requestList }) => {
 		setAmountByDate(expensesamounts)
 
 		const receiptsamounts = {}
-		receipts.forEach(expense => {
+		receipts?.forEach(expense => {
 			if (!receiptsamounts[expense.date]) {
 				receiptsamounts[expense.date] = 0
 			}
@@ -67,7 +67,7 @@ const LineChart = ({ expenses, receipts, requestList }) => {
 		setReceiptByDate(receiptsamounts)
 
 		const balances = {}
-		requestList.forEach(expense => {
+		requestList?.forEach(expense => {
 			if (!balances[expense.date]) {
 				balances[expense.date] = 0
 			}
@@ -80,6 +80,7 @@ const LineChart = ({ expenses, receipts, requestList }) => {
 	const amounts = Object.values(amountByDate)
 	const receiptsLists = Object.values(receiptByDate)
 	const balanceList = Object.values(listByDate)
+	const isMobile = window.innerWidth <= 600 // Define your mobile width breakpoint
 
 	const data = {
 		labels: [...labels],
@@ -110,10 +111,29 @@ const LineChart = ({ expenses, receipts, requestList }) => {
 
 	const options = {
 		plugins: {
-			legend: true
+			legend: {
+				labels: {
+					color: 'white' // Change legend font color
+				}
+			}
 		},
-		scale: {
-			y: {}
+		scales: {
+			x: {
+				grid: {
+					color: 'rgba(255, 255, 255, 0.1)' // Change x-axis grid color
+				},
+				ticks: {
+					color: 'white' // Change x-axis tick font color
+				}
+			},
+			y: {
+				grid: {
+					color: 'rgba(255, 255, 255, 0.1)' // Change y-axis grid color
+				},
+				ticks: {
+					color: 'white' // Change y-axis tick font color
+				}
+			}
 		},
 		layout: {
 			padding: {
@@ -123,13 +143,19 @@ const LineChart = ({ expenses, receipts, requestList }) => {
 				bottom: 20
 			}
 		},
-		maintainAspectRatio: true, // This will allow you to set custom width and height
+		maintainAspectRatio: false,
 		responsive: true,
-		width: 400, // Set your desired width
-		height: 300 // Set your desired height]
+		elements: {
+			point: {
+				backgroundColor: 'white' // Change point background color
+			}
+		},
+		width: 400,
+		height: 1000
 	}
+
 	return (
-		<div className="">
+		<div className="chart-container" style={{ width: '100%', height: '100%' }}>
 			<Line data={data} options={options} />
 		</div>
 	)

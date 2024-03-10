@@ -106,9 +106,6 @@ const Loan = () => {
 		getTotalExpenseForDate(loans, new Date())
 	}, [loans])
 
-	useLayoutEffect(() => {
-		dispatch(getLoans())
-	}, [dispatch])
 	return (
 		<div className={`container-fluid ${styles.home}`}>
 			<div className="row">

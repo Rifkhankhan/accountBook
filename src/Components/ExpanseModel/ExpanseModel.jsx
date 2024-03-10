@@ -10,8 +10,7 @@ const ExpanseModel = ({
 	clickedRow,
 	showModal,
 	closeHandler,
-	deleteHandler,
-	submitHandlerProp
+	deleteHandler
 }) => {
 	const currentUser = useSelector(state => state.auth.user)
 	const list = useSelector(state => state.accountRequest.accountRequests)
@@ -83,12 +82,10 @@ const ExpanseModel = ({
 			return
 		}
 
-		submitHandlerProp(clickedRow._id, data)
-
-		// dispatch(updateAccountRequest(clickedRow._id, data))
-		// closeHandler()
+		dispatch(updateAccountRequest(clickedRow._id, data))
+		closeHandler()
 		setFormSubmit(true)
-		// setInputs(initialInputsState)
+		setInputs(initialInputsState)
 	}
 
 	return (
