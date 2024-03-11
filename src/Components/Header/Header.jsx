@@ -80,7 +80,7 @@ function Header() {
 					<p
 						className={`col-6  ${styles.contact}`}
 						style={{ textAlign: 'left', float: 'left', margin: 'auto' }}>
-						Contact Us : +94716972318; +94742625427
+						Contact Us : +94716972318/+94742625427
 					</p>
 					<a
 						href="https://scitglobal.com/"
