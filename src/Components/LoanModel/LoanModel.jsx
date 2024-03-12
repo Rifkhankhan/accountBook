@@ -24,16 +24,19 @@ const LoanModel = ({
 	const [formValid, setFormValid] = useState(true)
 	const dispatch = useDispatch()
 	// initialInputsState
+	const { balance, ...rest } = clickedRow
+
 	const initialInputsState = {
 		date: {
-			...clickedRow,
+			...rest,
+
 			value: new Date(clickedRow?.date).toISOString()?.split('T')[0],
 			isValid: true
 		},
 		amount: { value: +clickedRow?.amount, isValid: true },
 		narration: { value: clickedRow?.narration, isValid: true },
 		requestForm: { value: clickedRow?.requestForm, isValid: true },
-		userId: { value: currentUser?._id, isValid: true },
+		id: { value: currentUser?.id, isValid: true },
 		requestType: { value: clickedRow?.requestType, isValid: true }
 	}
 
@@ -60,11 +63,12 @@ const LoanModel = ({
 
 	const submitHandler = () => {
 		const data = {
-			...clickedRow,
+			...rest,
+
 			narration: inputs.narration.value,
 			amount: +inputs.amount.value,
 			requestForm: inputs.requestForm.value,
-			userId: inputs.userId.value,
+			id: inputs.id.value,
 			requestType: inputs.requestType.value
 		}
 
@@ -75,6 +79,8 @@ const LoanModel = ({
 		if (!narrationValid || !amountValid || !categoryValid) {
 			setInputs(currentInputs => {
 				return {
+					...rest,
+
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
@@ -165,7 +171,7 @@ const LoanModel = ({
 							currentUser.loanDeletePermission === 'yes' && (
 								<Button
 									variant="danger"
-									onClick={() => deleteHandler(clickedRow._id)}>
+									onClick={() => deleteHandler(clickedRow)}>
 									Delete
 								</Button>
 							)}

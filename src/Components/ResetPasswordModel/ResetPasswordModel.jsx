@@ -55,7 +55,7 @@ const ResetPasswordModel = ({ selectedUser, showModal, closeHandler }) => {
 			return
 		}
 
-		dispatch(updatePassword(currentUser._id, data))
+		dispatch(updatePassword(currentUser.id, data))
 		setFormSubmit(true)
 		setShowEditModal(false)
 

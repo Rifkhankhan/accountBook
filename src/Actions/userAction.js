@@ -14,16 +14,23 @@ export const activateToggle = id => async dispatch => {
 		const { data } = await UserApi.activateToggle(id)
 		if (data.success) {
 			dispatch(userActions.activateToggle(id))
+			swal('Successfully Update the state', 'Your Request completed', 'success')
+		} else {
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		}
 	} catch (error) {
 		console.log(error)
 
 		if (error.response?.status === 400) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
 		} else if (error.response?.status === 404) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal("You don't have Account", error.response.data.message, 'error')
 		} else if (error.response?.status === 409) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
+		} else if (error.response?.status === 408) {
+			swal('Oops! You have no access', error.response.data.message, 'error')
+		} else if (error.response?.status === 500) {
+			swal('Internal Server Error', error.response.data.message, 'error')
 		}
 	}
 	dispatch(authActions.handleLoading())
@@ -36,43 +43,55 @@ export const createUser = formData => async dispatch => {
 		const { data } = await UserApi.createCustomer(formData)
 		if (data.success) {
 			dispatch(userActions.createUser(formData))
+		} else {
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
 		}
 
 		// dispatch(uiActions.changeAsLoading())
 	} catch (error) {
 		if (error.response?.status === 400) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
 		} else if (error.response?.status === 404) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal("You don't have Account", error.response.data.message, 'error')
 		} else if (error.response?.status === 409) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
+		} else if (error.response?.status === 408) {
+			swal('Oops! You have no access', error.response.data.message, 'error')
 		} else if (error.response?.status === 500) {
-			swal('Internal Server Error', 'Check Your network!', 'error')
+			swal('Internal Server Error', error.response.data.message, 'error')
 		}
 	}
 	dispatch(authActions.handleLoading())
 }
 
-export const getUsers = () => async dispatch => {
+export const getUsers = () => async (dispatch, getState) => {
 	dispatch(authActions.handleLoading())
 
 	try {
 		// dispatch(uiActions.changeAsLoading())
 		const { data } = await UserApi.getCustomers()
-		dispatch(userActions.getUsers(data))
+		if (data.success) {
+			dispatch(userActions.getUsers(data.data))
+		} else {
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
+		}
 		// dispatch(uiActions.changeAsLoading())
 	} catch (error) {
 		if (error.response?.status === 400) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
 		} else if (error.response?.status === 404) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal("You don't have Account", error.response.data.message, 'error')
 		} else if (error.response?.status === 409) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
+		} else if (error.response?.status === 408) {
+			swal('Oops! You have no access', error.response.data.message, 'error')
 		} else if (error.response?.status === 500) {
-			swal('Internal Server Error', 'Check Your network!', 'error')
+			swal('Internal Server Error', error.response.data.message, 'error')
 		}
+	} finally {
+		// Dispatch an action to handle loading state (assuming you have authActions.handleLoading())
+		dispatch(authActions.handleLoading())
 	}
-	dispatch(authActions.handleLoading())
 }
 export const getUser = id => async dispatch => {
 	dispatch(authActions.handleLoading())
@@ -82,13 +101,15 @@ export const getUser = id => async dispatch => {
 		console.log(error)
 
 		if (error.response?.status === 400) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
 		} else if (error.response?.status === 404) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal("You don't have Account", error.response.data.message, 'error')
 		} else if (error.response?.status === 409) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
+		} else if (error.response?.status === 408) {
+			swal('Oops! You have no access', error.response.data.message, 'error')
 		} else if (error.response?.status === 500) {
-			swal('Internal Server Error', 'Check Your network!', 'error')
+			swal('Internal Server Error', error.response.data.message, 'error')
 		}
 	}
 	dispatch(authActions.handleLoading())
@@ -98,20 +119,25 @@ export const updateUser = (id, formData) => async dispatch => {
 
 	try {
 		const { data } = await UserApi.updateCustomer(id, formData)
-		dispatch(userActions.updateUser({ id, formData }))
+		if (data.success) {
+			dispatch(userActions.updateUser({ id, formData }))
+		} else {
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
+		}
 	} catch (error) {
 		console.log(error)
 
 		if (error.response?.status === 400) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
 		} else if (error.response?.status === 404) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal("You don't have Account", error.response.data.message, 'error')
 		} else if (error.response?.status === 409) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
+		} else if (error.response?.status === 408) {
+			swal('Oops! You have no access', error.response.data.message, 'error')
 		} else if (error.response?.status === 500) {
-			swal('Internal Server Error', 'Check Your network!', 'error')
+			swal('Internal Server Error', error.response.data.message, 'error')
 		}
-		swal('Oops! Something Wrong', error.message, 'error')
 	}
 	dispatch(authActions.handleLoading())
 }
@@ -119,19 +145,25 @@ export const updateUser = (id, formData) => async dispatch => {
 export const resetPassword = id => async dispatch => {
 	dispatch(authActions.handleLoading())
 	try {
-		await UserApi.resetPassword(id)
-		swal('Successfully Reset Password', 'Successfully Reset Password')
+		const { data } = await UserApi.resetPassword(id)
+		if (data.success) {
+			swal('Successfully Reset Password', 'Successfully Reset Password')
+		} else {
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
+		}
 	} catch (error) {
 		console.log(error)
 
 		if (error.response?.status === 400) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
 		} else if (error.response?.status === 404) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal("You don't have Account", error.response.data.message, 'error')
 		} else if (error.response?.status === 409) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
+		} else if (error.response?.status === 408) {
+			swal('Oops! You have no access', error.response.data.message, 'error')
 		} else if (error.response?.status === 500) {
-			swal('Internal Server Error', 'Check Your network!', 'error')
+			swal('Internal Server Error', error.response.data.message, 'error')
 		}
 	}
 	dispatch(authActions.handleLoading())
@@ -140,19 +172,25 @@ export const resetPassword = id => async dispatch => {
 export const updatePassword = (id, formData) => async dispatch => {
 	dispatch(authActions.handleLoading())
 	try {
-		await UserApi.updatePassword(id, formData)
-		swal('Successfully Update Password', 'Successfully Update Password')
+		const { data } = await UserApi.updatePassword(id, formData)
+		if (data.success) {
+			swal('Successfully Update Password', 'Successfully Update Password')
+		} else {
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
+		}
 	} catch (error) {
 		console.log(error)
 
 		if (error.response?.status === 400) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
 		} else if (error.response?.status === 404) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal("You don't have Account", error.response.data.message, 'error')
 		} else if (error.response?.status === 409) {
-			swal('Oops! Something Wrong', 'Try again please!', 'error')
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
+		} else if (error.response?.status === 408) {
+			swal('Oops! You have no access', error.response.data.message, 'error')
 		} else if (error.response?.status === 500) {
-			swal('Internal Server Error', 'Check Your network!', 'error')
+			swal('Internal Server Error', error.response.data.message, 'error')
 		}
 	}
 	dispatch(authActions.handleLoading())

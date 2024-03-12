@@ -13,6 +13,7 @@ import ResetPasswordModel from '../../Components/ResetPasswordModel/ResetPasswor
 
 const Users = () => {
 	const users = useSelector(state => state.user.users)
+
 	const currentUser = useSelector(state => state.auth.user)
 
 	const dispatch = useDispatch()
@@ -32,7 +33,7 @@ const Users = () => {
 	}, [])
 
 	const getIdHandler = id => {
-		setSelectedUser({ ...users.find(data => data._id === id) })
+		setSelectedUser({ ...users.find(data => data.id === id) })
 	}
 
 	return (

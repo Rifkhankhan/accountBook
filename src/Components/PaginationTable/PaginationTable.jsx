@@ -866,9 +866,9 @@ function PaginationTable({ list, handleModel, tableType }) {
 				transaction.requestType === 'receipt' ||
 				transaction.requestForm === 'got'
 			) {
-				balance += transaction.amount
+				balance += +transaction.amount
 			} else {
-				balance -= transaction.amount
+				balance -= +transaction.amount
 			}
 			// Add balance property to transaction object
 			return { ...transaction, balance }
@@ -1044,7 +1044,7 @@ function PaginationTable({ list, handleModel, tableType }) {
 				<tbody>
 					{currentItems?.map((item, index) => (
 						<tr
-							key={item._id}
+							key={item.id}
 							onClick={() => {
 								handleModel(item)
 							}}>

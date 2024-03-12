@@ -18,9 +18,6 @@ function Header() {
 
 	const dispatch = useDispatch()
 
-	useEffect(() => {
-		dispatch(getAccountRequests())
-	}, [dispatch])
 	// State to manage the visibility of the dropdown
 	function handleScroll() {
 		const scrollTop = window.pageYOffset || document.documentElement.scrollTop
@@ -51,11 +48,8 @@ function Header() {
 		setShowCloseButton(!showCloseButton)
 	}
 
-	const headerClicked = e => {
-		const btns = document.getElementsByClassName('head')
-	}
-
 	const logOutHandler = () => {
+		navigate('/login')
 		setMenuOpen(!menuOpen)
 		setShowCloseButton(!showCloseButton)
 
@@ -92,7 +86,7 @@ function Header() {
 			</div>
 			<div className={styles.headers}>
 				<div className={styles.headers}>
-					{isAuthenticated && (
+					{isAuthenticated && currentUser.status && (
 						<Link
 							to="/"
 							id="home"
@@ -132,16 +126,16 @@ function Header() {
 						<Link
 							to="/loan"
 							id="services"
-							className={`${styles.head} `}
+							className={`${styles.head}`}
 							style={{ textDecorationLine: 'none' }}>
 							Loan
 						</Link>
 					)}
-					{isAuthenticated && currentUser.isAdmin && (
+					{isAuthenticated && currentUser.isAdmin === 1 && (
 						<Link
 							to="/users"
 							id="projects"
-							className={`${styles.head} `}
+							className={`${styles.head}`}
 							style={{ textDecorationLine: 'none' }}>
 							Users
 						</Link>
@@ -234,6 +228,17 @@ function Header() {
 								onClick={toggleMenu}
 								style={{ textDecorationLine: 'none' }}>
 								Loan
+							</Link>
+						)}
+					</li>
+					<li className={styles.navItem}>
+						{isAuthenticated && currentUser.isAdmin === 1 && (
+							<Link
+								to="/users"
+								className={styles.navLink}
+								onClick={toggleMenu}
+								style={{ textDecorationLine: 'none' }}>
+								Users
 							</Link>
 						)}
 					</li>

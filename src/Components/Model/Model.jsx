@@ -134,7 +134,7 @@ const Model = ({ showModal, closeHandler, selectedUser }) => {
 			return
 		}
 
-		dispatch(updateUser(selectedUser._id, data))
+		dispatch(updateUser(selectedUser.id, data))
 		setFormSubmit(true)
 		setShowEditModal(false)
 		closeHandler()
@@ -146,12 +146,12 @@ const Model = ({ showModal, closeHandler, selectedUser }) => {
 		setShowEditModal(current => !current)
 	}
 	const resetPasswordHandler = () => {
-		dispatch(resetPassword(selectedUser._id))
+		dispatch(resetPassword(selectedUser.id))
 		closeHandler()
 	}
 
 	const blockHandler = () => {
-		dispatch(activateToggle(selectedUser._id))
+		dispatch(activateToggle(selectedUser.id))
 		closeHandler()
 	}
 	return (

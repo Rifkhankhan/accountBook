@@ -1,30 +1,25 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import styles from './Receipt.module.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMoneyBill, faSackDollar } from '@fortawesome/free-solid-svg-icons'
 
 import ReceiptForm from '../../Components/ReceiptForm/ReceiptForm'
 import PaginationTable from '../../Components/PaginationTable/PaginationTable'
 import { useDispatch, useSelector } from 'react-redux'
-import { deleteReceipt, getReceipts } from '../../Actions/ReceiptActions'
 import ReceiptModel from '../../Components/ReceiptModel/ReceiptModel'
-import {
-	deleteAccountRequest,
-	getAccountRequests,
-	updateAccountRequest
-} from '../../Actions/AccountRequestActions'
+import { deleteAccountRequest } from '../../Actions/AccountRequestActions'
+import LoadingSpinner from '../../Components/LoadingSpinner/LoadingSpinner'
 const Receipt = () => {
 	const currentUser = useSelector(state => state.auth.user)
+	const isLoading = useSelector(state => state.accountRequest.isLoading)
 
 	const receipts = useSelector(state => state.accountRequest.accountRequests)
 		?.filter(expanse => expanse.requestType === 'receipt')
-		?.filter(request => request.status === true)
+		?.filter(request => request.status === 1)
 
 	const TableReceipt = useSelector(
 		state => state.accountRequest.accountRequests
 	)
 		?.filter(expanse => expanse.requestType === 'receipt')
-		?.filter(request => request.status === true)
+		?.filter(request => request.status === 1)
 
 	const [showModal, setShowModal] = useState(false)
 	const [clickedRow, setClickedRow] = useState({})
@@ -34,19 +29,20 @@ const Receipt = () => {
 	const [totalTodayCapital, setTotalTodayCapital] = useState(0)
 
 	const dispatch = useDispatch()
-	const [totalReceipts, setTotalReceipts] = useState(0)
-	const [todayTotalReceipts, setTodayTotalReceipts] = useState(0)
+
 	const handleModel = id => {
 		setClickedRow(id)
 
 		setShowModal(current => !current)
 	}
 
-	const deleteHandler = id => {
+	const deleteHandler = row => {
 		handleModel()
-		dispatch(deleteAccountRequest(id))
-
-		// dispatch(deleteReceipt(id))
+		const data = {
+			...row,
+			id: currentUser.id
+		}
+		dispatch(deleteAccountRequest(data))
 	}
 
 	// Function to calculate total expense for a specific date
@@ -63,7 +59,7 @@ const Receipt = () => {
 
 		// Calculate total amount for the target date
 		const totalExpenseForDate = expensesForDate.reduce(
-			(total, expense) => total + expense.amount,
+			(total, expense) => total + +expense.amount,
 			0
 		)
 
@@ -74,14 +70,14 @@ const Receipt = () => {
 
 		const totalIncomes = incomes.reduce((total, current) => {
 			if (current.requestForm === 'cash') {
-				return total + current.amount
+				return total + +current.amount
 			}
 			return total // Make sure to return total even if the condition isn't met
 		}, 0)
 
 		const totalCapital = incomes.reduce((total, current) => {
 			if (current.requestForm === 'capital') {
-				return total + current.amount
+				return total + +current.amount
 			}
 			return total // Make sure to return total even if the condition isn't met
 		}, 0)
@@ -206,7 +202,7 @@ const Receipt = () => {
 			</div>
 
 			<section className="container-fluid" style={{ margin: 'auto' }}>
-				<h2 style={{ textAlign: 'left', color: 'white' }}>Receipt Table</h2>
+				<h2 style={{ textAlign: 'left', color: 'white' }}>Receipts</h2>
 				<div className={`col`}>
 					<PaginationTable
 						list={TableReceipt}
@@ -224,6 +220,8 @@ const Receipt = () => {
 					deleteHandler={deleteHandler}
 				/>
 			)}
+
+			{isLoading && <LoadingSpinner />}
 		</div>
 	)
 }

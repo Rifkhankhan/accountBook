@@ -17,18 +17,16 @@ export const userSlice = createSlice({
 			//   if (action.payload.success) state.notification = true;
 		},
 		deleteUser: (state, action) => {
-			state.users = state.users.filter(user => user._id !== action.payload)
+			state.users = state.users.filter(user => user.id !== action.payload)
 		},
 		updateUser: (state, action) => {
 			const updatedUser = {
-				_id: action.payload.id,
+				id: action.payload.id,
 				...action.payload.formData
 			}
 
 			// Find the index of the object to update
-			const index = state.users.findIndex(
-				user => user._id === action.payload.id
-			)
+			const index = state.users.findIndex(user => user.id === action.payload.id)
 
 			if (index !== -1) {
 				// Create a new array with the updated object
@@ -53,10 +51,10 @@ export const userSlice = createSlice({
 		},
 		activateToggle: (state, action) => {
 			// find user
-			const updatedUser = state.users.find(user => user._id === action.payload)
+			const updatedUser = state.users.find(user => user.id === action.payload)
 			updatedUser.status = !updatedUser?.status
 			// Find the index of the object to update
-			const index = state.users.findIndex(user => user._id === action.payload)
+			const index = state.users.findIndex(user => user.id === action.payload)
 			console.log(updatedUser)
 			if (index !== -1) {
 				// Create a new array with the updated object

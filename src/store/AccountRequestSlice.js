@@ -12,7 +12,7 @@ export const accountRequestSlice = createSlice({
 		},
 		createAccountRequest: (state, action) => {
 			console.log(action.payload)
-			state.accountRequests.push(action.payload)
+			state.accountRequests = [...action.payload]
 		},
 		getAccountRequests: (state, action) => {
 			state.accountRequests = [...action.payload]
@@ -22,17 +22,17 @@ export const accountRequestSlice = createSlice({
 		},
 		deleteAccountRequest: (state, action) => {
 			state.accountRequests = state.accountRequests.filter(
-				accountRequest => accountRequest._id !== action.payload
+				accountRequest => accountRequest.arid !== action.payload.arid
 			)
 		},
 		updateAccountRequest: (state, action) => {
 			const updatedAdvance = {
 				...action.payload
 			}
-
+			console.log(updatedAdvance)
 			// Find the index of the object to update
 			const index = state.accountRequests.findIndex(
-				accountRequest => accountRequest._id === action.payload._id
+				accountRequest => accountRequest.arid === action.payload.arid
 			)
 
 			if (index !== -1) {

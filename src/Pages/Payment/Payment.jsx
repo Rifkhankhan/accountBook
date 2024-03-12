@@ -5,7 +5,6 @@ import { faMoneyBill, faSackDollar } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch, useSelector } from 'react-redux'
 import PaginationTable from '../../Components/PaginationTable/PaginationTable'
 import ExpanseForm from '../../Components/ExpanseForm/ExpanseForm'
-import { deleteExpanse, getExpanses } from '../../Actions/ExpanseActions'
 import ExpanseModel from '../../Components/ExpanseModel/ExpanseModel'
 
 import LoadingSpinner from '../../Components/LoadingSpinner/LoadingSpinner'
@@ -14,15 +13,16 @@ import {
 	updateAccountRequest
 } from '../../Actions/AccountRequestActions'
 const Payment = () => {
+	const currentUser = useSelector(state => state.auth.user)
 	const expenses = useSelector(state => state.accountRequest.accountRequests)
 		?.filter(request => request.requestForm === 'expense')
-		?.filter(request => request.status === true)
+		?.filter(request => request.status === 1)
 
 	const expensesTable = useSelector(
 		state => state.accountRequest.accountRequests
-	)?.filter(request => request.status === true)
+	)?.filter(request => request.status === 1)
 
-	useEffect(() => {}, [expenses])
+	// useEffect(() => {}, [expenses])
 
 	const isLoading = useSelector(state => state.accountRequest.isLoading)
 
@@ -47,10 +47,13 @@ const Payment = () => {
 		setShowModal(current => !current)
 	}
 
-	const deleteHandler = id => {
+	const deleteHandler = row => {
 		handleModel()
-
-		dispatch(deleteAccountRequest(id))
+		const data = {
+			...row,
+			id: currentUser.id
+		}
+		dispatch(deleteAccountRequest(data))
 	}
 
 	// Function to calculate total expense for a specific date
@@ -65,7 +68,7 @@ const Payment = () => {
 
 		// Calculate total amount for the target date
 		const totalExpenseForDate = expensesForDate.reduce(
-			(total, expense) => total + expense.amount,
+			(total, expense) => total + +expense.amount,
 			0
 		)
 
@@ -73,7 +76,10 @@ const Payment = () => {
 	}
 
 	useLayoutEffect(() => {
-		const total = expenses.reduce((total, current) => total + current.amount, 0)
+		const total = expenses.reduce(
+			(total, current) => total + +current.amount,
+			0
+		)
 		setTotalExpanses(total)
 		setTodayTotalExpanses(getTotalExpenseForDate(expenses, new Date()))
 	}, [expenses])

@@ -1,24 +1,24 @@
 import React, { useLayoutEffect, useState } from 'react'
 import styles from './Advance.module.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMoneyBill, faSackDollar } from '@fortawesome/free-solid-svg-icons'
 
-import ReceiptForm from '../../Components/ReceiptForm/ReceiptForm'
 import PaginationTable from '../../Components/PaginationTable/PaginationTable'
 import { useDispatch, useSelector } from 'react-redux'
-import { deleteReceipt, getReceipts } from '../../Actions/ReceiptActions'
-import { deleteAdvance, getAdvances } from '../../Actions/AdvanceActions'
+
 import AdvanceModel from '../../Components/AdvanceModel/AdvanceModel'
 import AdvanceForm from '../../Components/Advance/AdvanceForm'
 import { deleteAccountRequest } from '../../Actions/AccountRequestActions'
+import LoadingSpinner from '../../Components/LoadingSpinner/LoadingSpinner'
 const Advance = () => {
+	const currentUser = useSelector(state => state.auth.user)
+	const isLoading = useSelector(state => state.accountRequest.isLoading)
+
 	const advances = useSelector(state => state.accountRequest.accountRequests)
 		?.filter(expanse => expanse.requestType === 'advance')
-		?.filter(request => request.status === true)
+		?.filter(request => request.status === 1)
 
 	const TableAdvances = useSelector(
 		state => state.accountRequest.accountRequests
-	)?.filter(request => request.status === true)
+	)?.filter(request => request.status === 1)
 
 	const [gotAdvance, setGotAdvance] = useState(0)
 	const [todayGotAdvance, setTodayGotAdvance] = useState(0)
@@ -34,10 +34,13 @@ const Advance = () => {
 		setShowModal(current => !current)
 	}
 
-	const deleteHandler = id => {
+	const deleteHandler = row => {
 		handleModel()
-
-		dispatch(deleteAccountRequest(id))
+		const data = {
+			...row,
+			id: currentUser.id
+		}
+		dispatch(deleteAccountRequest(data))
 	}
 
 	// Function to calculate total expense for a specific date
@@ -56,7 +59,7 @@ const Advance = () => {
 			expense => expense.requestForm === 'got'
 		)
 		const gottodayAdvanceAmount = gotAmountList.reduce(
-			(total, current) => total + current.amount,
+			(total, current) => total + +current.amount,
 			0
 		)
 		setTodayGotAdvance(gottodayAdvanceAmount)
@@ -67,14 +70,14 @@ const Advance = () => {
 			expense => expense.requestForm === 'paid'
 		)
 		const paidAdvanceAmount = padiAmountList.reduce(
-			(total, current) => total + current.amount,
+			(total, current) => total + +current.amount,
 			0
 		)
 		setTodayPaidAdvance(paidAdvanceAmount)
 
 		// Calculate total amount for the target date
 		const totalExpenseForDate = expensesForDate.reduce(
-			(total, expense) => total + expense.amount,
+			(total, expense) => total + +expense.amount,
 			0
 		)
 
@@ -86,7 +89,7 @@ const Advance = () => {
 
 		const loanGotList = advances.filter(loan => loan.requestForm === 'got')
 		const gotLoanAmount = loanGotList.reduce(
-			(total, current) => total + current.amount,
+			(total, current) => total + +current.amount,
 			0
 		)
 
@@ -96,7 +99,7 @@ const Advance = () => {
 
 		const loanPaidList = advances.filter(loan => loan.requestForm === 'paid')
 		const paidLoanAmount = loanPaidList.reduce(
-			(total, current) => total + current.amount,
+			(total, current) => total + +current.amount,
 			0
 		)
 
@@ -232,6 +235,7 @@ const Advance = () => {
 					deleteHandler={deleteHandler}
 				/>
 			)}
+			{isLoading && <LoadingSpinner />}
 		</div>
 	)
 }

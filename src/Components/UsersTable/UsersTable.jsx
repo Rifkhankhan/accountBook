@@ -21,8 +21,7 @@ const UsersTable = ({ initialData, handleModel, getIdHandler }) => {
 				<thead className="thead-dark">
 					<tr>
 						<th>Name</th>
-						<th>Email</th>
-						<th>Phone</th>
+
 						<th>Expense Permission</th>
 						<th>Expense Delete Permission</th>
 						<th>Receipt Permission</th>
@@ -39,11 +38,10 @@ const UsersTable = ({ initialData, handleModel, getIdHandler }) => {
 									key={index}
 									onClick={() => {
 										handleModel()
-										getIdHandler(item?._id)
+										getIdHandler(item?.id)
 									}}>
 									<td>{item?.name}</td>
-									<td>{item?.email}</td>
-									<td>{item?.phone}</td>
+
 									<td
 										className={
 											item?.expansePermission === 'yes'

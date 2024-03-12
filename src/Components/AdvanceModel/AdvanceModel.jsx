@@ -21,8 +21,10 @@ const AdvanceModel = ({
 	const [formValid, setFormValid] = useState(true)
 	const dispatch = useDispatch()
 	// initialInputsState
+	const { balance, ...rest } = clickedRow
+
 	const initialInputsState = {
-		...clickedRow,
+		...rest,
 		date: {
 			value: new Date(clickedRow?.date).toISOString()?.split('T')[0],
 			isValid: true
@@ -30,7 +32,7 @@ const AdvanceModel = ({
 		amount: { value: +clickedRow?.amount, isValid: true },
 		narration: { value: clickedRow?.narration, isValid: true },
 		requestForm: { value: clickedRow?.requestForm, isValid: true },
-		userId: { value: currentUser?._id, isValid: true },
+		id: { value: currentUser?.id, isValid: true },
 		requestType: { value: clickedRow?.requestType, isValid: true }
 	}
 
@@ -57,22 +59,24 @@ const AdvanceModel = ({
 
 	const submitHandler = () => {
 		const data = {
-			...clickedRow,
+			...rest,
+
 			date: inputs.date.value,
 
 			narration: inputs.narration.value,
 			amount: +inputs.amount.value,
-			userId: inputs.userId.value,
+			id: inputs.id.value,
 			requestForm: inputs.requestForm.value,
 			requestType: inputs.requestType.value
 		}
 
 		const narrationValid = data.narration?.trim().length > 0
 		const categoryValid = data.requestForm?.trim().length > 0
-		const amountValid = data.amount > 0
+		const amountValid = +data.amount > 0
 		if (!narrationValid || !amountValid || !categoryValid) {
 			setInputs(currentInputs => {
 				return {
+					...rest,
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
@@ -164,7 +168,7 @@ const AdvanceModel = ({
 							currentUser.advanceDeletePermission === 'yes' && (
 								<Button
 									variant="danger"
-									onClick={() => deleteHandler(clickedRow._id)}>
+									onClick={() => deleteHandler(clickedRow)}>
 									Delete
 								</Button>
 							)}

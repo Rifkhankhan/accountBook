@@ -18,24 +18,21 @@ const ReceiptModel = ({
 	const [formSubmit, setFormSubmit] = useState(false)
 	const [formValid, setFormValid] = useState(true)
 	const dispatch = useDispatch()
-
-	
+	const { balance, ...rest } = clickedRow
 
 	// initialInputsState
 	const initialInputsState = {
-		...clickedRow,
+		...rest,
 		date: {
 			value: new Date(clickedRow.date).toISOString().split('T')[0],
 			isValid: true
 		},
-		amount: { value: clickedRow?.amount, isValid: true },
+		amount: { value: +clickedRow?.amount, isValid: true },
 		narration: { value: clickedRow?.narration, isValid: true },
-		userId: { value: currentUser?._id, isValid: true },
+		id: { value: currentUser?.id, isValid: true },
 		requestForm: { value: clickedRow?.requestForm, isValid: true },
 		requestType: { value: clickedRow?.requestType, isValid: true }
 	}
-
-	
 
 	const [inputs, setInputs] = useState(initialInputsState)
 
@@ -69,23 +66,24 @@ const ReceiptModel = ({
 
 	const submitHandler = () => {
 		const data = {
-			...clickedRow,
+			...rest,
 			date: inputs.date.value,
 
 			narration: inputs.narration.value,
-			amount: inputs.amount.value,
-			userId: inputs.userId.value,
+			amount: +inputs.amount.value,
+			id: inputs.id.value,
 			requestForm: inputs.requestForm.value,
 			requestType: inputs.requestType.value
 		}
 
 		const narrationValid = data.narration?.trim().length > 0
 		const categoryValid = data.requestForm?.trim().length > 0
-		const amountValid = data.amount > 0
+		const amountValid = +data.amount > 0
 		const dateValid = data.date?.trim().length > 0
 		if (!narrationValid || !amountValid || !categoryValid) {
 			setInputs(currentInputs => {
 				return {
+					...rest,
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
@@ -95,7 +93,7 @@ const ReceiptModel = ({
 						isValid: dateValid
 					},
 					amount: {
-						value: currentInputs.amount.value,
+						value: +currentInputs.amount.value,
 						isValid: amountValid
 					},
 					requestForm: {
@@ -108,15 +106,10 @@ const ReceiptModel = ({
 		}
 
 		dispatch(updateAccountRequest(data))
+		closeHandler()
 		setFormSubmit(true)
-		// setShowEditModal(false)j
 
 		setInputs(initialInputsState)
-		closeHandler()
-	}
-
-	const delHandler = () => {
-		deleteHandler(clickedRow._id)
 	}
 
 	return (
@@ -180,7 +173,9 @@ const ReceiptModel = ({
 					<Modal.Footer>
 						{currentUser.receiptPermission === 'yes' &&
 							currentUser.receiptDeletePermission === 'yes' && (
-								<Button variant="danger" onClick={delHandler}>
+								<Button
+									variant="danger"
+									onClick={() => deleteHandler(clickedRow)}>
 									Delete
 								</Button>
 							)}

@@ -56,20 +56,20 @@ const ExpanseForm = () => {
 	// }
 	const submitHandler = () => {
 		const data = {
-			amount: inputs.amount.value,
+			amount: +inputs.amount.value,
 			narration: inputs.narration.value,
 			date: inputs.date.value
 		}
 
 		const dateValid = data.date?.trim().length > 0
 
-		const amountValid = data.amount > 0
+		const amountValid = +data.amount > 0
 		const narrationValid = data.narration?.trim().length > 0
 
 		if (!amountValid || !narrationValid || !dateValid) {
 			setInputs(currentInputs => {
 				return {
-					amount: { value: currentInputs.amount.value, isValid: amountValid },
+					amount: { value: +currentInputs.amount.value, isValid: amountValid },
 					date: { value: currentInputs.date.value, isValid: dateValid },
 
 					narration: {
@@ -84,7 +84,7 @@ const ExpanseForm = () => {
 		// dispatch(createExpanse(data))
 		const newData = {
 			...data,
-			userId: currentUser._id,
+			id: currentUser.id,
 			requestType: 'expense',
 			requestForm: 'expense'
 		}
@@ -95,7 +95,7 @@ const ExpanseForm = () => {
 	return (
 		<div className={`container ${styles.container} `}>
 			<h2 class="row col-md-12 col-sm-6" className={styles.header}>
-				Create Expense(Dr)
+				Create Expense(D)
 			</h2>
 			{!formValid && (
 				<div className="row ">

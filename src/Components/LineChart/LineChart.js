@@ -22,7 +22,6 @@ Chart.register(
 const LineChart = ({ expenses, receipts, requestList }) => {
 	// Get today's date
 	const today = new Date()
-
 	// Initialize an array to store the labels
 	const labels = []
 
@@ -47,40 +46,124 @@ const LineChart = ({ expenses, receipts, requestList }) => {
 	const [receiptByDate, setReceiptByDate] = useState({})
 	const [listByDate, setListByDate] = useState({})
 
-	useEffect(() => {
-		const expensesamounts = {}
-		expenses?.forEach(expense => {
-			if (!expensesamounts[expense.date]) {
-				expensesamounts[expense.date] = 0
-			}
-			expensesamounts[expense.date] += expense.amount
-		})
-		setAmountByDate(expensesamounts)
+	const receiptLine = receipts => {
+		const today = new Date()
+		const sevenDaysAgo = new Date(today.getTime() - 6 * 24 * 60 * 60 * 1000) // Include today
 
-		const receiptsamounts = {}
-		receipts?.forEach(expense => {
-			if (!receiptsamounts[expense.date]) {
-				receiptsamounts[expense.date] = 0
-			}
-			receiptsamounts[expense.date] += expense.amount
+		// Step 1: Filter receipts for the last 7 days
+		const filteredReceipts = receipts.filter(receipt => {
+			const receiptDate = new Date(receipt.date)
+			return receiptDate >= sevenDaysAgo && receiptDate <= today
 		})
-		setReceiptByDate(receiptsamounts)
 
+		// Step 2: Group receipts by date
+		const receiptsByDate = {}
+		filteredReceipts.forEach(receipt => {
+			const date = receipt.date.split(' ')[0] // Extract date part only
+			if (!receiptsByDate[date]) {
+				receiptsByDate[date] = []
+			}
+			receiptsByDate[date].push(receipt)
+		})
+
+		// Step 3: Calculate sum of amounts for each date
+		const sumsByDate = {}
+		for (const date in receiptsByDate) {
+			const amounts = receiptsByDate[date].map(receipt =>
+				parseInt(receipt.amount)
+			)
+			sumsByDate[date] = amounts.reduce((total, amount) => total + amount, 0)
+		}
+
+		setReceiptByDate(sumsByDate)
+	}
+
+	const expenseLine = receipts => {
+		const today = new Date()
+		const sevenDaysAgo = new Date(today.getTime() - 6 * 24 * 60 * 60 * 1000) // Include today
+
+		// Step 1: Filter receipts for the last 7 days
+		const filteredReceipts = receipts.filter(receipt => {
+			const receiptDate = new Date(receipt.date)
+			return receiptDate >= sevenDaysAgo && receiptDate <= today
+		})
+
+		// Step 2: Group receipts by date
+		const receiptsByDate = {}
+		filteredReceipts.forEach(receipt => {
+			const date = receipt.date.split(' ')[0] // Extract date part only
+			if (!receiptsByDate[date]) {
+				receiptsByDate[date] = []
+			}
+			receiptsByDate[date].push(receipt)
+		})
+
+		// Step 3: Calculate sum of amounts for each date
+		const sumsByDate = {}
+		for (const date in receiptsByDate) {
+			const amounts = receiptsByDate[date].map(receipt =>
+				parseInt(receipt.amount)
+			)
+			sumsByDate[date] = amounts.reduce((total, amount) => total + +amount, 0)
+		}
+
+		setAmountByDate(sumsByDate)
+	}
+
+	const balanceLine = receipts => {
+		const today = new Date()
+		const sevenDaysAgo = new Date(today.getTime() - 6 * 24 * 60 * 60 * 1000) // Include today
+
+		// Step 1: Filter receipts for the last 7 days
+		const filteredReceipts = receipts.filter(receipt => {
+			const receiptDate = new Date(receipt.date)
+			return receiptDate >= sevenDaysAgo && receiptDate <= today
+		})
+
+		// Step 2: Group receipts by date
+		const receiptsByDate = {}
+		filteredReceipts.forEach(receipt => {
+			const date = receipt.date.split(' ')[0] // Extract date part only
+			if (!receiptsByDate[date]) {
+				receiptsByDate[date] = []
+			}
+			receiptsByDate[date].push(receipt)
+		})
+
+		console.log(receiptsByDate)
+		// Step 3: Calculate sum of amounts for each date
 		const balances = {}
-		requestList?.forEach(expense => {
-			if (!balances[expense.date]) {
-				balances[expense.date] = 0
-			}
-			balances[expense.date] += expense.amount
-		})
+		for (const date in receiptsByDate) {
+			let totalIncome = 0
+			let totalExpense = 0
+
+			receiptsByDate[date].forEach(entry => {
+				if (entry.requestForm === 'got' || entry.requestType === 'receipt') {
+					totalIncome += +entry.amount
+				} else {
+					totalExpense += +entry.amount
+				}
+			})
+
+			const balance = +totalIncome - +totalExpense
+			balances[date] = balance
+		}
+
+		console.log(balances)
+
 		setListByDate(balances)
+	}
+
+	useEffect(() => {
+		receiptLine(receipts)
+		expenseLine(expenses)
+		balanceLine(requestList)
 	}, [expenses, receipts, requestList])
 
 	// Convert object to array of values
 	const amounts = Object.values(amountByDate)
 	const receiptsLists = Object.values(receiptByDate)
 	const balanceList = Object.values(listByDate)
-	const isMobile = window.innerWidth <= 600 // Define your mobile width breakpoint
 
 	const data = {
 		labels: [...labels],
@@ -88,22 +171,22 @@ const LineChart = ({ expenses, receipts, requestList }) => {
 			{
 				label: 'Income',
 				data: receiptsLists,
-				backgroundColor: 'yellow',
-				borderColor: 'aqua',
-				pointBorderColor: 'yellow'
+				backgroundColor: 'aqua',
+				borderColor: 'yellow',
+				pointBorderColor: 'aqua'
 			},
 			{
 				label: 'Expense',
 				data: amounts,
 				backgroundColor: 'red',
-				borderColor: 'yellow',
+				borderColor: 'aqua',
 				pointBorderColor: 'red'
 			},
 			{
 				label: 'Balance',
 				data: balanceList,
 				backgroundColor: 'orange',
-				borderColor: 'white',
+				borderColor: 'green',
 				pointBorderColor: 'orange'
 			}
 		]

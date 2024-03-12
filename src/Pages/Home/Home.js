@@ -24,28 +24,55 @@ import PieChart from '../../Components/PieChart/PieChart'
 import LineChart from '../../Components/LineChart/LineChart'
 import TransactionTable from '../../Components/TransectionTable/TransectionTable'
 import { deleteAccountRequest } from '../../Actions/AccountRequestActions'
+import LoadingSpinner from '../../Components/LoadingSpinner/LoadingSpinner'
+import Countdown from 'react-countdown'
+import { logout } from '../../Actions/AuthAction'
+import { authActions } from '../../store/AuthSlice'
 
+const Timer = ({ onTimeout }) => {
+	const initialTimeLeft = localStorage.getItem('timeLeft') || 3600
+	const [timeLeft, setTimeLeft] = useState(parseInt(initialTimeLeft))
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			if (timeLeft > 0) {
+				setTimeLeft(prevTimeLeft => prevTimeLeft - 1)
+			} else {
+				clearInterval(interval)
+				onTimeout() // Call the logout function when timer expires
+			}
+		}, 1000)
+
+		return () => clearInterval(interval)
+	}, [timeLeft, onTimeout])
+
+	useEffect(() => {
+		localStorage.setItem('timeLeft', timeLeft)
+	}, [timeLeft])
+
+	const formatTime = time => {
+		const minutes = Math.floor(time / 60)
+		const seconds = time % 60
+		return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
+	}
+
+	return <div>: {formatTime(timeLeft)}</div>
+}
 const Home = () => {
 	const requestList = useSelector(
 		state => state.accountRequest.accountRequests
-	).filter(request => request.status === true)
+	).filter(request => request.status === 1)
 
-	const expanses = requestList?.filter(
-		request => request.requestType === 'expense'
-	)
+	const expanses = requestList
+		?.filter(request => request.requestType === 'expense')
+		.filter(request => request.status === 1)
 
-	const receipts = requestList?.filter(
-		request => request.requestType === 'receipt'
-	)
-
-	const loans = requestList?.filter(request => request.requestType === 'loan')
-	const advances = requestList?.filter(
-		request => request.requestType === 'advance'
-	)
-
-	const lastRequest = requestList[requestList?.length - 1]
+	const receipts = requestList
+		?.filter(request => request.requestType === 'receipt')
+		.filter(request => request.status === 1)
 
 	const currentUser = useSelector(state => state.auth.user)
+	const isLoading = useSelector(state => state.accountRequest.isLoading)
 
 	const [totalExpanses, setTotalExpanses] = useState(0)
 	const [totalIncomes, setTotalIncomes] = useState(0)
@@ -79,29 +106,36 @@ const Home = () => {
 		const today = new Date()
 		const yesterday = new Date(today)
 		yesterday.setDate(today.getDate() - 1)
-
 		const formattedYesterday = yesterday.toISOString().split('T')[0]
+		const formattedToday = yesterday.toISOString().split('T')[0]
 
-		const lastDayList = list.filter(
-			li => li.date.split('T')[0] === formattedYesterday
+		// Filter list to get entries before yesterday
+		const beforeYesterdayList = list.filter(li => {
+			const currentDate = new Date(li.date).toISOString().split('T')[0]
+			return currentDate <= formattedYesterday
+		})
+
+		const totalAmountBeforeYesterday = beforeYesterdayList.reduce(
+			(total, current) => {
+				if (
+					current.requestForm === 'got' ||
+					current.requestType === 'receipt'
+				) {
+					return total + parseFloat(current.amount)
+				} else {
+					return total - parseFloat(current.amount)
+				}
+			},
+			0
 		)
 
-		const gotAdvanceAmount = lastDayList.reduce((total, current) => {
-			if (current.requestForm === 'got' || current.requestType === 'receipt') {
-				return total + current.amount
-			} else {
-				return total - current.amount
-			}
-			return total // Make sure to return total even if the condition isn't met
-		}, 0)
-
-		setOpeningBalance(gotAdvanceAmount)
+		setOpeningBalance(totalAmountBeforeYesterday)
 	}
 
 	const getTotalExpenseAmount = expanses => {
 		// calculate total expenses
 		const totalExpanses = expanses.reduce(
-			(total, current) => total + current.amount,
+			(total, current) => total + +current.amount,
 			0
 		)
 		setTotalExpanses(totalExpanses)
@@ -112,14 +146,14 @@ const Home = () => {
 
 		const totalIncomes = incomes.reduce((total, current) => {
 			if (current.requestForm === 'cash') {
-				return total + current.amount
+				return total + +current.amount
 			}
 			return total // Make sure to return total even if the condition isn't met
 		}, 0)
 
 		const totalCapital = incomes.reduce((total, current) => {
 			if (current.requestForm === 'capital') {
-				return total + current.amount
+				return total + +current.amount
 			}
 			return total // Make sure to return total even if the condition isn't met
 		}, 0)
@@ -133,14 +167,14 @@ const Home = () => {
 
 		const totalPaidAdvance = advances.reduce((total, current) => {
 			if (current.requestForm === 'paid' && current.requestType === 'advance') {
-				return total + current.amount
+				return total + +current.amount
 			}
 			return total // Make sure to return total even if the condition isn't met
 		}, 0)
 
 		const totalGotAdvance = advances.reduce((total, current) => {
 			if (current.requestForm === 'got' && current.requestType === 'advance') {
-				return total + current.amount
+				return total + +current.amount
 			}
 			return total // Make sure to return total even if the condition isn't met
 		}, 0)
@@ -154,14 +188,14 @@ const Home = () => {
 
 		const totalPaidLoan = advances.reduce((total, current) => {
 			if (current.requestForm === 'paid' && current.requestType === 'loan') {
-				return total + current.amount
+				return total + +current.amount
 			}
 			return total // Make sure to return total even if the condition isn't met
 		}, 0)
 
 		const totalGotLoan = advances.reduce((total, current) => {
 			if (current.requestForm === 'got' && current.requestType === 'loan') {
-				return total + current.amount
+				return total + +current.amount
 			}
 			return total // Make sure to return total even if the condition isn't met
 		}, 0)
@@ -243,6 +277,13 @@ const Home = () => {
 			.padStart(2, '0')}`
 	}
 
+	// timer logout
+	const handleLogout = () => {
+		localStorage.removeItem('timeLeft') // Clear remaining time on logout
+
+		dispatch(authActions.logout())
+	}
+
 	return (
 		<div className={`container ${styles.home}`}>
 			<section className={`container  text-light`} style={{ margin: 'auto' }}>
@@ -253,38 +294,108 @@ const Home = () => {
 						display: 'flex',
 						justifyContent: 'space-between'
 					}}>
-					<div className={`col-3 ${styles.smallCard}`}>
+					{/* times */}
+					<div
+						className={`col-3 ${styles.smallCard}`}
+						style={{
+							backgroundColor: 'white',
+							color: 'darkblue',
+							display: 'flex',
+							alignItems: 'center',
+							fontSize: '1em'
+						}}>
+						<p className="col-6" style={{ marginBlock: 'auto' }}>
+							Remaining Time{' '}
+						</p>
+						<p
+							style={{
+								marginBlock: 'auto',
+								textAlign: 'left',
+								fontSize: '1.5em',
+								fontWeight: 600
+							}}>
+							{/* <Countdown
+								className="col-6"
+								date={Date.now() + 3600000} // 1 hour from now in milliseconds
+								onComplete={handleLogout}
+								renderer={({ hours, minutes, seconds, completed }) => {
+									if (completed) {
+										return <span>Logging out...</span>
+									} else {
+										return (
+											<span>
+												{hours}:{minutes}:{seconds}
+											</span>
+										)
+									}
+								}}
+							/> */}
+
+							<Timer onTimeout={handleLogout} />
+						</p>
+					</div>
+
+					{/* timer finished */}
+				</div>
+			</section>
+			<section className={`container  text-light`} style={{ margin: 'auto' }}>
+				<div
+					className="row "
+					style={{
+						margin: 'auto',
+						display: 'flex',
+						justifyContent: 'space-between'
+					}}>
+					{/* times */}
+
+					{/* timer finished */}
+					<div
+						className={`col-3 ${styles.smallCard}`}
+						style={{ backgroundColor: '#FFD700', color: 'darkblue' }}>
 						<p className="col-2 " style={{ margin: 'auto' }}>
 							Date
 						</p>
 						<p
 							className="col-8  "
-							style={{ textAlign: 'left', margin: 'auto' }}>
+							style={{ textAlign: 'left', margin: 'auto', fontWeight: 700 }}>
 							: {formattedDate}
 						</p>
 					</div>
 					<div
 						className={`col-3 ${styles.smallCard}`}
-						style={{ position: 'relative' }}>
+						style={{
+							position: 'relative',
+							backgroundColor: ' #CCCCCC',
+							color: 'darkblue'
+						}}>
 						<p className="col-2 " style={{ textAlign: 'left', margin: 'auto' }}>
 							User
 						</p>
 						<p
 							className="col-8  "
-							style={{ textAlign: 'left', margin: 'auto' }}>
+							style={{ textAlign: 'left', margin: 'auto', fontWeight: 700 }}>
 							: {currentUser.name}
 						</p>
 						<FontAwesomeIcon
 							className={styles.profileEditBtn}
 							icon={faPen}
+							style={{ color: 'darkblue' }}
 							onClick={handlePasswordModel}
 						/>
 					</div>
-					<div className={`col-3 ${styles.smallCard}`}>
+					<div
+						className={`col-3 ${styles.smallCard}`}
+						style={{
+							position: 'relative',
+							backgroundColor: ' #FFFDD0',
+							color: 'darkblue'
+						}}>
 						<p className="col-3 " style={{ textAlign: 'left', margin: 'auto' }}>
 							Opening Balance
 						</p>
-						<p className="col-8 " style={{ textAlign: 'left', margin: 'auto' }}>
+						<p
+							className="col-8 "
+							style={{ textAlign: 'left', margin: 'auto', fontWeight: 700 }}>
 							: {openingBalance}
 						</p>
 					</div>
@@ -649,6 +760,8 @@ const Home = () => {
 					closeHandler={handlePasswordModel}
 				/>
 			)}
+
+			{isLoading && <LoadingSpinner />}
 		</div>
 	)
 }

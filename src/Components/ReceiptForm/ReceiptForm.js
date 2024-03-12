@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styles from './ReceiptForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { createReceipt } from './../../Actions/ReceiptActions'
 import { createAccountRequest } from '../../Actions/AccountRequestActions'
 const ReceiptForm = ({ header }) => {
 	const [formValid, setFormValid] = useState(true)
@@ -9,13 +8,12 @@ const ReceiptForm = ({ header }) => {
 	const currentUser = useSelector(state => state.auth.user)
 	const [formSubmit, setFormSubmit] = useState(false)
 	const dispatch = useDispatch()
-	const [error, setHasError] = useState(false)
 	// Initial state for inputs
 	const initialInputsState = {
 		amount: { value: '', isValid: true },
 		narration: { value: '', isValid: true },
 		date: { value: '', isValid: true },
-		type: { value: '', isValid: true }
+		requestForm: { value: '', isValid: true }
 	}
 
 	// State for inputs
@@ -25,7 +23,7 @@ const ReceiptForm = ({ header }) => {
 		setFormValid(
 			inputs.amount.isValid &&
 				inputs.narration.isValid &&
-				inputs.type.isValid &&
+				inputs.requestForm.isValid &&
 				inputs.date.isValid
 		)
 
@@ -58,13 +56,13 @@ const ReceiptForm = ({ header }) => {
 		const data = {
 			amount: +inputs.amount.value,
 			narration: inputs.narration.value,
-			type: inputs.type.value,
+			requestForm: inputs.requestForm.value,
 			date: inputs.date.value
 		}
 
 		const amountValid = +data.amount > 0
 		const narrationValid = data.narration?.trim().length > 0
-		const categoryValid = data.type?.trim().length > 0
+		const categoryValid = data.requestForm?.trim().length > 0
 		const dateValid = data.date?.trim().length > 0
 
 		if (!amountValid || !narrationValid || !categoryValid || !dateValid) {
@@ -77,8 +75,8 @@ const ReceiptForm = ({ header }) => {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
 					},
-					type: {
-						value: currentInputs.type.value,
+					requestForm: {
+						value: currentInputs.requestForm.value,
 						isValid: categoryValid
 					}
 				}
@@ -88,9 +86,9 @@ const ReceiptForm = ({ header }) => {
 
 		const newData = {
 			...data,
-			userId: currentUser._id,
+			id: currentUser.id,
 			requestType: 'receipt',
-			requestForm: data.type
+			requestForm: data.requestForm
 		}
 		dispatch(createAccountRequest(newData))
 		setFormSubmit(true)
@@ -99,7 +97,7 @@ const ReceiptForm = ({ header }) => {
 	return (
 		<div className={`container ${styles.container} `}>
 			<h2 class="row col-md-12 col-sm-6" className={styles.header}>
-				Create Income
+				Create Income(C)
 			</h2>
 			{!formValid && (
 				<div className="row ">
@@ -172,9 +170,9 @@ const ReceiptForm = ({ header }) => {
 								<input
 									type="radio"
 									id="Cash"
-									name="type"
-									onChange={e => inputTextChangeHandler('type', 'cash')}
-									value={inputs.type?.value}
+									name="requestForm"
+									onChange={e => inputTextChangeHandler('requestForm', 'cash')}
+									value={inputs.requestForm?.value}
 									class="col col-2"
 								/>
 								<label
@@ -189,9 +187,11 @@ const ReceiptForm = ({ header }) => {
 								<input
 									type="radio"
 									id="Capital"
-									name="type"
-									onChange={e => inputTextChangeHandler('type', 'capital')}
-									value={inputs.type?.value}
+									name="requestForm"
+									onChange={e =>
+										inputTextChangeHandler('requestForm', 'capital')
+									}
+									value={inputs.requestForm?.value}
 									class="col col-2"
 								/>
 								<label

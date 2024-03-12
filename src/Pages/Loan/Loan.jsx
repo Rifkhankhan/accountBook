@@ -11,14 +11,18 @@ import ReceiptModel from '../../Components/ReceiptModel/ReceiptModel'
 import { getLoans } from '../../Actions/LoanActions'
 import LoanModel from '../../Components/LoanModel/LoanModel'
 import { deleteAccountRequest } from '../../Actions/AccountRequestActions'
+import LoadingSpinner from '../../Components/LoadingSpinner/LoadingSpinner'
 const Loan = () => {
+	const currentUser = useSelector(state => state.auth.user)
+	const isLoading = useSelector(state => state.accountRequest.isLoading)
+
 	const loans = useSelector(state => state.accountRequest.accountRequests)
 		?.filter(expanse => expanse.requestType === 'loan')
-		?.filter(request => request.status === true)
+		?.filter(request => request.status === 1)
 
 	const TableLoan = useSelector(
 		state => state.accountRequest.accountRequests
-	)?.filter(request => request.status === true)
+	)?.filter(request => request.status === 1)
 
 	const [gotLoan, setGotLoan] = useState(0)
 	const [paidLoan, setPaidLoan] = useState(0)
@@ -35,10 +39,13 @@ const Loan = () => {
 		setShowModal(current => !current)
 	}
 
-	const deleteHandler = id => {
+	const deleteHandler = row => {
 		handleModel()
-
-		dispatch(deleteAccountRequest(id))
+		const data = {
+			...row,
+			id: currentUser.id
+		}
+		dispatch(deleteAccountRequest(data))
 	}
 
 	// Function to calculate total expense for a specific date
@@ -57,7 +64,7 @@ const Loan = () => {
 			expense => expense.requestForm === 'got'
 		)
 		const gottodayAdvanceAmount = gotAmountList.reduce(
-			(total, current) => total + current.amount,
+			(total, current) => total + +current.amount,
 			0
 		)
 		setTodayGotLoan(gottodayAdvanceAmount)
@@ -68,7 +75,7 @@ const Loan = () => {
 			expense => expense.requestForm === 'paid'
 		)
 		const paidAdvanceAmount = padiAmountList.reduce(
-			(total, current) => total + current.amount,
+			(total, current) => total + +current.amount,
 			0
 		)
 		setTodayPaidLoan(paidAdvanceAmount)
@@ -87,7 +94,7 @@ const Loan = () => {
 
 		const loanGotList = loans.filter(loan => loan.requestForm === 'got')
 		const gotLoanAmount = loanGotList.reduce(
-			(total, current) => total + current.amount,
+			(total, current) => total + +current.amount,
 			0
 		)
 
@@ -97,7 +104,7 @@ const Loan = () => {
 
 		const loanPaidList = loans.filter(loan => loan.requestForm === 'paid')
 		const paidLoanAmount = loanPaidList.reduce(
-			(total, current) => total + current.amount,
+			(total, current) => total + +current.amount,
 			0
 		)
 
@@ -231,6 +238,7 @@ const Loan = () => {
 					deleteHandler={deleteHandler}
 				/>
 			)}
+			{isLoading && <LoadingSpinner />}
 		</div>
 	)
 }

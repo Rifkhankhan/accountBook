@@ -7,6 +7,7 @@ import { authActions } from '../../store/AuthSlice'
 import { useNavigate } from 'react-router-dom'
 import { logIn } from '../../Actions/AuthAction'
 import LoadingSpinner from './../../Components/LoadingSpinner/LoadingSpinner'
+import { getUsers } from '../../Actions/userAction'
 const Login = props => {
 	const [formSubmit, setFormSubmit] = useState(false)
 	const dispatch = useDispatch()
@@ -14,7 +15,6 @@ const Login = props => {
 	const navigate = useNavigate()
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
 	const isLoading = useSelector(state => state.auth.isLoading)
-	console.log(isLoading)
 
 	const initialInputsState = {
 		name: { value: '', isValid: true },

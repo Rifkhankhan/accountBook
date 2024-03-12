@@ -29,7 +29,12 @@ const Routers = () => {
 			<Header />
 			{isLoading && <LoadingSpinner />}
 			<Routes>
-				{<Route path="/login" element={<Login />} />}
+				{
+					<Route
+						path="/login"
+						element={!isAuthenticated ? <Login /> : <Home />}
+					/>
+				}
 
 				<Route
 					path="/"

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styles from './AdvanceForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { createReceipt } from '../../Actions/ReceiptActions'
-import { createAdvance } from '../../Actions/AdvanceActions'
+
 import { createAccountRequest } from '../../Actions/AccountRequestActions'
 
 const AdvanceForm = ({ header }) => {
@@ -11,13 +10,12 @@ const AdvanceForm = ({ header }) => {
 	const [formSubmit, setFormSubmit] = useState(false)
 	const currentUser = useSelector(state => state.auth.user)
 	const dispatch = useDispatch()
-	const [error, setHasError] = useState(false)
 	// Initial state for inputs
 	const initialInputsState = {
 		amount: { value: '', isValid: true },
 		narration: { value: '', isValid: true },
 		date: { value: '', isValid: true },
-		type: { value: '', isValid: true }
+		requestForm: { value: '', isValid: true }
 	}
 
 	// State for inputs
@@ -27,7 +25,7 @@ const AdvanceForm = ({ header }) => {
 		setFormValid(
 			inputs.amount.isValid &&
 				inputs.narration.isValid &&
-				inputs.type.isValid &&
+				inputs.requestForm.isValid &&
 				inputs.date.isValid
 		)
 
@@ -61,13 +59,13 @@ const AdvanceForm = ({ header }) => {
 		const data = {
 			amount: +inputs.amount.value,
 			narration: inputs.narration.value,
-			type: inputs.type.value,
+			requestForm: inputs.requestForm.value,
 			date: inputs.date.value
 		}
 
 		const amountValid = +data.amount > 0
 		const narrationValid = data.narration?.trim().length > 0
-		const typeValid = data.type?.trim().length > 0
+		const typeValid = data.requestForm?.trim().length > 0
 		const dateValid = data.date?.trim().length > 0
 
 		if (!amountValid || !narrationValid || !typeValid || !dateValid) {
@@ -80,8 +78,8 @@ const AdvanceForm = ({ header }) => {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
 					},
-					type: {
-						value: currentInputs.type.value,
+					requestForm: {
+						value: currentInputs.requestForm.value,
 						isValid: typeValid
 					}
 				}
@@ -91,9 +89,9 @@ const AdvanceForm = ({ header }) => {
 
 		const newData = {
 			...data,
-			userId: currentUser._id,
+			id: currentUser.id,
 			requestType: 'advance',
-			requestForm: data.type
+			requestForm: data.requestForm
 		}
 		dispatch(createAccountRequest(newData))
 		setFormSubmit(true)
@@ -175,9 +173,9 @@ const AdvanceForm = ({ header }) => {
 								<input
 									type="radio"
 									id="paid"
-									name="type"
-									onChange={e => inputTextChangeHandler('type', 'paid')}
-									value={inputs.type?.value}
+									name="requestForm"
+									onChange={e => inputTextChangeHandler('requestForm', 'paid')}
+									value={inputs.requestForm?.value}
 									class="col col-2"
 								/>
 								<label
@@ -192,9 +190,9 @@ const AdvanceForm = ({ header }) => {
 								<input
 									type="radio"
 									id="Received"
-									name="type"
-									onChange={e => inputTextChangeHandler('type', 'got')}
-									value={inputs.type?.value}
+									name="requestForm"
+									onChange={e => inputTextChangeHandler('requestForm', 'got')}
+									value={inputs.requestForm?.value}
 									class="col col-2"
 								/>
 								<label
