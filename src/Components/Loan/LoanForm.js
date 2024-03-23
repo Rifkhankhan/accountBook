@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styles from './LoanForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { createReceipt } from '../../Actions/ReceiptActions'
-import { createLoan } from '../../Actions/LoanActions'
+
 import { createAccountRequest } from '../../Actions/AccountRequestActions'
 
 const LoanForm = ({ header }) => {
@@ -16,7 +15,9 @@ const LoanForm = ({ header }) => {
 		amount: { value: '', isValid: true },
 		narration: { value: '', isValid: true },
 		date: { value: '', isValid: true },
-		requestForm: { value: '', isValid: true }
+		requestForm: { value: '', isValid: true },
+
+		methode: { value: '', isValid: true }
 	}
 
 	// State for inputs
@@ -27,6 +28,7 @@ const LoanForm = ({ header }) => {
 			inputs.amount.isValid &&
 				inputs.narration.isValid &&
 				inputs.requestForm.isValid &&
+				inputs.methode.isValid &&
 				inputs.date.isValid
 		)
 
@@ -60,15 +62,23 @@ const LoanForm = ({ header }) => {
 			amount: +inputs.amount.value,
 			narration: inputs.narration.value,
 			requestForm: inputs.requestForm.value,
-			date: inputs.date.value
+			date: inputs.date.value,
+			methode: inputs.methode.value
 		}
 
 		const amountValid = +data.amount > 0
 		const narrationValid = data.narration?.trim().length > 0
 		const typeValid = data.requestForm?.trim().length > 0
 		const dateValid = data.date?.trim().length > 0
+		const methodeValid = data.methode?.trim().length > 0
 
-		if (!amountValid || !narrationValid || !typeValid || !dateValid) {
+		if (
+			!amountValid ||
+			!narrationValid ||
+			!typeValid ||
+			!dateValid ||
+			!methodeValid
+		) {
 			setInputs(currentInputs => {
 				return {
 					amount: { value: +currentInputs.amount.value, isValid: amountValid },
@@ -77,6 +87,10 @@ const LoanForm = ({ header }) => {
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
+					},
+					methode: {
+						value: currentInputs.methode.value,
+						isValid: methodeValid
 					},
 					requestForm: {
 						value: currentInputs.requestForm.value,
@@ -166,42 +180,38 @@ const LoanForm = ({ header }) => {
 							/>
 						</div>
 					</div>
-
-					<div class="col-md-6 col-sm-6 my-3">
+					<div class="col-md-6 col-sm-6 my-1">
 						<div class="form-group">
-							<div class="row mb-1">
-								<input
-									type="radio"
-									id="Cash"
-									name="requestForm"
-									onChange={e => inputTextChangeHandler('requestForm', 'got')}
-									value={inputs.requestForm?.value}
-									class="col col-2"
-								/>
-								<label
-									for="Cash"
-									class="col col-1"
-									style={{ color: 'white', fontSize: '2vh' }}>
-									Receive
-								</label>
-							</div>
+							<select
+								class="form-control mb-2"
+								id="requestForm"
+								value={inputs.requestForm.value}
+								onChange={e =>
+									inputTextChangeHandler('requestForm', e.target.value)
+								}>
+								<option value="" disabled>
+									Pay / Receive
+								</option>
+								<option value="got">Receive</option>
+								<option value="paid">Pay</option>
+							</select>
+						</div>
 
-							<div class="row mb-1">
-								<input
-									type="radio"
-									id="Capital"
-									name="requestForm"
-									onChange={e => inputTextChangeHandler('requestForm', 'paid')}
-									value={inputs.requestForm?.value}
-									class="col col-2"
-								/>
-								<label
-									for="Capital"
-									class="col col-1"
-									style={{ color: 'white', fontSize: '2vh' }}>
-									Pay
-								</label>
-							</div>
+						<div class="form-group">
+							<select
+								class="form-control mb-2"
+								id="methode"
+								value={inputs.methode.value}
+								onChange={e =>
+									inputTextChangeHandler('methode', e.target.value)
+								}>
+								<option value="" disabled>
+									Card / Cash / Cheque
+								</option>
+								<option value="card">Card</option>
+								<option value="cash">Cash</option>
+								<option value="cheque">Cheque</option>
+							</select>
 						</div>
 					</div>
 

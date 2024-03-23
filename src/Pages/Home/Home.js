@@ -28,6 +28,7 @@ import LoadingSpinner from '../../Components/LoadingSpinner/LoadingSpinner'
 import Countdown from 'react-countdown'
 import { logout } from '../../Actions/AuthAction'
 import { authActions } from '../../store/AuthSlice'
+import SummaryTable from '../../Components/SummaryTable/SummaryTable'
 
 const Timer = ({ onTimeout }) => {
 	const initialTimeLeft = localStorage.getItem('timeLeft') || 3600
@@ -77,8 +78,8 @@ const Home = () => {
 	const [totalExpanses, setTotalExpanses] = useState(0)
 	const [totalIncomes, setTotalIncomes] = useState(0)
 	const [captitalAmount, setCapitalAmount] = useState(0)
-	const [balance, setBalance] = useState(0)
 	const [openingBalance, setOpeningBalance] = useState(0)
+	const [balance, setBalance] = useState(0)
 	const [gotLoan, setGotLoan] = useState(0)
 	const [paidLoan, setPaidLoan] = useState(0)
 	const [gotAdvance, setGotAdvance] = useState(0)
@@ -100,6 +101,7 @@ const Home = () => {
 		getTotalIncomeAmount(requestList)
 		getTotalAdvanceAmount(requestList)
 		getTotalLoanAmount(requestList)
+		getBalance(requestList)
 	}, [requestList])
 
 	const getOpeningBalance = list => {
@@ -132,12 +134,30 @@ const Home = () => {
 		setOpeningBalance(totalAmountBeforeYesterday)
 	}
 
+	const getBalance = list => {
+		const today = new Date()
+		const yesterday = new Date(today)
+		yesterday.setDate(today.getDate() - 1)
+
+		const totalAmountBeforeYesterday = list.reduce((total, current) => {
+			if (current.requestForm === 'got' || current.requestType === 'receipt') {
+				return total + parseFloat(current.amount)
+			} else {
+				return total - parseFloat(current.amount)
+			}
+		}, 0)
+
+		setBalance(totalAmountBeforeYesterday)
+	}
 	const getTotalExpenseAmount = expanses => {
 		// calculate total expenses
-		const totalExpanses = expanses.reduce(
-			(total, current) => total + +current.amount,
-			0
-		)
+
+		const totalExpanses = expanses.reduce((total, current) => {
+			if (current.requestForm === 'expense') {
+				return total + +current.amount
+			}
+			return total // Make sure to return total even if the condition isn't met
+		}, 0)
 		setTotalExpanses(totalExpanses)
 	}
 
@@ -279,7 +299,7 @@ const Home = () => {
 
 	// timer logout
 	const handleLogout = () => {
-		localStorage.removeItem('timeLeft') // Clear remaining time on logout
+		// Clear remaining time on logout
 
 		dispatch(authActions.logout())
 	}
@@ -405,6 +425,8 @@ const Home = () => {
 					</div> */}
 				</div>
 			</section>
+
+			{/* charts */}
 			<div className="container-fluid my-3">
 				<div className="row">
 					<div className="col-md-6 col-12 my-2" style={{ margin: 'auto' }}>
@@ -456,6 +478,7 @@ const Home = () => {
 				</div>
 			</div>
 
+			{/* Cards */}
 			<div className="container-fluid" style={{ marginInline: 'auto' }}>
 				<div
 					className="row"
@@ -470,9 +493,226 @@ const Home = () => {
 					<div
 						className=" col-md-auto col-12 m-1"
 						style={{
-							height: '20vh',
 							background: 'white',
-							minWidth: '35vh',
+
+							backdropFilter: 'blur(20px) saturate(113%)',
+							WebkitBackdropFilter: 'blur(20px) saturate(113%)',
+							backgroundColor: 'rgba(255, 255, 255, 200)',
+
+							borderRadius: '12px',
+							border: '1px solid rgba(209, 213, 219, 0.3)'
+						}}>
+						<div className="row" style={{ position: 'relative' }}>
+							<FontAwesomeIcon
+								icon={faHandHoldingDollar}
+								fontSize="8vh"
+								width="105px"
+								color="darkblue"
+								style={{
+									marginBlock: 'auto'
+								}}
+								className="col"
+							/>
+							<div className="col" style={{ margin: 'auto' }}>
+								<p
+									style={{
+										fontSize: '3vh',
+
+										textAlign: 'right',
+										height: '30%',
+										paddingInline: '2vh',
+										margin: '0%'
+									}}>
+									Balance
+								</p>
+								<p
+									style={{
+										fontSize: '4.5vh',
+										fontWeight: '700',
+										textAlign: 'right',
+										paddingInline: '2vh',
+
+										margin: '0%'
+									}}>
+									{balance}
+								</p>
+							</div>
+						</div>
+					</div>
+
+					{/* 2 */}
+					<div
+						className=" col-md-auto col-12 m-1"
+						style={{
+							background: 'white',
+
+							backdropFilter: 'blur(20px) saturate(113%)',
+							WebkitBackdropFilter: 'blur(20px) saturate(113%)',
+							backgroundColor: 'rgba(255, 255, 255, 200)',
+
+							borderRadius: '12px',
+							border: '1px solid rgba(209, 213, 219, 0.3)'
+						}}>
+						<div
+							className="row"
+							style={{ height: '75%', position: 'relative' }}>
+							<FontAwesomeIcon
+								icon={faMoneyBill}
+								fontSize="8vh"
+								color="darkblue"
+								style={{
+									marginBlock: 'auto'
+								}}
+								className="col"
+							/>
+							<div className="col" style={{ margin: 'auto' }}>
+								<p
+									style={{
+										fontSize: '3vh',
+
+										textAlign: 'right',
+										height: '30%',
+										paddingInline: '2vh',
+										margin: '0%'
+									}}>
+									Expenses
+								</p>
+								<p
+									style={{
+										fontSize: '4.5vh',
+										fontWeight: '700',
+										textAlign: 'right',
+										paddingInline: '2vh',
+
+										margin: '0%'
+									}}>
+									{totalExpanses}
+								</p>
+							</div>
+						</div>
+					</div>
+
+					{/* 3 */}
+					<div
+						className=" col-md-auto col-12 m-1"
+						style={{
+							background: 'white',
+
+							backdropFilter: 'blur(20px) saturate(113%)',
+							WebkitBackdropFilter: 'blur(20px) saturate(113%)',
+							backgroundColor: 'rgba(255, 255, 255, 200)',
+
+							borderRadius: '12px',
+							border: '1px solid rgba(209, 213, 219, 0.3)'
+						}}>
+						<div
+							className="row"
+							style={{ height: '75%', position: 'relative' }}>
+							<FontAwesomeIcon
+								icon={faMoneyCheck}
+								fontSize="8vh"
+								width="105px"
+								color="darkblue"
+								style={{
+									marginBlock: 'auto'
+								}}
+								className="col"
+							/>
+							<div className="col" style={{ margin: 'auto' }}>
+								<p
+									style={{
+										fontSize: '3vh',
+
+										textAlign: 'right',
+										height: '30%',
+										paddingInline: '2vh',
+										margin: '0%'
+									}}>
+									Advance(Credit)
+								</p>
+								<p
+									style={{
+										fontSize: '4.5vh',
+										fontWeight: '700',
+										textAlign: 'right',
+										paddingInline: '2vh',
+
+										margin: '0%'
+									}}>
+									{gotAdvance}
+								</p>
+							</div>
+						</div>
+					</div>
+
+					<div
+						className=" col-md-auto col-12 m-1"
+						style={{
+							background: 'white',
+
+							backdropFilter: 'blur(20px) saturate(113%)',
+							WebkitBackdropFilter: 'blur(20px) saturate(113%)',
+							backgroundColor: 'rgba(255, 255, 255, 200)',
+
+							borderRadius: '12px',
+							border: '1px solid rgba(209, 213, 219, 0.3)'
+						}}>
+						<div className="row" style={{ position: 'relative' }}>
+							<FontAwesomeIcon
+								icon={faBank}
+								fontSize="8vh"
+								width="105px"
+								color="darkblue"
+								style={{
+									margin: 'auto',
+									width: '105px'
+								}}
+								className="col"
+							/>
+							<div className="col" style={{ margin: 'auto' }}>
+								<p
+									style={{
+										fontSize: '3vh',
+
+										textAlign: 'right',
+										height: '30%',
+										paddingInline: '2vh',
+										margin: '0%'
+									}}>
+									Advance(Debit)
+								</p>
+								<p
+									style={{
+										fontSize: '4.5vh',
+										fontWeight: '700',
+										textAlign: 'right',
+										paddingInline: '2vh',
+
+										margin: '0%'
+									}}>
+									{paidAdvance}
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{/* Cards */}
+			<div className="container-fluid" style={{ marginInline: 'auto' }}>
+				<div
+					className="row"
+					style={{
+						width: '100%',
+						marginInline: 'auto',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						minWidth: '35vh'
+					}}>
+					<div
+						className=" col-md-auto col-12 m-1"
+						style={{
+							background: 'white',
 							backdropFilter: 'blur(20px) saturate(113%)',
 							WebkitBackdropFilter: 'blur(20px) saturate(113%)',
 							backgroundColor: 'rgba(255, 255, 255, 200)',
@@ -485,7 +725,8 @@ const Home = () => {
 							style={{ height: '75%', position: 'relative' }}>
 							<FontAwesomeIcon
 								icon={faHandHoldingDollar}
-								fontSize="10vh"
+								fontSize="8vh"
+								width="105px"
 								color="darkblue"
 								style={{
 									margin: 'auto'
@@ -517,28 +758,11 @@ const Home = () => {
 								</p>
 							</div>
 						</div>
-
-						<div className="row">
-							<div>
-								<p
-									style={{
-										textAlign: 'center',
-										borderTop: '1px solid black',
-										width: '80%',
-										margin: 'auto',
-										fontSize: '3vh'
-									}}>
-									{totalIncomes}
-								</p>
-							</div>
-						</div>
 					</div>
 					<div
 						className=" col-md-auto col-12 m-1"
 						style={{
-							height: '20vh',
 							background: 'white',
-							minWidth: '35vh',
 							backdropFilter: 'blur(20px) saturate(113%)',
 							WebkitBackdropFilter: 'blur(20px) saturate(113%)',
 							backgroundColor: 'rgba(255, 255, 255, 200)',
@@ -551,7 +775,7 @@ const Home = () => {
 							style={{ height: '75%', position: 'relative' }}>
 							<FontAwesomeIcon
 								icon={faMoneyBill}
-								fontSize="10vh"
+								fontSize="8vh"
 								color="darkblue"
 								style={{
 									margin: 'auto'
@@ -568,7 +792,7 @@ const Home = () => {
 										paddingInline: '2vh',
 										margin: '0%'
 									}}>
-									Expenses
+									Capital
 								</p>
 								<p
 									style={{
@@ -579,22 +803,7 @@ const Home = () => {
 
 										margin: '0%'
 									}}>
-									{totalExpanses}
-								</p>
-							</div>
-						</div>
-
-						<div className="row">
-							<div>
-								<p
-									style={{
-										textAlign: 'center',
-										borderTop: '1px solid black',
-										width: '80%',
-										margin: 'auto',
-										fontSize: '3vh'
-									}}>
-									{totalExpanses}
+									{captitalAmount}
 								</p>
 							</div>
 						</div>
@@ -602,9 +811,7 @@ const Home = () => {
 					<div
 						className=" col-md-auto col-12 m-1"
 						style={{
-							height: '20vh',
 							background: 'white',
-							minWidth: '35vh',
 							backdropFilter: 'blur(20px) saturate(113%)',
 							WebkitBackdropFilter: 'blur(20px) saturate(113%)',
 							backgroundColor: 'rgba(255, 255, 255, 200)',
@@ -617,7 +824,7 @@ const Home = () => {
 							style={{ height: '75%', position: 'relative' }}>
 							<FontAwesomeIcon
 								icon={faMoneyCheck}
-								fontSize="10vh"
+								fontSize="8vh"
 								color="darkblue"
 								style={{
 									margin: 'auto'
@@ -634,7 +841,7 @@ const Home = () => {
 										paddingInline: '2vh',
 										margin: '0%'
 									}}>
-									Advance
+									Loan(Credit)
 								</p>
 								<p
 									style={{
@@ -645,22 +852,7 @@ const Home = () => {
 
 										margin: '0%'
 									}}>
-									{paidAdvance - gotAdvance}
-								</p>
-							</div>
-						</div>
-
-						<div className="row">
-							<div>
-								<p
-									style={{
-										textAlign: 'center',
-										borderTop: '1px solid black',
-										width: '80%',
-										margin: 'auto',
-										fontSize: '3vh'
-									}}>
-									{paidAdvance} -{gotAdvance}
+									{gotLoan}
 								</p>
 							</div>
 						</div>
@@ -669,9 +861,8 @@ const Home = () => {
 					<div
 						className=" col-md-auto col-12 m-1"
 						style={{
-							height: '20vh',
 							background: 'white',
-							minWidth: '35vh',
+
 							backdropFilter: 'blur(20px) saturate(113%)',
 							WebkitBackdropFilter: 'blur(20px) saturate(113%)',
 							backgroundColor: 'rgba(255, 255, 255, 200)',
@@ -684,7 +875,7 @@ const Home = () => {
 							style={{ height: '75%', position: 'relative' }}>
 							<FontAwesomeIcon
 								icon={faBank}
-								fontSize="10vh"
+								fontSize="8vh"
 								color="darkblue"
 								style={{
 									margin: 'auto'
@@ -701,7 +892,7 @@ const Home = () => {
 										paddingInline: '2vh',
 										margin: '0%'
 									}}>
-									Loans
+									Loans(Debit)
 								</p>
 								<p
 									style={{
@@ -712,22 +903,7 @@ const Home = () => {
 
 										margin: '0%'
 									}}>
-									{gotLoan - paidLoan}
-								</p>
-							</div>
-						</div>
-
-						<div className="row">
-							<div>
-								<p
-									style={{
-										textAlign: 'center',
-										borderTop: '1px solid black',
-										width: '80%',
-										margin: 'auto',
-										fontSize: '3vh'
-									}}>
-									{gotLoan} -{paidLoan}
+									{paidLoan}
 								</p>
 							</div>
 						</div>
@@ -737,10 +913,7 @@ const Home = () => {
 			<section className={`container-fluid mt-3`}>
 				<h2 style={{ textAlign: 'left', color: 'white' }}>Account Works</h2>
 				<div className={`col-12 `}>
-					<PaginationTable
-						list={requestList}
-						handleModel={handleExpenseModel}
-					/>
+					<SummaryTable list={requestList} handleModel={handleExpenseModel} />
 				</div>
 			</section>
 

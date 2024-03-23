@@ -10,10 +10,11 @@ const ReceiptForm = ({ header }) => {
 	const dispatch = useDispatch()
 	// Initial state for inputs
 	const initialInputsState = {
-		amount: { value: '', isValid: true },
+		amount: { value: null, isValid: true },
 		narration: { value: '', isValid: true },
 		date: { value: '', isValid: true },
-		requestForm: { value: '', isValid: true }
+		requestForm: { value: '', isValid: true },
+		methode: { value: '', isValid: true }
 	}
 
 	// State for inputs
@@ -24,6 +25,7 @@ const ReceiptForm = ({ header }) => {
 			inputs.amount.isValid &&
 				inputs.narration.isValid &&
 				inputs.requestForm.isValid &&
+				(inputs.requestForm.value === 'cash' ? inputs.methode.isValid : true) &&
 				inputs.date.isValid
 		)
 
@@ -57,15 +59,24 @@ const ReceiptForm = ({ header }) => {
 			amount: +inputs.amount.value,
 			narration: inputs.narration.value,
 			requestForm: inputs.requestForm.value,
+			methode: inputs.methode.value,
 			date: inputs.date.value
 		}
 
 		const amountValid = +data.amount > 0
 		const narrationValid = data.narration?.trim().length > 0
 		const categoryValid = data.requestForm?.trim().length > 0
+		const methodeValid =
+			data.requestForm === 'cash' ? data.methode?.trim().length > 0 : true
 		const dateValid = data.date?.trim().length > 0
 
-		if (!amountValid || !narrationValid || !categoryValid || !dateValid) {
+		if (
+			!amountValid ||
+			!narrationValid ||
+			!categoryValid ||
+			!dateValid ||
+			!methodeValid
+		) {
 			setInputs(currentInputs => {
 				return {
 					amount: { value: +currentInputs.amount.value, isValid: amountValid },
@@ -74,6 +85,10 @@ const ReceiptForm = ({ header }) => {
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
+					},
+					methode: {
+						value: currentInputs.methode.value,
+						isValid: methodeValid
 					},
 					requestForm: {
 						value: currentInputs.requestForm.value,
@@ -88,10 +103,12 @@ const ReceiptForm = ({ header }) => {
 			...data,
 			id: currentUser.id,
 			requestType: 'receipt',
-			requestForm: data.requestForm
+			requestForm: data.requestForm,
+			methode: data.requestForm === 'cash' ? data.methode : 'capital'
 		}
 		dispatch(createAccountRequest(newData))
 		setFormSubmit(true)
+		// console.log(newData)
 		setInputs(initialInputsState)
 	}
 	return (
@@ -163,47 +180,43 @@ const ReceiptForm = ({ header }) => {
 							/>
 						</div>
 					</div>
-
-					<div class="col-md-6 col-sm-6 my-3">
+					<div class="col-md-6 col-sm-6 my-1">
 						<div class="form-group">
-							<div class="row mb-1">
-								<input
-									type="radio"
-									id="Cash"
-									name="requestForm"
-									onChange={e => inputTextChangeHandler('requestForm', 'cash')}
-									value={inputs.requestForm?.value}
-									class="col col-2"
-								/>
-								<label
-									for="Cash"
-									class="col col-1"
-									style={{ color: 'white', fontSize: '2vh' }}>
-									Cash
-								</label>
-							</div>
-
-							<div class="row mb-1">
-								<input
-									type="radio"
-									id="Capital"
-									name="requestForm"
-									onChange={e =>
-										inputTextChangeHandler('requestForm', 'capital')
-									}
-									value={inputs.requestForm?.value}
-									class="col col-2"
-								/>
-								<label
-									for="Capital"
-									class="col col-1"
-									style={{ color: 'white', fontSize: '2vh' }}>
-									Capital
-								</label>
-							</div>
+							<select
+								class="form-control mb-2"
+								id="requestForm"
+								value={inputs.requestForm.value}
+								onChange={e =>
+									inputTextChangeHandler('requestForm', e.target.value)
+								}>
+								<option value="" disabled>
+									Select Income Type
+								</option>
+								<option value="cash">Income</option>
+								<option value="capital">Capital</option>
+							</select>
 						</div>
+						{inputs.requestForm.value === 'cash' && (
+							<div class="form-group">
+								<select
+									class="form-control mb-2"
+									id="methode"
+									value={inputs.methode.value}
+									onChange={e =>
+										inputTextChangeHandler('methode', e.target.value)
+									}>
+									<option value="" disabled>
+										Select Income Type
+									</option>
+									<option value="card">Card</option>
+									<option value="cash">Cash</option>
+									<option value="cheque">Cheque</option>
+								</select>
+							</div>
+						)}
 					</div>
-
+				</div>
+				<div class="form-row row">
 					<div class="col-md-2 col-sm-6 my-1">
 						<div class="form-group">
 							<button

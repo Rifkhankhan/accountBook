@@ -17,7 +17,8 @@ const ExpanseForm = () => {
 	const initialInputsState = {
 		amount: { value: '', isValid: true },
 		narration: { value: '', isValid: true },
-		date: { value: '', isValid: true }
+		date: { value: '', isValid: true },
+		methode: { value: '', isValid: true }
 	}
 
 	// State for inputs
@@ -25,7 +26,10 @@ const ExpanseForm = () => {
 
 	useEffect(() => {
 		setFormValid(
-			inputs.amount.isValid && inputs.narration.isValid && inputs.date.isValid
+			inputs.methode.isValid &&
+				inputs.amount.isValid &&
+				inputs.narration.isValid &&
+				inputs.date.isValid
 		)
 
 		return () => {}
@@ -58,20 +62,25 @@ const ExpanseForm = () => {
 		const data = {
 			amount: +inputs.amount.value,
 			narration: inputs.narration.value,
-			date: inputs.date.value
+			date: inputs.date.value,
+			methode: inputs.methode.value
 		}
 
 		const dateValid = data.date?.trim().length > 0
 
 		const amountValid = +data.amount > 0
 		const narrationValid = data.narration?.trim().length > 0
+		const methodeValid = data.methode?.trim().length > 0
 
-		if (!amountValid || !narrationValid || !dateValid) {
+		if (!amountValid || !narrationValid || !dateValid || !methodeValid) {
 			setInputs(currentInputs => {
 				return {
 					amount: { value: +currentInputs.amount.value, isValid: amountValid },
 					date: { value: currentInputs.date.value, isValid: dateValid },
-
+					methode: {
+						value: currentInputs.methode.value,
+						isValid: methodeValid
+					},
 					narration: {
 						value: currentInputs.narration.value,
 						isValid: narrationValid
@@ -88,6 +97,7 @@ const ExpanseForm = () => {
 			requestType: 'expense',
 			requestForm: 'expense'
 		}
+
 		dispatch(createAccountRequest(newData))
 		setFormSubmit(true)
 		setInputs(initialInputsState)
@@ -146,7 +156,7 @@ const ExpanseForm = () => {
 				</div>
 
 				<div class="form-row row">
-					<div class="col-md-12 col-sm-6 my-1">
+					<div class="col-md-6 col-sm-6 my-1">
 						<div class="form-group">
 							<textarea
 								type="narration"
@@ -159,6 +169,24 @@ const ExpanseForm = () => {
 									inputTextChangeHandler('narration', e.target.value)
 								}
 							/>
+						</div>
+					</div>
+					<div class="col-md-6 col-sm-6 my-1">
+						<div class="form-group">
+							<select
+								class="form-control mb-2"
+								id="methode"
+								value={inputs.methode.value}
+								onChange={e =>
+									inputTextChangeHandler('methode', e.target.value)
+								}>
+								<option value="" disabled>
+									Card / Cash / Cheque
+								</option>
+								<option value="card">Card</option>
+								<option value="cash">Cash</option>
+								<option value="cheque">Cheque</option>
+							</select>
 						</div>
 					</div>
 

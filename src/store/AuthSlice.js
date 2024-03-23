@@ -23,6 +23,7 @@ export const authSlice = createSlice({
 		logout: (state, action) => {
 			state.isAuthenticated = false
 			window.localStorage.removeItem('token')
+			localStorage.removeItem('timeLeft')
 			state.user = []
 			state.token = null
 		},

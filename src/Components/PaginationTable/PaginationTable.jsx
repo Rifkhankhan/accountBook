@@ -951,7 +951,6 @@ function PaginationTable({ list, handleModel, tableType }) {
 		doc.text('Date: ' + formattedDate, 200, 15)
 		doc.text('Smart Account Book', 50, 15)
 		// Add the date to the PDF document
-
 		if (tableType === undefined) {
 			doc.text('Summary Report', 50, 25)
 		} else if (tableType === 'expense') {
@@ -975,6 +974,50 @@ function PaginationTable({ list, handleModel, tableType }) {
 	}
 
 	// calculate the balance
+	const handlePrint = () => {
+		const currentDate = new Date()
+		const formattedDate = currentDate.toISOString().slice(0, 10)
+
+		const doc = new jsPDF({ orientation: 'landscape' })
+		const logo = new Image()
+		logo.src = image
+		doc.addImage(logo, 'PNG', 15, 10, 30, 30)
+		doc.setFontSize(16)
+		doc.text('Date: ' + formattedDate, 200, 15)
+		doc.text('Smart Account Book', 50, 15)
+
+		if (tableType === undefined) {
+			doc.text('Summary Report', 50, 25)
+		} else if (tableType === 'expense') {
+			doc.text('Expense Report', 50, 25)
+		} else if (tableType === 'receipt') {
+			doc.text('Income Report', 50, 25)
+		} else if (tableType === 'loan') {
+			doc.text('Loan Report', 50, 25)
+		} else if (tableType === 'advance') {
+			doc.text('Advance Report', 50, 25)
+		}
+		doc.autoTable({ html: '#table', startY: 50 }) // Adjust startY as needed
+
+		// Print the PDF content directly
+		doc.autoPrint()
+
+		// Convert the PDF document to a data URL
+		const pdfContentBase64 = doc.output('datauristring')
+
+		// Open a new window and print the PDF content
+		const printWindow = window.open('', '_blank')
+		printWindow.document.write('<html><body>')
+		printWindow.document.write(
+			'<embed width="100%" height="100%" src="' +
+				pdfContentBase64 +
+				'" type="application/pdf" />'
+		)
+		printWindow.document.write(
+			'<script>window.onload = function() { window.print(); }</script>'
+		) // Print when fully loaded
+		printWindow.document.write('</body></html>')
+	}
 
 	return (
 		<div className={`container-fluid my-3 ${styles.tableContainer}`}>
@@ -1028,6 +1071,9 @@ function PaginationTable({ list, handleModel, tableType }) {
 					<button onClick={exportPdf} className="btn btn-secondary btn-sm m-1">
 						Download
 					</button>
+					<button onClick={handlePrint} className="btn btn-primary btn-sm m-1">
+						Print
+					</button>
 				</div>
 			</div>
 			<table className={`table table-bordered table-hover `} id="table">
@@ -1044,7 +1090,7 @@ function PaginationTable({ list, handleModel, tableType }) {
 				<tbody>
 					{currentItems?.map((item, index) => (
 						<tr
-							key={item.id}
+							key={item}
 							onClick={() => {
 								handleModel(item)
 							}}>

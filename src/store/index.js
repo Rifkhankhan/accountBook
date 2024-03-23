@@ -6,7 +6,7 @@ import { advanceSlice } from './AdvanceSlice'
 import { loanSlice } from './LoanSlice'
 import { accountRequestSlice } from './AccountRequestSlice'
 import { thunk } from 'redux-thunk'
-import { Tuple, configureStore } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 export const store = configureStore({
 	reducer: {
 		expanse: expanseSlice.reducer,
@@ -19,5 +19,3 @@ export const store = configureStore({
 	},
 	middleware: getDefaultMiddleware => getDefaultMiddleware().concat(thunk)
 })
-
-export default store
