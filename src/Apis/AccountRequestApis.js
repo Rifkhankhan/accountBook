@@ -13,3 +13,5 @@ export const disableAccountRequest = formData =>
 export const getAccountRequests = () => API.get('/accountRequest')
 export const updateAccountRequest = (id, formData) =>
 	API.put(`/accountRequest/${id}`, formData)
+
+export const getRequests = () => API.get('/requests')

@@ -93,6 +93,36 @@ export const getUsers = () => async (dispatch, getState) => {
 		dispatch(authActions.handleLoading())
 	}
 }
+
+export const getUserActivities = () => async (dispatch, getState) => {
+	dispatch(authActions.handleLoading())
+
+	try {
+		// dispatch(uiActions.changeAsLoading())
+		const { data } = await UserApi.getUserActivities()
+		if (data.success) {
+			dispatch(userActions.getUserActivities(data.product))
+		} else {
+			swal('Oops! Something Wrong', 'Try again please!', 'error')
+		}
+		// dispatch(uiActions.changeAsLoading())
+	} catch (error) {
+		if (error.response?.status === 400) {
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
+		} else if (error.response?.status === 404) {
+			swal("You don't have Account", error.response.data.message, 'error')
+		} else if (error.response?.status === 409) {
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
+		} else if (error.response?.status === 408) {
+			swal('Oops! You have no access', error.response.data.message, 'error')
+		} else if (error.response?.status === 500) {
+			swal('Internal Server Error', error.response.data.message, 'error')
+		}
+	} finally {
+		// Dispatch an action to handle loading state (assuming you have authActions.handleLoading())
+		dispatch(authActions.handleLoading())
+	}
+}
 export const getUser = id => async dispatch => {
 	dispatch(authActions.handleLoading())
 	try {

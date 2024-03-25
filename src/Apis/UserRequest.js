@@ -10,6 +10,7 @@ export const createCustomer = formData => API.post('/user/createUser', formData)
 export const getCustomer = id => API.get(`/user/${id}`)
 export const deleteCustomer = id => API.delete(`/user/${id}`)
 export const getCustomers = () => API.get('/user')
+export const getUserActivities = () => API.get('/user/activities')
 export const updateCustomer = (id, formData) => API.put(`/user/${id}`, formData)
 export const resetPassword = id => API.put(`/user/reset/${id}`)
 export const updatePassword = (id, formData) =>

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClose } from '@fortawesome/free-solid-svg-icons'
 import { authActions } from '../../store/AuthSlice'
-import { autoLogin } from '../../Actions/AuthAction'
+import { autoLogin, logout } from '../../Actions/AuthAction'
 import { getAccountRequests } from '../../Actions/AccountRequestActions'
 
 function Header() {
@@ -27,6 +27,28 @@ function Header() {
 			setScrolled(false)
 		}
 	}
+
+	// useEffect(() => {
+	// 	const handleBeforeUnload = event => {
+	// 		// Perform logout action here
+	// 		// For example, you can clear user session, call logout API, etc.
+	// 		console.log('Logging out user...')
+	// 		// You can call your logout function or dispatch logout action here
+
+	// 		navigate('/login')
+	// 		setMenuOpen(!menuOpen)
+	// 		setShowCloseButton(!showCloseButton)
+	// 		dispatch(logout())
+	// 	}
+
+	// 	// Add event listener for beforeunload event
+	// 	window.addEventListener('beforeunload', handleBeforeUnload)
+
+	// 	// Clean up by removing the event listener when component unmounts
+	// 	return () => {
+	// 		window.removeEventListener('beforeunload', handleBeforeUnload)
+	// 	}
+	// }, []) // Empty dependency array ensures this effect runs only once on component mount
 
 	useEffect(() => {
 		window.addEventListener('scroll', handleScroll)
@@ -52,14 +74,13 @@ function Header() {
 		navigate('/login')
 		setMenuOpen(!menuOpen)
 		setShowCloseButton(!showCloseButton)
-
-		dispatch(authActions.logout())
+		dispatch(logout())
 	}
 
 	return (
 		<section className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
 			<div className={`container ${styles.logo}`}>
-				<div className={`col-4 ${styles.logohead}`}>
+				<div className={`col-3 ${styles.logohead}`}>
 					<h3
 						style={{ fontSize: '1em', margin: 0, padding: 0 }}
 						className={styles.hightlight}>
@@ -74,7 +95,7 @@ function Header() {
 					<p
 						className={`col-6  ${styles.contact}`}
 						style={{ textAlign: 'left', float: 'left', margin: 'auto' }}>
-						Contact Us : +94716972318; +94742625427
+						Contact Us : +94716972318/ +94742625427
 					</p>
 					<a
 						href="https://scitglobal.com/"

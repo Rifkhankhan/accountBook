@@ -4,7 +4,8 @@ export const accountRequestSlice = createSlice({
 	name: 'accountRequest',
 	initialState: {
 		isLoading: false,
-		accountRequests: []
+		accountRequests: [],
+		requests: []
 	},
 	reducers: {
 		handleLoading: (state, action) => {
@@ -16,6 +17,9 @@ export const accountRequestSlice = createSlice({
 		},
 		getAccountRequests: (state, action) => {
 			state.accountRequests = [...action.payload]
+		},
+		getRequests: (state, action) => {
+			state.requests = [...action.payload]
 		},
 		getAccountRequest: (state, action) => {
 			//   if (action.payload.success) state.notification = true;

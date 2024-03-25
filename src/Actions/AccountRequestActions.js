@@ -1,6 +1,5 @@
 import swal from 'sweetalert'
 import * as AccountRequestApis from '../Apis/AccountRequestApis'
-import { advanceActions } from '../store/AdvanceSlice'
 import { AccountRequestActions } from '../store/AccountRequestSlice'
 
 export const createAccountRequest = formData => async dispatch => {
@@ -110,6 +109,30 @@ export const deleteAccountRequest = formData => async dispatch => {
 			swal('Successfully Deleted!', 'Now You can Continue', 'success')
 		} else {
 			swal('Oops! Something Wrong', 'Try again please!', 'error')
+		}
+	} catch (error) {
+		if (error.response?.status === 400) {
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
+		} else if (error.response?.status === 404) {
+			swal("You don't have Account", error.response.data.message, 'error')
+		} else if (error.response?.status === 409) {
+			swal('Oops! Something Wrong', error.response.data.message, 'error')
+		} else if (error.response?.status === 408) {
+			swal('Oops! You have no access', error.response.data.message, 'error')
+		} else if (error.response?.status === 500) {
+			swal('Internal Server Error', error.response.data.message, 'error')
+		}
+	}
+	dispatch(AccountRequestActions.handleLoading())
+}
+
+export const getRequests = () => async dispatch => {
+	dispatch(AccountRequestActions.handleLoading())
+	try {
+		const { data } = await AccountRequestApis.getRequests()
+
+		if (data.success) {
+			dispatch(AccountRequestActions.getRequests(data.product))
 		}
 	} catch (error) {
 		if (error.response?.status === 400) {

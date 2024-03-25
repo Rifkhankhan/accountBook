@@ -29,6 +29,7 @@ const ReceiptModel = ({
 		},
 		amount: { value: +clickedRow?.amount, isValid: true },
 		narration: { value: clickedRow?.narration, isValid: true },
+		methode: { value: clickedRow?.methode, isValid: true },
 		id: { value: currentUser?.id, isValid: true },
 		requestForm: { value: clickedRow?.requestForm, isValid: true },
 		requestType: { value: clickedRow?.requestType, isValid: true }
@@ -39,6 +40,7 @@ const ReceiptModel = ({
 	useEffect(() => {
 		setFormValid(
 			inputs.amount.isValid &&
+				inputs.methode.isValid &&
 				inputs.requestForm.isValid &&
 				inputs.narration.isValid
 		)
@@ -72,15 +74,17 @@ const ReceiptModel = ({
 			narration: inputs.narration.value,
 			amount: +inputs.amount.value,
 			id: inputs.id.value,
+			methode: inputs.methode.value,
 			requestForm: inputs.requestForm.value,
 			requestType: inputs.requestType.value
 		}
 
+		const methodeValid = data.methode?.trim().length > 0
 		const narrationValid = data.narration?.trim().length > 0
 		const categoryValid = data.requestForm?.trim().length > 0
 		const amountValid = +data.amount > 0
 		const dateValid = data.date?.trim().length > 0
-		if (!narrationValid || !amountValid || !categoryValid) {
+		if (!narrationValid || !amountValid || !categoryValid || !methodeValid) {
 			setInputs(currentInputs => {
 				return {
 					...rest,
@@ -99,6 +103,10 @@ const ReceiptModel = ({
 					requestForm: {
 						value: currentInputs.requestForm.value,
 						isValid: categoryValid
+					},
+					methode: {
+						value: currentInputs.methode.value,
+						isValid: methodeValid
 					}
 				}
 			})
@@ -148,27 +156,54 @@ const ReceiptModel = ({
 							</div>
 							<div className="col-12 col-md-4">
 								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
-									RequestForm
+									Income/Capital
 								</label>
 								<p>{inputs.requestForm.value}</p>
 							</div>
 						</div>
 						<div className="row">
-							<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
-								Narration
-							</label>
-							<textarea
-								rows={5}
-								disabled
-								style={{
-									marginInline: 'auto',
-									width: '98%',
-									border: '2px solid blue',
-									borderRadius: '5px'
-								}}>
-								{inputs.narration.value}
-							</textarea>
+							<div className="col-12 col-md-6">
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
+									Transfer Methode
+								</label>
+								<p>
+									{inputs.methode.value === 'transfer'
+										? 'Bank Transfer'
+										: inputs.methode.value === 'deposite'
+										? 'Bank Deposite'
+										: inputs.methode.value}
+								</p>
+							</div>
+							<div className="col-12 col-md-6">
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
+									Narration
+								</label>
+								<textarea
+									rows={5}
+									disabled
+									style={{
+										marginInline: 'auto',
+										width: '98%',
+										border: '2px solid blue',
+										borderRadius: '5px'
+									}}>
+									{inputs.narration.value}
+								</textarea>
+							</div>
 						</div>
+
+						{clickedRow?.filename !== null && (
+							<div className="row">
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
+									Image
+								</label>
+								<img
+									src={`http://localhost:5000/uploads/${clickedRow?.filename}`}
+									alt="Uploaded"
+									style={{ width: '100%', height: '50vh' }}
+								/>
+							</div>
+						)}
 					</Modal.Body>
 					<Modal.Footer>
 						{currentUser.receiptPermission === 'yes' &&
@@ -245,66 +280,56 @@ const ReceiptModel = ({
 							</div>
 						</div>
 						<div class="form-row row">
-							<div class="col-md-6 col-sm-6 my-1">
-								<div class="form-group">
-									<textarea
-										type="narration"
-										class="form-control"
-										id="narration"
-										placeholder="Narration"
-										value={inputs.narration.value}
-										rows={4}
-										onChange={e =>
-											inputTextChangeHandler('narration', e.target.value)
-										}
-									/>
-								</div>
-							</div>
-
-							<div class="col-md-6 col-sm-6 my-3">
-								<div class="form-group">
-									<div class="row mb-1">
-										<input
-											type="radio"
-											id="eCash"
-											name="requestForm"
+							<div class="form-row row">
+								<div class="col-md-6 col-sm-6 my-1">
+									<div class="form-group">
+										<select
+											class="form-control mb-2"
+											id="requestForm"
+											value={inputs.requestForm.value}
 											onChange={e =>
-												inputTextChangeHandler('requestForm', 'cash')
-											}
-											value={inputs.requestForm?.value}
-											checked={inputs.requestForm?.value === 'cash'}
-											className="col col-2 "
-										/>
-										<label
-											for="eCash"
-											class="col col-4"
-											style={{
-												color: 'black',
-												fontSize: '2vh',
-												textAlign: 'left'
-											}}>
-											Cash
-										</label>
+												inputTextChangeHandler('requestForm', e.target.value)
+											}>
+											<option value="" disabled>
+												Pay / Receive
+											</option>
+											<option value="got">Receive</option>
+											<option value="paid">Pay</option>
+										</select>
 									</div>
 
-									<div class="row mb-1">
-										<input
-											type="radio"
-											id="eCapital"
-											name="requestForm"
+									<div class="form-group">
+										<select
+											class="form-control mb-2"
+											id="methode"
+											value={inputs.methode.value}
 											onChange={e =>
-												inputTextChangeHandler('requestForm', 'capital')
+												inputTextChangeHandler('methode', e.target.value)
+											}>
+											<option value="" disabled>
+												Card / Cash / Cheque
+											</option>
+											<option value="card">Card</option>
+											<option value="cash">Cash</option>
+											<option value="cheque">Cheque</option>
+											<option value="transfer">Bank Transfer</option>
+											<option value="deposite">Bank Deposite</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-6 col-sm-6 my-1">
+									<div class="form-group">
+										<textarea
+											type="narration"
+											class="form-control"
+											id="narration"
+											placeholder="Narration"
+											value={inputs.narration.value}
+											rows={4}
+											onChange={e =>
+												inputTextChangeHandler('narration', e.target.value)
 											}
-											checked={inputs.requestForm?.value === 'capital'}
-											value={inputs.requestForm?.value}
-											class="col col-2"
 										/>
-										<label
-											for="eCapital"
-											class="col col-4"
-											style={{ color: 'black', fontSize: '2vh' }}>
-											Capital
-										</label>
 									</div>
 								</div>
 							</div>

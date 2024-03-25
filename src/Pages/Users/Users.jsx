@@ -8,11 +8,16 @@ import CreateUser from '../../Components/CreateUser/CreateUser'
 import image from './../../Images/man.png'
 import UsersTable from '../../Components/UsersTable/UsersTable'
 import Model from '../../Components/Model/Model'
-import { getUsers } from '../../Actions/userAction'
+import { getUserActivities, getUsers } from '../../Actions/userAction'
 import ResetPasswordModel from '../../Components/ResetPasswordModel/ResetPasswordModel'
+import { getRequests } from '../../Actions/AccountRequestActions'
+import DataActivityTable from '../../Components/DataActivityTable/DataActivityTable'
+import UserActivityTable from '../../Components/UserActivityTable/UserActivityTable'
 
 const Users = () => {
 	const users = useSelector(state => state.user.users)
+	const requests = useSelector(state => state.accountRequest.requests)
+	const userActivities = useSelector(state => state.user.userActivities)
 
 	const currentUser = useSelector(state => state.auth.user)
 
@@ -22,7 +27,6 @@ const Users = () => {
 	const [selectedUser, setSelectedUser] = useState()
 
 	const handlePasswordModel = () => {
-		console.log('clicked')
 		setPasswordModel(current => !current)
 	}
 	const handleModel = () => {
@@ -30,6 +34,8 @@ const Users = () => {
 	}
 	useEffect(() => {
 		dispatch(getUsers())
+		dispatch(getRequests())
+		dispatch(getUserActivities())
 	}, [])
 
 	const getIdHandler = id => {
@@ -70,6 +76,23 @@ const Users = () => {
 				<h2>Users</h2>
 				<UsersTable
 					initialData={users}
+					handleModel={handleModel}
+					getIdHandler={getIdHandler}
+				/>
+			</div>
+			<div className="row" style={{ marginTop: '3vh', color: 'white' }}>
+				<h2>Data Activities</h2>
+				<DataActivityTable
+					initialData={requests}
+					handleModel={handleModel}
+					getIdHandler={getIdHandler}
+				/>
+			</div>
+
+			<div className="row" style={{ marginTop: '3vh', color: 'white' }}>
+				<h2>User Activities</h2>
+				<UserActivityTable
+					initialData={userActivities}
 					handleModel={handleModel}
 					getIdHandler={getIdHandler}
 				/>

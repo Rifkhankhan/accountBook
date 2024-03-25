@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit'
 export const userSlice = createSlice({
 	name: 'user',
 	initialState: {
-		users: []
+		users: [],
+		userActivities: []
 	},
 	reducers: {
 		createUser: (state, action) => {
@@ -12,6 +13,9 @@ export const userSlice = createSlice({
 		},
 		getUsers: (state, action) => {
 			state.users = [...action.payload]
+		},
+		getUserActivities: (state, action) => {
+			state.userActivities = [...action.payload]
 		},
 		getUser: (state, action) => {
 			//   if (action.payload.success) state.notification = true;

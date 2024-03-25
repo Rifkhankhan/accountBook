@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styles from './LoanForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -10,6 +10,8 @@ const LoanForm = ({ header }) => {
 	// const notification = useSelector(state => state.customer.notification)
 	const [formSubmit, setFormSubmit] = useState(false)
 	const dispatch = useDispatch()
+	const [file, setFile] = useState(null)
+	const filePickerRef = useRef()
 	// Initial state for inputs
 	const initialInputsState = {
 		amount: { value: '', isValid: true },
@@ -57,7 +59,8 @@ const LoanForm = ({ header }) => {
 	// 		window.location.reload()
 	// 	}, 1000)
 	// }
-	const submitHandler = () => {
+	const submitHandler = e => {
+		e.preventDefault()
 		const data = {
 			amount: +inputs.amount.value,
 			narration: inputs.narration.value,
@@ -101,15 +104,33 @@ const LoanForm = ({ header }) => {
 			return
 		}
 
-		const newData = {
-			...data,
-			id: currentUser.id,
-			requestType: 'loan',
-			requestForm: data.requestForm
-		}
-		dispatch(createAccountRequest(newData))
+		const formData = new FormData()
+		formData.append('file', file)
+
+		// Append other form data fields to the FormData object
+		formData.append('date', data.date)
+		formData.append('amount', data.amount)
+		formData.append('narration', data.narration)
+		formData.append('requestType', 'loan')
+		formData.append('requestForm', data.requestForm)
+		formData.append('id', currentUser.id)
+		formData.append('methode', data.methode)
+
+		dispatch(createAccountRequest(formData))
 		setFormSubmit(true)
 		setInputs(initialInputsState)
+	}
+
+	const pickHandler = e => {
+		let pickedFile
+
+		if (e.target.files && e.target.files.length === 1) {
+			pickedFile = e.target.files[0]
+			setFile(pickedFile)
+		}
+	}
+	const pickImageHandler = () => {
+		filePickerRef.current.click()
 	}
 	return (
 		<div className={`container ${styles.container} `}>
@@ -211,18 +232,46 @@ const LoanForm = ({ header }) => {
 								<option value="card">Card</option>
 								<option value="cash">Cash</option>
 								<option value="cheque">Cheque</option>
+								<option value="transfer">Bank Transfer</option>
+								<option value="deposite">Bank Deposite</option>
 							</select>
 						</div>
 					</div>
 
-					<div class="col-md-2 col-sm-6 my-1">
-						<div class="form-group">
-							<button
-								type="button"
-								class="btn btn-primary "
-								onClick={submitHandler}>
-								Submit
-							</button>
+					<div class="form-row row">
+						<div class="col-md-6 col-sm-6 my-1">
+							<div class="form-group">
+								<input
+									type="file"
+									name=""
+									value=""
+									style={{ display: 'none' }}
+									accept=".jpg,.png,.jpeg"
+									onChange={pickHandler}
+									ref={filePickerRef}
+								/>
+
+								<button
+									type="button"
+									onClick={pickImageHandler}
+									class="btn btn-danger "
+									style={{ width: '100%' }}>
+									{!file ? 'Upload File' : 'File Uploaded'}
+								</button>
+							</div>
+						</div>
+					</div>
+					<div class="form-row row">
+						<div class="col-md-6 col-sm-6 my-1">
+							<div class="form-group">
+								<button
+									type="button "
+									class="btn btn-primary "
+									style={{ display: 'block', width: '100%' }}
+									onClick={submitHandler}>
+									Submit
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>

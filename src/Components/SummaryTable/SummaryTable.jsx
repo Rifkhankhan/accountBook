@@ -211,8 +211,9 @@ function SummaryTable({ list, handleModel }) {
 						<th>#</th>
 						<th>Date</th>
 						<th>Amount</th>
-						<th>Transfer Type</th>
 						<th>Category</th>
+						<th>SubCategory</th>
+						<th>Transfer Type</th>
 						<th>Balance</th>
 					</tr>
 				</thead>
@@ -230,15 +231,20 @@ function SummaryTable({ list, handleModel }) {
 								{item.requestType}
 							</td>
 							<td style={{ textTransform: 'capitalize' }}>
-								{item.requestForm === 'got' ? 'Received' : item.requestForm}
+								{item.requestForm === 'got'
+									? 'Received'
+									: item.requestForm === 'cash'
+									? 'Income'
+									: item.requestForm}
 							</td>
+							<td style={{ textTransform: 'capitalize' }}>{item.methode}</td>
 							<td style={{ textTransform: 'capitalize' }}>{item.balance}</td>
 						</tr>
 					))}
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colSpan="6" className="text-right">
+						<td colSpan="7" className="text-right">
 							{renderPaginationButtons()}
 						</td>
 					</tr>

@@ -33,6 +33,8 @@ const AdvanceModel = ({
 		narration: { value: clickedRow?.narration, isValid: true },
 		requestForm: { value: clickedRow?.requestForm, isValid: true },
 		id: { value: currentUser?.id, isValid: true },
+		methode: { value: clickedRow?.methode, isValid: true },
+
 		requestType: { value: clickedRow?.requestType, isValid: true }
 	}
 
@@ -42,6 +44,7 @@ const AdvanceModel = ({
 		setFormValid(
 			inputs.amount.isValid &&
 				inputs.requestForm.isValid &&
+				inputs.methode.isValid &&
 				inputs.narration.isValid
 		)
 
@@ -67,13 +70,15 @@ const AdvanceModel = ({
 			amount: +inputs.amount.value,
 			id: inputs.id.value,
 			requestForm: inputs.requestForm.value,
+			methode: inputs.methode.value,
 			requestType: inputs.requestType.value
 		}
 
 		const narrationValid = data.narration?.trim().length > 0
 		const categoryValid = data.requestForm?.trim().length > 0
+		const methodeValid = data.methode?.trim().length > 0
 		const amountValid = +data.amount > 0
-		if (!narrationValid || !amountValid || !categoryValid) {
+		if (!narrationValid || !amountValid || !categoryValid || !methodeValid) {
 			setInputs(currentInputs => {
 				return {
 					...rest,
@@ -88,6 +93,10 @@ const AdvanceModel = ({
 					requestForm: {
 						value: currentInputs.requestForm.value,
 						isValid: categoryValid
+					},
+					methode: {
+						value: currentInputs.methode.value,
+						isValid: methodeValid
 					}
 				}
 			})
@@ -139,7 +148,7 @@ const AdvanceModel = ({
 							</div>
 							<div className="col-12 col-md-4">
 								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
-									Type
+									Paid / Received
 								</label>
 								<p>
 									{inputs.requestForm.value === 'got' ? 'Received' : 'Paid'}
@@ -147,21 +156,48 @@ const AdvanceModel = ({
 							</div>
 						</div>
 						<div className="row">
-							<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
-								Narration
-							</label>
-							<textarea
-								rows={5}
-								disabled
-								style={{
-									marginInline: 'auto',
-									width: '98%',
-									border: '2px solid blue',
-									borderRadius: '5px'
-								}}>
-								{inputs.narration.value}
-							</textarea>
+							<div className="col-12 col-md-6">
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
+									Transfer Methode
+								</label>
+								<p>
+									{inputs.methode.value === 'transfer'
+										? 'Bank Transfer'
+										: inputs.methode.value === 'deposite'
+										? 'Bank Deposite'
+										: inputs.methode.value}
+								</p>
+							</div>
+							<div className="col-12 col-md-6">
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
+									Narration
+								</label>
+								<textarea
+									rows={5}
+									disabled
+									style={{
+										marginInline: 'auto',
+										width: '98%',
+										border: '2px solid blue',
+										borderRadius: '5px'
+									}}>
+									{inputs.narration.value}
+								</textarea>
+							</div>
 						</div>
+
+						{clickedRow?.filename !== null && (
+							<div className="row">
+								<label style={{ fontWeight: 600, fontSize: '1.5em' }}>
+									Image
+								</label>
+								<img
+									src={`http://localhost:5000/uploads/${clickedRow?.filename}`}
+									alt="Uploaded"
+									style={{ width: '100%', height: '50vh' }}
+								/>
+							</div>
+						)}
 					</Modal.Body>
 					<Modal.Footer>
 						{currentUser.advancePermission === 'yes' &&
@@ -241,6 +277,42 @@ const AdvanceModel = ({
 						<div class="form-row row">
 							<div class="col-md-6 col-sm-6 my-1">
 								<div class="form-group">
+									<select
+										class="form-control mb-2"
+										id="requestForm"
+										value={inputs.requestForm.value}
+										onChange={e =>
+											inputTextChangeHandler('requestForm', e.target.value)
+										}>
+										<option value="" disabled>
+											Pay / Receive
+										</option>
+										<option value="got">Receive</option>
+										<option value="paid">Pay</option>
+									</select>
+								</div>
+
+								<div class="form-group">
+									<select
+										class="form-control mb-2"
+										id="methode"
+										value={inputs.methode.value}
+										onChange={e =>
+											inputTextChangeHandler('methode', e.target.value)
+										}>
+										<option value="" disabled>
+											Card / Cash / Cheque
+										</option>
+										<option value="card">Card</option>
+										<option value="cash">Cash</option>
+										<option value="cheque">Cheque</option>
+										<option value="transfer">Bank Transfer</option>
+										<option value="deposite">Bank Deposite</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6 col-sm-6 my-1">
+								<div class="form-group">
 									<textarea
 										type="narration"
 										class="form-control"
@@ -252,54 +324,6 @@ const AdvanceModel = ({
 											inputTextChangeHandler('narration', e.target.value)
 										}
 									/>
-								</div>
-							</div>
-
-							<div class="col-md-6 col-sm-6 my-3">
-								<div class="form-group">
-									<div class="row mb-1">
-										<input
-											type="radio"
-											id="eCash"
-											name="requestForm"
-											onChange={e =>
-												inputTextChangeHandler('requestForm', 'got')
-											}
-											value={inputs.requestForm?.value}
-											checked={inputs.requestForm?.value === 'got'}
-											className="col col-2 "
-										/>
-										<label
-											for="eCash"
-											class="col col-4"
-											style={{
-												color: 'black',
-												fontSize: '2vh',
-												textAlign: 'left'
-											}}>
-											Receive
-										</label>
-									</div>
-
-									<div class="row mb-1">
-										<input
-											type="radio"
-											id="eCapital"
-											name="requestForm"
-											onChange={e =>
-												inputTextChangeHandler('requestForm', 'paid')
-											}
-											checked={inputs.requestForm?.value === 'paid'}
-											value={inputs.requestForm?.value}
-											class="col col-2"
-										/>
-										<label
-											for="eCapital"
-											class="col col-4"
-											style={{ color: 'black', fontSize: '2vh' }}>
-											Pay
-										</label>
-									</div>
 								</div>
 							</div>
 						</div>
