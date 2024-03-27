@@ -1082,8 +1082,16 @@ function PaginationTable({ list, handleModel, tableType }) {
 						<th>#</th>
 						<th>Date</th>
 						<th>Amount</th>
-						<th>Transfer Type</th>
-						<th>Category</th>
+
+						{tableType === 'receipt' ? (
+							<th>Capital / Income</th>
+						) : tableType === 'advance' || tableType === 'loan' ? (
+							<th>Paid / Received</th>
+						) : (
+							<th>Category</th>
+						)}
+						<th>Payment Type</th>
+
 						<th>Balance</th>
 					</tr>
 				</thead>
@@ -1097,11 +1105,26 @@ function PaginationTable({ list, handleModel, tableType }) {
 							<td>{index + 1}</td>
 							<td>{new Date(item.date).toISOString().split('T')[0]}</td>
 							<td style={{ textTransform: 'capitalize' }}>{item.amount}</td>
+
+							{tableType === 'receipt' ? (
+								<td style={{ textTransform: 'capitalize' }}>
+									{item.requestForm === 'cash' ? 'Income' : 'Capital'}
+								</td>
+							) : tableType === 'advance' || tableType === 'loan' ? (
+								<td style={{ textTransform: 'capitalize' }}>
+									{item.requestForm === 'got' ? 'Received' : item.requestForm}
+								</td>
+							) : (
+								<td style={{ textTransform: 'capitalize' }}>
+									{item.requestForm}
+								</td>
+							)}
 							<td style={{ textTransform: 'capitalize' }}>
-								{item.requestType}
-							</td>
-							<td style={{ textTransform: 'capitalize' }}>
-								{item.requestForm === 'got' ? 'Received' : item.requestForm}
+								{item.methode === 'transfer'
+									? 'Bank Transfer'
+									: item.methode === 'deposite'
+									? 'Bank Deposite'
+									: item.methode}
 							</td>
 							<td style={{ textTransform: 'capitalize' }}>{item.balance}</td>
 						</tr>
@@ -1109,7 +1132,7 @@ function PaginationTable({ list, handleModel, tableType }) {
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colSpan="6" className="text-right">
+						<td colSpan="7" className="text-right">
 							{renderPaginationButtons()}
 						</td>
 					</tr>

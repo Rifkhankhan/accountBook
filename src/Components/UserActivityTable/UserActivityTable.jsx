@@ -3,7 +3,12 @@ import styles from './UserActivityTable.module.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 
-const UserActivityTable = ({ initialData, handleModel, getIdHandler }) => {
+const UserActivityTable = ({
+	initialData,
+	handleModel,
+	getIdHandler,
+	handleConfirmation
+}) => {
 	const [filter, setFilter] = useState('')
 	const [currentPage, setCurrentPage] = useState(1)
 	const pageSize = 10 // Number of items per page
@@ -14,14 +19,21 @@ const UserActivityTable = ({ initialData, handleModel, getIdHandler }) => {
 		setFilter(event.target.value)
 	}
 
-	// Filtered and paginated data
+	// Filtered data
 	const filteredData = initialData.filter(
 		item =>
 			String(item.rid).toLowerCase().includes(filter.toLowerCase()) ||
 			String(item.id).toLowerCase().includes(filter.toLowerCase()) ||
 			String(item.arid).toLowerCase().includes(filter.toLowerCase())
 	)
-	const totalPages = Math.ceil(filteredData.length / pageSize)
+
+	// Sort filtered data based on login time
+	const sortedData = filteredData.sort(
+		(a, b) => new Date(a.logintime) - new Date(b.logintime)
+	)
+
+	// Paginated data
+	const totalPages = Math.ceil(sortedData.length / pageSize)
 
 	const handlePageChange = pageNumber => {
 		setCurrentPage(pageNumber)
@@ -36,7 +48,7 @@ const UserActivityTable = ({ initialData, handleModel, getIdHandler }) => {
 		visiblePages.push(i)
 	}
 
-	const visibleData = filteredData.slice(
+	const visibleData = sortedData.slice(
 		(currentPage - 1) * pageSize,
 		currentPage * pageSize
 	)
@@ -57,25 +69,27 @@ const UserActivityTable = ({ initialData, handleModel, getIdHandler }) => {
 						<th>User</th>
 						<th>Status</th>
 						<th>Login Time</th>
+						<th>Duration</th>
 						<th>Logout Time</th>
 						<th>Online</th>
 					</tr>
 				</thead>
 				<tbody>
 					{visibleData.map((item, index) => (
-						<tr key={index}>
+						<tr key={index} onClick={() => handleConfirmation(item.id)}>
 							<td>{item?.aid}</td>
 							<td>{item?.name}</td>
 							<td>{+item?.status === 0 ? 'Blocked' : 'Active'}</td>
 							<td>{item?.logintime}</td>
+							<td>{item?.logintime}</td>
 							<td>{item?.logouttime}</td>
 							<td
 								style={{
-									backgroundColor: item?.isLoggedIn === 1 ? 'red' : 'black',
+									backgroundColor: item?.logouttime === null ? 'red' : 'black',
 									color: 'white',
 									fontWeight: 'bold'
 								}}>
-								{item?.isLoggedIn === 1 ? 'Online' : 'Offline'}
+								{item?.logouttime === null ? 'Online' : 'Offline'}
 							</td>
 						</tr>
 					))}

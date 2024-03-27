@@ -13,6 +13,8 @@ import ResetPasswordModel from '../../Components/ResetPasswordModel/ResetPasswor
 import { getRequests } from '../../Actions/AccountRequestActions'
 import DataActivityTable from '../../Components/DataActivityTable/DataActivityTable'
 import UserActivityTable from '../../Components/UserActivityTable/UserActivityTable'
+import swal from 'sweetalert'
+import { logoutUserAccount } from '../../Actions/AuthAction'
 
 const Users = () => {
 	const users = useSelector(state => state.user.users)
@@ -34,12 +36,26 @@ const Users = () => {
 	}
 	useEffect(() => {
 		dispatch(getUsers())
-		dispatch(getRequests())
-		dispatch(getUserActivities())
 	}, [])
 
 	const getIdHandler = id => {
 		setSelectedUser({ ...users.find(data => data.id === id) })
+	}
+
+	const handleConfirmation = id => {
+		swal({
+			title: 'Are you sure?',
+			text: 'Are You Want to Logout This Account',
+			icon: 'warning',
+			buttons: ['No', 'Yes'],
+			dangerMode: true
+		}).then(confirm => {
+			dispatch(logoutUserAccount(id))
+
+			if (confirm) {
+				swal('Success!', 'Account is Logout!', 'success')
+			}
+		})
 	}
 
 	return (
@@ -95,6 +111,7 @@ const Users = () => {
 					initialData={userActivities}
 					handleModel={handleModel}
 					getIdHandler={getIdHandler}
+					handleConfirmation={handleConfirmation}
 				/>
 			</div>
 			{showModal && (

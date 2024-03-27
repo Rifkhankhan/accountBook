@@ -215,7 +215,7 @@ const ReceiptForm = ({ header }) => {
 									inputTextChangeHandler('requestForm', e.target.value)
 								}>
 								<option value="" disabled>
-									Select Income Type
+									Income / Capital
 								</option>
 								<option value="cash">Income</option>
 								<option value="capital">Capital</option>
@@ -231,7 +231,7 @@ const ReceiptForm = ({ header }) => {
 										inputTextChangeHandler('methode', e.target.value)
 									}>
 									<option value="" disabled>
-										Select Income Type
+										Card / Cash / Cheque...
 									</option>
 									<option value="card">Card</option>
 									<option value="cash">Cash</option>

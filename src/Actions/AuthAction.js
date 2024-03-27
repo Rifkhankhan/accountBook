@@ -55,6 +55,29 @@ export const logout = () => async dispatch => {
 	dispatch(authActions.handleLoading())
 }
 
+export const logoutUserAccount = id => async dispatch => {
+	dispatch(authActions.handleLoading())
+	try {
+		// const token = window.localStorage.getItem('token')
+
+		await AuthApi.logoutUserAccount(id)
+	} catch (error) {
+		console.log(error)
+		if (error.response?.status === 400) {
+			swal('Oops! Something Wrong', error.response?.data?.message, 'error')
+		} else if (error.response?.status === 404) {
+			swal("You don't have Account", error.response?.data?.message, 'error')
+		} else if (error.response?.status === 409) {
+			swal('Oops! Something Wrong', error.response?.data?.message, 'error')
+		} else if (error.response?.status === 408) {
+			swal('Oops! You have no access', error.response?.data?.message, 'error')
+		} else if (error.response?.status === 500) {
+			swal('Internal Server Error', error.response?.data?.message, 'error')
+		}
+	}
+	dispatch(authActions.handleLoading())
+}
+
 export const autoLogin = () => async dispatch => {
 	dispatch(authActions.handleLoading())
 	try {
@@ -78,6 +101,10 @@ export const autoLogin = () => async dispatch => {
 			swal('Oops! You have no access', error.response.data.message, 'error')
 		} else if (error.response?.status === 500) {
 			swal('Internal Server Error', error.response.data.message, 'error')
+		} else if (error.response?.status === 405) {
+			dispatch(authActions.autoLogin())
+
+			swal('Oops! Something Wrong', ' You are Logged Out!', 'info')
 		}
 	}
 	dispatch(authActions.handleLoading())

@@ -9,20 +9,28 @@ import Advance from '../Pages/Advance/Advance'
 import Loan from '../Pages/Loan/Loan'
 import { useEffect } from 'react'
 import Header from '../Components/Header/Header'
-import { getAccountRequests } from '../Actions/AccountRequestActions'
+import {
+	getAccountRequests,
+	getRequests
+} from '../Actions/AccountRequestActions'
 import LoadingSpinner from '../Components/LoadingSpinner/LoadingSpinner'
 import { autoLogin } from '../Actions/AuthAction'
+import { getUserActivities } from '../Actions/userAction'
 
 const Routers = () => {
 	const dispatch = useDispatch()
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
 	const isLoading = useSelector(state => state.auth.isLoading)
 	const currentUser = useSelector(state => state.auth.user)
-
+	const token = localStorage.getItem('token')
 	useEffect(() => {
-		dispatch(autoLogin())
+		if (token) {
+			dispatch(autoLogin())
+		}
 		dispatch(getAccountRequests())
-	}, [dispatch])
+		dispatch(getRequests())
+		dispatch(getUserActivities())
+	}, [dispatch, token])
 
 	return (
 		<>
@@ -69,7 +77,7 @@ const Routers = () => {
 						isAuthenticated && currentUser.isAdmin ? (
 							<Users />
 						) : (
-							<Home to="/home" />
+							<Login to="/login" />
 						)
 					}
 				/>

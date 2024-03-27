@@ -306,7 +306,9 @@ const Home = () => {
 
 	return (
 		<div className={`container ${styles.home}`}>
-			<section className={`container  text-light`} style={{ margin: 'auto' }}>
+			<section
+				className={`container-fluid  text-light`}
+				style={{ margin: 'auto' }}>
 				<div
 					className="row "
 					style={{
@@ -316,10 +318,10 @@ const Home = () => {
 					}}>
 					{/* times */}
 					<div
-						className={`col-3 ${styles.smallCard}`}
+						className={`col-md-auto ${styles.smallCard}`}
 						style={{
-							backgroundColor: 'white',
-							color: 'darkblue',
+							backgroundColor: 'red',
+							color: 'white',
 							display: 'flex',
 							alignItems: 'center',
 							fontSize: '1em'
@@ -354,23 +356,9 @@ const Home = () => {
 							<Timer onTimeout={handleLogout} />
 						</p>
 					</div>
-
-					{/* timer finished */}
-				</div>
-			</section>
-			<section className={`container  text-light`} style={{ margin: 'auto' }}>
-				<div
-					className="row "
-					style={{
-						margin: 'auto',
-						display: 'flex',
-						justifyContent: 'space-between'
-					}}>
-					{/* times */}
-
 					{/* timer finished */}
 					<div
-						className={`col-3 ${styles.smallCard}`}
+						className={`col-md-auto ${styles.smallCard}`}
 						style={{ backgroundColor: '#FFD700', color: 'darkblue' }}>
 						<p className="col-2 " style={{ margin: 'auto' }}>
 							Date
@@ -382,7 +370,7 @@ const Home = () => {
 						</p>
 					</div>
 					<div
-						className={`col-3 ${styles.smallCard}`}
+						className={`col-md-auto ${styles.smallCard}`}
 						style={{
 							position: 'relative',
 							backgroundColor: ' #CCCCCC',
@@ -404,7 +392,7 @@ const Home = () => {
 						/>
 					</div>
 					<div
-						className={`col-3 ${styles.smallCard}`}
+						className={`col-md-auto ${styles.smallCard}`}
 						style={{
 							position: 'relative',
 							backgroundColor: ' #FFFDD0',

@@ -17,6 +17,7 @@
 .editBtn {
 	font-size: 1.5em;
 	transition: all 0.3s ease-in-out;
+	margin-right: 1vh;
 }
 
 .editBtn:hover {

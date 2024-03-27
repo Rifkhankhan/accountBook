@@ -213,7 +213,7 @@ function SummaryTable({ list, handleModel }) {
 						<th>Amount</th>
 						<th>Category</th>
 						<th>SubCategory</th>
-						<th>Transfer Type</th>
+						<th>Payment Type</th>
 						<th>Balance</th>
 					</tr>
 				</thead>
@@ -237,7 +237,13 @@ function SummaryTable({ list, handleModel }) {
 									? 'Income'
 									: item.requestForm}
 							</td>
-							<td style={{ textTransform: 'capitalize' }}>{item.methode}</td>
+							<td style={{ textTransform: 'capitalize' }}>
+								{item.methode === 'transfer'
+									? 'Bank Transfer'
+									: item.methode === 'deposite'
+									? 'Bank Deposite'
+									: item.methode}
+							</td>
 							<td style={{ textTransform: 'capitalize' }}>{item.balance}</td>
 						</tr>
 					))}
